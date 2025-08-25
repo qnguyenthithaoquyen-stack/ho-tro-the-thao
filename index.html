@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hỗ Trợ Huấn Luyện Thể Thao</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            background-color: #f0f2f5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: #fff;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.07);
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            background-color: #008080;
+            color: #fff;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo {
+            background-color: #fff;
+            color: #008080;
+            font-weight: 700;
+            padding: 10px;
+            border-radius: 5px;
+            margin-right: 15px;
+        }
+
+        .project-info h1 {
+            font-size: 24px;
+            margin: 0;
+            font-weight: 700;
+        }
+
+        .project-info p {
+            font-size: 12px;
+            margin: 0;
+            opacity: 0.9;
+        }
+
+        .login-btn {
+            background-color: #fff;
+            color: #008080;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 700;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        .login-btn:hover {
+            background-color: #f0f2f5;
+        }
+
+        /* Navigation */
+        .navbar {
+            display: flex;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,.05);
+            padding: 0 30px;
+        }
+
+        .navbar a {
+            padding: 15px 25px;
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+        .navbar a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 3px;
+            background-color: #008080;
+            transition: width 0.3s ease;
+        }
+        .navbar a:hover, .navbar a.active {
+            color: #008080;
+        }
+        .navbar a.active::after {
+            width: 70%;
+        }
+
+        /* Main Content */
+        .welcome-section {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .welcome-section h1 {
+            font-size: 42px;
+            margin: 0 0 15px;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .welcome-section p {
+            font-size: 18px;
+            color: #34495e;
+            margin: 0;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Carousel */
+        .carousel-container {
+            position: relative;
+            max-width: 1200px; /* Full width */
+            margin: 0 auto; /* No vertical margin */
+            overflow: hidden;
+        }
+
+        .carousel-slides {
+            display: flex;
+            transition: transform 0.7s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        .slide {
+            flex-shrink: 0;
+            width: 100%;
+            height: 450px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            font-size: 48px;
+            font-weight: 700;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.7);
+            position: relative;
+            background-size: cover;
+            background-position: center;
+        }
+        .slide::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.4); /* Lớp phủ tối */
+        }
+        .slide-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.5);
+            font-size: 28px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 10;
+            user-select: none;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .carousel-btn:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .carousel-btn.left { left: 30px; }
+        .carousel-btn.right { right: 30px; }
+
+        .carousel-dots {
+            position: absolute;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            z-index: 10;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            background-color: rgba(255,255,255,0.5);
+            border-radius: 50%;
+            margin: 0 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .dot.active {
+            background-color: #fff;
+            transform: scale(1.2);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header class="header">
+            <div class="header-left">
+                <div class="logo">LOGO</div>
+                <div class="project-info">
+                    <h1>HỖ TRỢ HUẤN LUYỆN THỂ THAO</h1>
+                    <p>DỰ ÁN KHOA HỌC KỸ THUẬT - ỨNG DỤNG THEO DÕI CHỈ SỐ VẬN ĐỘNG VIÊN</p>
+                </div>
+            </div>
+            <!-- SỬA LỖI Ở ĐÂY -->
+            <a href="dangnhap.html" class="login-btn">Đăng nhập</a>
+        </header>
+
+        <!-- SỬA LỖI Ở ĐÂY -->
+        <nav class="navbar">
+            <a href="index.html" class="active">Trang chủ</a>
+            <a href="gioithieu.html">Giới thiệu</a>
+            <a href="bangdieukhien.html">Bảng điều khiển</a>
+        </nav>
+
+        <section class="welcome-section">
+            <h1>Chào mừng đến với hệ thống Hỗ trợ Huấn luyện Thể thao!</h1>
+            <p>Nền tảng giúp tối ưu hóa hiệu suất và bảo vệ sức khỏe cho vận động viên.</p>
+        </section>
+
+        <div class="carousel-container">
+            <div class="carousel-slides" id="slides">
+                <div class="slide" style="background-image: url('https://placehold.co/1200x450/008080/FFFFFF?text=Hinh+Anh+1');">
+                    <div class="slide-content">Phân Tích Tư Thế</div>
+                </div>
+                <div class="slide" style="background-image: url('https://placehold.co/1200x450/28a745/FFFFFF?text=Hinh+Anh+2');">
+                    <div class="slide-content">Theo Dõi Thành Tích</div>
+                </div>
+                <div class="slide" style="background-image: url('https://placehold.co/1200x450/17a2b8/FFFFFF?text=Hinh+Anh+3');">
+                    <div class="slide-content">Cảnh Báo Chấn Thương</div>
+                </div>
+            </div>
+
+            <button class="carousel-btn left" id="prevBtn">&#10094;</button>
+            <button class="carousel-btn right" id="nextBtn">&#10095;</button>
+
+            <div class="carousel-dots" id="dots"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+
+</body>
+</html>

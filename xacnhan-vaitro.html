@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xác nhận vai trò</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            background-color: #f0f2f5;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .role-confirmation-card {
+            background-color: #fff;
+            border-radius: 16px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            text-align: center;
+            width: 100%;
+            max-width: 550px;
+            border-top: 5px solid #008080;
+        }
+        .role-confirmation-card h2 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #008080;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+        .role-confirmation-card p {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #555;
+            margin-bottom: 30px;
+        }
+        .role-selection {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .role-btn {
+            background-color: #f0f2f5;
+            border: 2px solid #ddd;
+            color: #555;
+            padding: 15px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            flex: 1;
+        }
+        .role-btn:hover {
+            border-color: #008080;
+            color: #008080;
+        }
+        .role-btn.active {
+            background-color: #008080;
+            color: #fff;
+            border-color: #008080;
+        }
+        .confirm-btn {
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        .confirm-btn:hover {
+            background-color: #218838;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="role-confirmation-card">
+        <h2>Xác nhận vai trò của bạn</h2>
+        <p>Vui lòng xác nhận vai trò bạn muốn sử dụng. Bạn có thể thay đổi lựa chọn dưới đây.</p>
+        <div class="role-selection">
+            <button class="role-btn" data-role="coach">Huấn Luyện Viên</button>
+            <button class="role-btn" data-role="athlete">Vận Động Viên</button>
+            <button class="role-btn" data-role="researcher">Nghiên Cứu Viên</button>
+        </div>
+        <button class="confirm-btn" id="confirmBtn">Xác nhận và tiếp tục</button>
+    </div>
+    <script src="xacnhan-vaitro.js"></script>
+</body>
+</html>
