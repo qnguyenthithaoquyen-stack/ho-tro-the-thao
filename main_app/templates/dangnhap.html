@@ -230,7 +230,81 @@
     </div>
 
     <!-- Bạn cần tạo file dangnhap.js riêng cho trang này -->
-    <script src="dangnhap.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 
+    <script>
+        // =================================================================================
+        // LƯU Ý: BẠN CẦN THAY THẾ CẤU HÌNH FIREBASE CỦA MÌNH VÀO ĐÂY
+        // Bạn có thể lấy nó từ Firebase Console -> Project settings (Cài đặt dự án)
+        // =================================================================================
+        const firebaseConfig = {
+            apiKey: "AIza...",
+            authDomain: "your-project-id.firebaseapp.com",
+            projectId: "your-project-id",
+            storageBucket: "your-project-id.appspot.com",
+            messagingSenderId: "...",
+            appId: "..."
+        };
+
+        // Khởi tạo Firebase
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const auth = firebase.auth();
+
+        // Lấy form đăng nhập từ HTML
+        const loginForm = document.getElementById('loginForm');
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault(); // Ngăn trang web tải lại
+
+            // Lấy email và mật khẩu từ các ô input
+            const email = e.target.email.value;
+            const password = e.target.password.value;
+            const submitButton = e.target.querySelector('.submit-btn');
+
+            // Vô hiệu hóa nút bấm và hiển thị trạng thái chờ
+            submitButton.disabled = true;
+            submitButton.textContent = 'Đang xử lý...';
+
+            try {
+                // 1. Dùng Firebase SDK để đăng nhập người dùng
+                const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                
+                // 2. Lấy ID Token để xác thực với backend
+                const idToken = await userCredential.user.getIdToken();
+
+                // 3. Gửi token về server (Flask) để xác thực và tạo session
+                const response = await fetch('/api/verify-token', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ token: idToken })
+                });
+
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    // 4. Nếu thành công, chuyển hướng đến trang dashboard
+                    alert('Đăng nhập thành công!');
+                    window.location.href = '/dashboard'; 
+                } else {
+                    // Nếu server trả về lỗi
+                    throw new Error(data.message || 'Lỗi xác thực phía máy chủ.');
+                }
+
+            } catch (error) {
+                // Hiển thị lỗi cho người dùng nếu đăng nhập thất bại
+                console.error("Lỗi đăng nhập:", error);
+                alert('Đăng nhập thất bại: ' + error.message);
+                
+                // Kích hoạt lại nút bấm
+                submitButton.disabled = false;
+                submitButton.textContent = 'Đăng Nhập';
+            }
+        });
+    </script>
 </body>
 </html>
