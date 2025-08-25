@@ -48,9 +48,8 @@
                     <div class="form-group"><label for="email">EMAIL</label><input type="email" id="email" name="email" required></div>
                     <div class="form-group"><label for="password">MẬT KHẨU</label><input type="password" id="password" name="password" required></div>
                     <button type="submit" class="submit-btn">Đăng Nhập</button>
-                    <!-- === THÊM MỚI: LIÊN KẾT QUÊN MẬT KHẨU === -->
                     <div class="form-options">
-                        <a href="#" id="forgot-password-link">Quên mật khẩu?</a>
+                        <a href="quenmatkhau.html">Quên mật khẩu?</a>
                     </div>
                 </form>
                 <div class="signup-link">Chưa có tài khoản? <a href="dangki.html">Đăng ký ngay</a></div>
@@ -93,23 +92,6 @@
             } finally {
                 submitButton.disabled = false;
                 submitButton.textContent = 'Đăng Nhập';
-            }
-        });
-
-        // === THÊM MỚI: XỬ LÝ QUÊN MẬT KHẨU ===
-        const forgotPasswordLink = document.getElementById('forgot-password-link');
-        forgotPasswordLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            const email = prompt("Vui lòng nhập email của bạn để đặt lại mật khẩu:");
-            if (email) {
-                auth.sendPasswordResetEmail(email)
-                    .then(() => {
-                        alert('Đã gửi email đặt lại mật khẩu. Vui lòng kiểm tra hộp thư của bạn.');
-                    })
-                    .catch((error) => {
-                        console.error('Lỗi gửi email:', error);
-                        alert('Không thể gửi email. Vui lòng kiểm tra lại địa chỉ email bạn đã nhập.');
-                    });
             }
         });
     </script>
