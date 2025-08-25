@@ -87,6 +87,9 @@
                         </div>
                         <div class="form-group">
                             <label for="city">Tỉnh thành</label>
+                            <!-- ====================================================== -->
+                            <!-- ĐÃ CẬP NHẬT DANH SÁCH TỈNH THÀNH (BỎ CHỮ "TỈNH") -->
+                            <!-- ====================================================== -->
                             <select id="city" name="city" required>
                                 <option value="" disabled selected>-- Chọn tỉnh thành --</option>
                                 <option value="hanoi">Hà Nội</option>
@@ -94,7 +97,35 @@
                                 <option value="haiphong">Hải Phòng</option>
                                 <option value="danang">Đà Nẵng</option>
                                 <option value="cantho">Cần Thơ</option>
-                                <!-- Thêm các tỉnh thành khác nếu cần -->
+                                <option value="hue">Huế</option>
+                                <option value="angiang">An Giang</option>
+                                <option value="bacninh">Bắc Ninh</option>
+                                <option value="camau">Cà Mau</option>
+                                <option value="caobang">Cao Bằng</option>
+                                <option value="daklak">Đắk Lắk</option>
+                                <option value="dienbien">Điện Biên</option>
+                                <option value="dongnai">Đồng Nai</option>
+                                <option value="dongthap">Đồng Tháp</option>
+                                <option value="gialai">Gia Lai</option>
+                                <option value="hatinh">Hà Tĩnh</option>
+                                <option value="hungyen">Hưng Yên</option>
+                                <option value="khanhhoa">Khánh Hòa</option>
+                                <option value="laichau">Lai Châu</option>
+                                <option value="lamdong">Lâm Đồng</option>
+                                <option value="langson">Lạng Sơn</option>
+                                <option value="laocai">Lào Cai</option>
+                                <option value="nghean">Nghệ An</option>
+                                <option value="ninhbinh">Ninh Bình</option>
+                                <option value="phutho">Phú Thọ</option>
+                                <option value="quangngai">Quảng Ngãi</option>
+                                <option value="quangninh">Quảng Ninh</option>
+                                <option value="quangtri">Quảng Trị</option>
+                                <option value="sonla">Sơn La</option>
+                                <option value="tayninh">Tây Ninh</option>
+                                <option value="thainguyen">Thái Nguyên</option>
+                                <option value="thanhhoa">Thanh Hóa</option>
+                                <option value="tuyenquang">Tuyên Quang</option>
+                                <option value="vinhlong">Vĩnh Long</option>
                             </select>
                         </div>
                     </div>
@@ -166,15 +197,14 @@
                 const user = userCredential.user;
 
                 // Step 2: Save additional information to Firestore
-                // We use user.uid as the document ID for linking
                 await db.collection('users').doc(user.uid).set({
                     fullName: fullName,
                     username: username,
                     email: email,
-                    age: Number(age), // Convert age to a number
+                    age: Number(age),
                     city: city,
                     role: role,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp() // Add a timestamp
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
 
                 // Notify success and redirect
@@ -184,7 +214,6 @@
             } catch (error) {
                 console.error("Signup Error:", error);
                 
-                // Display a more user-friendly error message
                 let errorMessage = 'Đã có lỗi xảy ra. Vui lòng thử lại.';
                 switch (error.code) {
                     case 'auth/email-already-in-use':
