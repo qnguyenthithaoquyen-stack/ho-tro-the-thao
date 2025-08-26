@@ -86,7 +86,8 @@
             // Sử dụng chức năng có sẵn và an toàn của Firebase
             auth.sendPasswordResetEmail(email)
                 .then(() => {
-                    alert('Gửi thành công! Vui lòng kiểm tra hộp thư email của bạn (kể cả mục spam) để nhận liên kết đặt lại mật khẩu.');
+                    // === ĐÃ SỬA LẠI CÂU THÔNG BÁO THEO YÊU CẦU ===
+                    alert('Đã gửi liên kết đặt lại mật khẩu. Vui lòng kiểm tra email của bạn.');
                 })
                 .catch((error) => {
                     console.error('Lỗi gửi email đặt lại mật khẩu:', error);
