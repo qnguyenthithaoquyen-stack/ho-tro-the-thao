@@ -87,7 +87,7 @@
             auth.sendPasswordResetEmail(email)
                 .then(() => {
                     // === ĐÃ SỬA LẠI CÂU THÔNG BÁO THEO YÊU CẦU ===
-                    alert('Đã gửi liên kết đặt lại mật khẩu. Vui lòng kiểm tra email của bạn.');
+                    alert('Đã gửi mã xác thực. Vui lòng kiểm tra email của bạn.');
                 })
                 .catch((error) => {
                     console.error('Lỗi gửi email đặt lại mật khẩu:', error);
