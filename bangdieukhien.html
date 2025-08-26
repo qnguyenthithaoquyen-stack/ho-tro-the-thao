@@ -16,16 +16,11 @@
         .user-actions a { background-color: #fff; color: #008080; border: none; padding: 10px 20px; border-radius: 20px; cursor: pointer; font-weight: 700; text-decoration: none; font-size: 14px; margin-left: 10px; }
         .navbar { display: flex; background-color: #fff; box-shadow: 0 2px 4px rgba(0,0,0,.05); padding: 0 30px; }
         .navbar a { padding: 15px 25px; text-decoration: none; color: #333; font-weight: 500; position: relative; }
-        .navbar a::after { content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 0; height: 3px; background-color: #008080; transition: width 0.3s ease; }
-        .navbar a:hover, .navbar a.active { color: #008080; }
-        .navbar a.active::after { width: 70%; }
+        .navbar a.active { color: #008080; }
         .main-content { padding: 40px 30px; min-height: 400px; }
-        .login-prompt-card, .dashboard-content { background-color: #fff; border-radius: 16px; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1); padding: 60px 80px; text-align: center; max-width: 500px; margin: 40px auto; }
-        .login-prompt-card h2, .dashboard-content h2 { font-size: 32px; font-weight: 700; margin-top: 0; margin-bottom: 15px; color: #008080; }
-        .login-prompt-card p, .dashboard-content p { font-size: 16px; line-height: 1.6; color: #555; margin-bottom: 30px; }
-        .action-button { background-color: #008080; color: #fff; border: none; padding: 14px 28px; border-radius: 25px; cursor: pointer; font-weight: 700; font-size: 16px; text-decoration: none; display: inline-block; transition: all 0.3s; }
-        .action-button:hover { background-color: #006666; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.15); }
-        /* Ẩn nội dung mặc định */
+        .dashboard-card { background-color: #fff; border-radius: 16px; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1); padding: 40px; text-align: center; max-width: 600px; margin: 40px auto; }
+        .dashboard-card h2 { font-size: 32px; font-weight: 700; margin-top: 0; margin-bottom: 15px; color: #008080; }
+        .dashboard-card p { font-size: 16px; line-height: 1.6; color: #555; margin-bottom: 30px; }
         .hidden { display: none; }
     </style>
 </head>
@@ -35,12 +30,8 @@
         <header class="header">
             <div class="header-left">
                 <div class="logo">LOGO</div>
-                <div class="project-info">
-                    <h1>HỖ TRỢ HUẤN LUYỆN THỂ THAO</h1>
-                    <p>DỰ ÁN KHOA HỌC KỸ THUẬT - ỨNG DỤNG THEO DÕI CHỈ SỐ VẬN ĐỘNG VIÊN</p>
-                </div>
+                <div class="project-info"><h1>HỖ TRỢ HUẤN LUYỆN THỂ THAO</h1><p>DỰ ÁN KHOA HỌC KỸ THUẬT</p></div>
             </div>
-            <!-- Khu vực này sẽ được cập nhật bằng JavaScript -->
             <div id="user-actions-container" class="user-actions">
                  <a href="dangnhap.html" class="login-btn">Đăng nhập</a>
             </div>
@@ -53,30 +44,39 @@
         </nav>
 
         <main class="main-content">
-            <!-- Giao diện khi chưa đăng nhập (mặc định) -->
-            <div id="login-prompt" class="login-prompt-card">
+            <!-- Giao diện khi chưa đăng nhập -->
+            <div id="login-prompt" class="dashboard-card">
                 <h2>Vui lòng đăng nhập</h2>
                 <p>Bạn cần đăng nhập để xem Bảng điều khiển.</p>
-                <a href="dangnhap.html" class="action-button">Đi đến trang đăng nhập</a>
+                <a href="dangnhap.html" style="color: #008080;">Đi đến trang đăng nhập</a>
             </div>
 
-            <!-- Giao diện khi đã đăng nhập (bị ẩn mặc định) -->
-            <div id="dashboard-content" class="dashboard-content hidden">
+            <!-- Giao diện cho Huấn Luyện Viên (ẩn mặc định) -->
+            <div id="coach-dashboard" class="dashboard-card hidden">
+                <h2>Bảng điều khiển Huấn Luyện Viên</h2>
+                <p>Chào mừng, <span id="coach-name"></span>!</p>
+                <!-- Thêm các chức năng cho HLV vào đây -->
+            </div>
+
+            <!-- Giao diện cho Vận Động Viên (ẩn mặc định) -->
+            <div id="athlete-dashboard" class="dashboard-card hidden">
+                <h2>Bảng điều khiển Vận Động Viên</h2>
+                <p>Chào mừng, <span id="athlete-name"></span>!</p>
+                <!-- Thêm các chức năng cho VĐV vào đây -->
+            </div>
+            
+            <!-- Giao diện mặc định nếu không có vai trò -->
+             <div id="default-dashboard" class="dashboard-card hidden">
                 <h2>Chào mừng trở lại!</h2>
                 <p>Đây là khu vực Bảng điều khiển của bạn.</p>
-                <p id="user-email-display"></p>
-                <!-- Nội dung bảng điều khiển sẽ được thêm vào đây -->
             </div>
         </main>
     </div>
 
-    <!-- Firebase SDK Scripts -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-
     <script>
-        // Your web app's Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyA2dXWCyjL2xgCSyeW9QQ7RvjI_O7kFHJw",
             authDomain: "sporthealthdata.firebaseapp.com",
@@ -87,52 +87,68 @@
             measurementId: "G-ZWS9C7P359"
         };
 
-        // Initialize Firebase
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const auth = firebase.auth();
         const db = firebase.firestore();
 
+        const loginPrompt = document.getElementById('login-prompt');
+        const coachDashboard = document.getElementById('coach-dashboard');
+        const athleteDashboard = document.getElementById('athlete-dashboard');
+        const defaultDashboard = document.getElementById('default-dashboard');
+        const userActionsContainer = document.getElementById('user-actions-container');
+
         // Lắng nghe sự thay đổi trạng thái đăng nhập
         auth.onAuthStateChanged(user => {
-            const loginPrompt = document.getElementById('login-prompt');
-            const dashboardContent = document.getElementById('dashboard-content');
-            const userActionsContainer = document.getElementById('user-actions-container');
-            const userEmailDisplay = document.getElementById('user-email-display');
-
             if (user) {
                 // --- NGƯỜI DÙNG ĐÃ ĐĂNG NHẬP ---
-                // 1. Ẩn thông báo yêu cầu đăng nhập
                 loginPrompt.classList.add('hidden');
-                // 2. Hiện nội dung bảng điều khiển
-                dashboardContent.classList.remove('hidden');
-                userEmailDisplay.textContent = `Bạn đang đăng nhập với email: ${user.email}`;
-
-                // 3. Thay đổi nút "Đăng nhập" thành "Đăng xuất"
+                
+                // Thay đổi nút "Đăng nhập" thành "Đăng xuất"
                 userActionsContainer.innerHTML = '<a href="#" id="logout-btn">Đăng xuất</a>';
-
-                // 4. Gắn sự kiện cho nút đăng xuất MỚI
                 const logoutButton = document.getElementById('logout-btn');
                 if (logoutButton) {
                     logoutButton.addEventListener('click', (e) => {
                         e.preventDefault();
                         auth.signOut().then(() => {
-                            alert('Đăng xuất thành công!');
                             window.location.href = 'dangnhap.html';
-                        }).catch(error => {
-                            console.error('Lỗi đăng xuất:', error);
                         });
                     });
                 }
 
+                // Lấy thông tin vai trò từ Firestore
+                const userDocRef = db.collection('users').doc(user.uid);
+                userDocRef.get().then((doc) => {
+                    if (doc.exists) {
+                        const userData = doc.data();
+                        const userRole = userData.role;
+                        const userName = userData.fullName || user.email;
+
+                        // Hiển thị giao diện dựa trên vai trò
+                        if (userRole === 'coach') {
+                            document.getElementById('coach-name').textContent = userName;
+                            coachDashboard.classList.remove('hidden');
+                        } else if (userRole === 'athlete') {
+                             document.getElementById('athlete-name').textContent = userName;
+                            athleteDashboard.classList.remove('hidden');
+                        } else {
+                            defaultDashboard.classList.remove('hidden');
+                        }
+                    } else {
+                        // Nếu không tìm thấy thông tin người dùng, hiển thị giao diện mặc định
+                        console.log("Không tìm thấy thông tin người dùng trong Firestore!");
+                        defaultDashboard.classList.remove('hidden');
+                    }
+                }).catch((error) => {
+                    console.error("Lỗi khi lấy thông tin người dùng:", error);
+                    defaultDashboard.classList.remove('hidden');
+                });
+
             } else {
                 // --- NGƯỜI DÙNG CHƯA ĐĂNG NHẬP ---
-                // 1. Hiện thông báo yêu cầu đăng nhập
                 loginPrompt.classList.remove('hidden');
-                // 2. Ẩn nội dung bảng điều khiển
-                dashboardContent.classList.add('hidden');
-                // 3. Đảm bảo nút là "Đăng nhập"
+                coachDashboard.classList.add('hidden');
+                athleteDashboard.classList.add('hidden');
+                defaultDashboard.classList.add('hidden');
                 userActionsContainer.innerHTML = '<a href="dangnhap.html">Đăng nhập</a>';
             }
         });
