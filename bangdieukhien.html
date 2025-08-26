@@ -18,10 +18,38 @@
         .navbar a { padding: 15px 25px; text-decoration: none; color: #333; font-weight: 500; position: relative; }
         .navbar a.active { color: #008080; }
         .main-content { padding: 40px 30px; min-height: 400px; }
-        .dashboard-card { background-color: #fff; border-radius: 16px; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1); padding: 40px; text-align: center; max-width: 600px; margin: 40px auto; }
+        .dashboard-card { background-color: #fff; border-radius: 16px; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1); padding: 40px; text-align: center; max-width: 800px; margin: 40px auto; }
         .dashboard-card h2 { font-size: 32px; font-weight: 700; margin-top: 0; margin-bottom: 15px; color: #008080; }
         .dashboard-card p { font-size: 16px; line-height: 1.6; color: #555; margin-bottom: 30px; }
         .hidden { display: none; }
+        /* === CSS MỚI CHO CÁC CHỨC NĂNG === */
+        .functions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+            text-align: left;
+        }
+        .function-card {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid #e9ecef;
+        }
+        .function-card h3 {
+            margin-top: 0;
+            color: #008080;
+        }
+        .function-card a {
+            display: inline-block;
+            margin-top: 15px;
+            background-color: #008080;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 500;
+        }
     </style>
 </head>
 <body>
@@ -51,18 +79,45 @@
                 <a href="dangnhap.html" style="color: #008080;">Đi đến trang đăng nhập</a>
             </div>
 
-            <!-- Giao diện cho Huấn Luyện Viên (ẩn mặc định) -->
+            <!-- === ĐÃ CẬP NHẬT GIAO DIỆN CHO HUẤN LUYỆN VIÊN === -->
             <div id="coach-dashboard" class="dashboard-card hidden">
                 <h2>Bảng điều khiển Huấn Luyện Viên</h2>
                 <p>Chào mừng, <span id="coach-name"></span>!</p>
-                <!-- Thêm các chức năng cho HLV vào đây -->
+                <div class="functions-grid">
+                    <div class="function-card">
+                        <h3>Quản lý Vận động viên</h3>
+                        <p>Thêm, sửa, xóa thông tin và theo dõi chỉ số của các vận động viên.</p>
+                        <a href="#">Bắt đầu</a>
+                    </div>
+                    <div class="function-card">
+                        <h3>Lịch tập luyện</h3>
+                        <p>Tạo và quản lý lịch tập cho cá nhân hoặc cả đội.</p>
+                        <a href="#">Xem lịch</a>
+                    </div>
+                    <div class="function-card">
+                        <h3>Báo cáo & Thống kê</h3>
+                        <p>Xem báo cáo tiến độ và hiệu suất của vận động viên.</p>
+                        <a href="#">Xem báo cáo</a>
+                    </div>
+                </div>
             </div>
 
             <!-- Giao diện cho Vận Động Viên (ẩn mặc định) -->
             <div id="athlete-dashboard" class="dashboard-card hidden">
                 <h2>Bảng điều khiển Vận Động Viên</h2>
                 <p>Chào mừng, <span id="athlete-name"></span>!</p>
-                <!-- Thêm các chức năng cho VĐV vào đây -->
+                 <div class="functions-grid">
+                    <div class="function-card">
+                        <h3>Xem Lịch tập</h3>
+                        <p>Kiểm tra lịch tập luyện hàng ngày và hàng tuần của bạn.</p>
+                        <a href="#">Xem ngay</a>
+                    </div>
+                    <div class="function-card">
+                        <h3>Nhập Chỉ số</h3>
+                        <p>Cập nhật các chỉ số sức khỏe và hiệu suất sau mỗi buổi tập.</p>
+                        <a href="#">Nhập chỉ số</a>
+                    </div>
+                </div>
             </div>
             
             <!-- Giao diện mặc định nếu không có vai trò -->
