@@ -77,7 +77,8 @@
         const resetPasswordForm = document.getElementById('resetPasswordForm');
         resetPasswordForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            const email = resetPasswordForm.email.value;
+            // === THAY ĐỔI QUAN TRỌNG: Tự động xóa khoảng trắng thừa ===
+            const email = resetPasswordForm.email.value.trim();
             const submitButton = resetPasswordForm.querySelector('.submit-btn');
             
             submitButton.disabled = true;
@@ -90,7 +91,8 @@
                 })
                 .catch((error) => {
                     console.error('Lỗi gửi email đặt lại mật khẩu:', error);
-                    alert('Có lỗi xảy ra. Vui lòng kiểm tra lại địa chỉ email bạn đã nhập.');
+                    // Hiển thị mã lỗi để dễ dàng xác định vấn đề
+                    alert('Có lỗi xảy ra: ' + error.message);
                 })
                 .finally(() => {
                     submitButton.disabled = false;
