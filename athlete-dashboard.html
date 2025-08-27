@@ -16,6 +16,8 @@
             --text-light-color: #6c757d;
             --border-color: #e9ecef;
             --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.07);
+            --run-color: #1890ff;
+            --strength-color: #faad14;
         }
 
         body { 
@@ -106,12 +108,20 @@
             padding: 20px;
             border-radius: 12px;
             margin-bottom: 15px;
-            background-color: #f8f9fa;
             transition: box-shadow 0.3s, transform 0.3s;
+            border-left: 5px solid transparent;
+        }
+        .task-item.run {
+            border-left-color: var(--run-color);
+            background: linear-gradient(90deg, rgba(24, 144, 255, 0.05) 0%, rgba(255, 255, 255, 0) 100%);
+        }
+        .task-item.strength {
+            border-left-color: var(--strength-color);
+            background: linear-gradient(90deg, rgba(250, 173, 20, 0.05) 0%, rgba(255, 255, 255, 0) 100%);
         }
         .task-item:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px -5px rgba(0,0,0,0.1);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px -5px rgba(0,0,0,0.12);
         }
         .task-info { display: flex; align-items: center; gap: 20px; }
         .task-icon { 
@@ -121,28 +131,33 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background-color: rgba(0, 128, 128, 0.1);
         }
         .task-icon svg {
             width: 24px;
             height: 24px;
-            stroke: var(--primary-color);
         }
+        .task-icon.run { background-color: #e6f7ff; }
+        .task-icon.run svg { stroke: var(--run-color); }
+        .task-icon.strength { background-color: #fffbe6; }
+        .task-icon.strength svg { stroke: var(--strength-color); }
+
         .task-details h3 { margin: 0; font-size: 16px; font-weight: 500; }
         .task-details p { margin: 4px 0 0; font-size: 14px; color: var(--text-light-color); }
         .task-action button { 
-            background-color: var(--primary-color); 
             color: #fff; 
             border: none; 
             padding: 10px 25px; 
             border-radius: 20px; 
             cursor: pointer; 
             font-weight: 500;
-            transition: background-color 0.3s;
+            transition: filter 0.3s;
         }
+        .task-action .btn-run { background-color: var(--run-color); }
+        .task-action .btn-strength { background-color: var(--strength-color); }
         .task-action button:hover {
-            background-color: var(--secondary-color);
+            filter: brightness(1.1);
         }
+
         .main-functions { 
             display: grid; 
             grid-template-columns: 1fr 1fr; 
@@ -164,21 +179,59 @@
             justify-content: center;
             gap: 10px;
             box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+            background-size: cover;
+            background-position: center;
         }
         .function-button:hover { 
             transform: translateY(-5px); 
             box-shadow: 0 12px 30px -5px rgba(0,0,0,0.15);
         }
+        .function-button svg, .function-button span {
+            z-index: 2;
+        }
         .function-button svg {
             width: 32px;
             height: 32px;
-            stroke-width: 2;
+            stroke-width: 1.5;
         }
-        .btn-blue { background: linear-gradient(45deg, #007bff, #0056b3); }
-        .btn-green { background: linear-gradient(45deg, #28a745, #1e7e34); }
-        .btn-yellow { background: linear-gradient(45deg, #ffc107, #d39e00); color: var(--text-color); }
-        .btn-red { background: linear-gradient(45deg, #dc3545, #b02a37); }
+        
+        .function-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            transition: background-color 0.3s;
+        }
+        .function-button:hover::before {
+            background-color: rgba(0,0,0,0.2);
+        }
 
+        .btn-blue { 
+            background-image: url('https://images.pexels.com/photos/3757374/pexels-photo-3757374.jpeg?auto=compress&cs=tinysrgb&w=600'); 
+        }
+        .btn-blue::before { background-color: rgba(13, 110, 253, 0.7); }
+
+        .btn-green { 
+            background-image: url('https://images.pexels.com/photos/590022/pexels-photo-590022.jpeg?auto=compress&cs=tinysrgb&w=600'); 
+        }
+        .btn-green::before { background-color: rgba(25, 135, 84, 0.7); }
+
+        .btn-yellow { 
+            background-image: url('https://images.pexels.com/photos/4098228/pexels-photo-4098228.jpeg?auto=compress&cs=tinysrgb&w=600'); 
+            color: #fff; 
+        }
+        .btn-yellow::before { background-color: rgba(255, 193, 7, 0.7); }
+
+        .btn-red { 
+            background-image: url('https://images.pexels.com/photos/7991379/pexels-photo-7991379.jpeg?auto=compress&cs=tinysrgb&w=600'); 
+        }
+        .btn-red::before { background-color: rgba(220, 53, 69, 0.7); }
+        
         .quick-stats {
             background-color: var(--card-bg-color);
             border-radius: 16px;
@@ -194,23 +247,135 @@
             margin-bottom: 20px;
         }
         .stat-card {
-            background-color: #f8f9fa;
-            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
             padding: 20px;
             margin-bottom: 15px;
-            text-align: left;
+            border-radius: 12px;
+            color: white;
+            transition: transform 0.2s, box-shadow 0.3s;
         }
-        .stat-card h3 {
+        .stat-card:hover {
+            transform: scale(1.03);
+            box-shadow: 0 8px 20px -5px rgba(0,0,0,0.15);
+        }
+        .stat-card-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .stat-card-icon svg {
+            width: 24px;
+            height: 24px;
+            stroke: white;
+            stroke-width: 2;
+        }
+        .stat-card-info h3 {
             margin: 0 0 5px 0;
             font-size: 14px;
-            color: var(--text-light-color);
             font-weight: 500;
+            opacity: 0.9;
         }
-        .stat-card .value {
+        .stat-card-info .value {
             font-size: 28px;
             font-weight: 700;
-            color: var(--primary-color);
         }
+        .stat-distance { background: linear-gradient(45deg, #0d6efd, #0a58ca); }
+        .stat-time { background: linear-gradient(45deg, #198754, #146c43); }
+        .stat-calories { background: linear-gradient(45deg, #ffc107, #d39e00); }
+        .stat-today-distance { background: linear-gradient(45deg, #fd7e14, #c8630c); }
+
+        .hidden { display: none; }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+        .modal-overlay.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+            transform: scale(0.9);
+            transition: transform 0.3s;
+        }
+        .modal-overlay.visible .modal-content {
+            transform: scale(1);
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        .modal-header h2 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .close-modal {
+            font-size: 28px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            color: #aaa;
+        }
+        .suggestions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+        .suggestion-card {
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            cursor: pointer;
+        }
+        .suggestion-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            display: block;
+        }
+        .suggestion-card p {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            margin: 0;
+            padding: 10px;
+            background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+            color: white;
+            font-weight: 500;
+            font-size: 14px;
+            text-align: left;
+            box-sizing: border-box;
+        }
+
 
         @media (max-width: 992px) {
             .main-content {
@@ -237,42 +402,48 @@
         <main class="main-content">
             <div class="left-column">
                 <div class="daily-goals">
-                    <h2>Mục tiêu hằng ngày</h2>
-                    <div class="task-item">
-                        <div class="task-info">
-                            <div class="task-icon">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                    <div id="goals-list">
+                        <h2>Mục tiêu hằng ngày</h2>
+                        <div class="task-item run" data-goal="run" data-target-km="5">
+                            <div class="task-info">
+                                <div class="task-icon run">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                                </div>
+                                <div class="task-details"><h3>Chạy bền 5km</h3><p>Bài tập từ HLV</p></div>
                             </div>
-                            <div class="task-details"><h3>Chạy bền 5km</h3><p>Bài tập từ HLV</p></div>
+                            <div class="task-action"><button class="btn-run">Chọn</button></div>
                         </div>
-                        <div class="task-action"><button>Chọn</button></div>
+                        <div class="task-item strength" data-goal="strength">
+                            <div class="task-info">
+                                <div class="task-icon strength">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 2 4 4-7 7-4-4 7-7"/><path d="m2 22 4-4"/><path d="m16 6 4 4"/></svg>
+                                </div>
+                                <div class="task-details"><h3>Tập sức mạnh thân trên</h3><p>Gợi ý từ AI</p></div>
+                            </div>
+                            <div class="task-action"><button class="btn-strength">Chọn</button></div>
+                        </div>
+                        <!-- === ĐÃ XÓA: MỤC TIÊU YOGA PHỤC HỒI === -->
                     </div>
-                    <div class="task-item">
-                        <div class="task-info">
-                            <div class="task-icon">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 2 4 4-7 7-4-4 7-7"/><path d="m2 22 4-4"/><path d="m16 6 4 4"/></svg>
-                            </div>
-                            <div class="task-details"><h3>Tập sức mạnh thân trên</h3><p>Gợi ý từ AI</p></div>
-                        </div>
-                        <div class="task-action"><button>Chọn</button></div>
+
+                    <div id="selected-goal" class="hidden">
+                        <h2>Mục tiêu hôm nay</h2>
+                        <div id="selected-goal-content"></div>
+                        <button id="complete-btn" class="submit-btn">Hoàn thành</button>
                     </div>
-                    <div class="task-item">
-                        <div class="task-info">
-                            <div class="task-icon">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 10.5c-2.5 1.5-2.5 5.5 0 7"/><path d="M19.5 10.5c2.5 1.5 2.5 5.5 0 7"/><path d="M10.5 4.5c1.5-2.5 5.5-2.5 7 0"/><path d="M10.5 19.5c1.5 2.5 5.5 2.5 7 0"/><circle cx="12" cy="12" r="7.5"/></svg>
-                            </div>
-                            <div class="task-details"><h3>Yoga phục hồi</h3><p>Gợi ý từ AI</p></div>
-                        </div>
-                        <div class="task-action"><button>Chọn</button></div>
+
+                    <div id="completion-message" class="hidden" style="text-align: center;">
+                        <h2>🎉 Chúc mừng! 🎉</h2>
+                        <p>Bạn đã hoàn thành xuất sắc mục tiêu hôm nay. Hãy tiếp tục phát huy!</p>
+                        <button id="reset-btn" class="submit-btn">Chọn mục tiêu khác</button>
                     </div>
                 </div>
                  <div class="main-functions">
                     <div class="function-button btn-blue">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/><path d="M12 12a6 6 0 1 0 6 6 6 6 0 0 0-6-6z"/><path d="M12 12a2 2 0 1 0 2 2 2 2 0 0 0-2-2z"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 1.5a10.5 10.5 0 1 0 0 21 10.5 10.5 0 0 0 0-21z"/><path d="M12 12a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9z"/><path d="M12 12a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/></svg>
                         <span>Phân tích tư thế</span>
                     </div>
                     <div class="function-button btn-green">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20V16"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3v18h18"/><path d="m18.7 8-5.1 5.2-2.8-2.7L7 14.3"/></svg>
                         <span>Lịch sử thành tích</span>
                     </div>
                     <div class="function-button btn-yellow">
@@ -288,21 +459,57 @@
             <div class="right-column">
                 <div class="quick-stats">
                     <h2>Thống kê nhanh</h2>
-                    <div class="stat-card">
-                        <h3>Tổng quãng đường (tuần)</h3>
-                        <p class="value">25.7 km</p>
+                    <div class="stat-card stat-distance">
+                        <div class="stat-card-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/><circle cx="12" cy="10" r="3"/></svg>
+                        </div>
+                        <div class="stat-card-info">
+                            <h3>Tổng quãng đường (tuần)</h3>
+                            <p class="value">25.7 km</p>
+                        </div>
                     </div>
-                    <div class="stat-card">
-                        <h3>Thời gian tập (tuần)</h3>
-                        <p class="value">4h 32m</p>
+                    <div class="stat-card stat-today-distance">
+                        <div class="stat-card-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                        </div>
+                        <div class="stat-card-info">
+                            <h3>Tổng quãng đường (hôm nay)</h3>
+                            <p class="value" id="today-distance-value">5.2 km</p>
+                        </div>
                     </div>
-                    <div class="stat-card">
-                        <h3>Calo tiêu thụ (hôm nay)</h3>
-                        <p class="value">540 kcal</p>
+                    <div class="stat-card stat-time">
+                        <div class="stat-card-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        </div>
+                        <div class="stat-card-info">
+                            <h3>Thời gian tập (tuần)</h3>
+                            <p class="value">4h 32m</p>
+                        </div>
+                    </div>
+                    <div class="stat-card stat-calories">
+                        <div class="stat-card-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M10.3 3.3a1 1 0 0 1 .4-2 8.5 8.5 0 0 1 8.6 8.6 1 1 0 0 1-2 .4 6.5 6.5 0 0 0-6.6-6.6 1 1 0 0 1-.4-2z"/><path d="M11 15.3a1 1 0 0 1-1.4 1.4 6.5 6.5 0 0 1-6.6-6.6 1 1 0 0 1 2-.4 4.5 4.5 0 0 0 4.6 4.6 1 1 0 0 1 1.4 1.4z"/><path d="M2.5 10.5a1 1 0 0 1-2 0 8.5 8.5 0 0 1 8.5-8.5 1 1 0 0 1 0 2 6.5 6.5 0 0 0-6.5 6.5z"/></svg>
+                        </div>
+                        <div class="stat-card-info">
+                            <h3>Calo tiêu thụ (hôm nay)</h3>
+                            <p class="value">540 kcal</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </main>
+    </div>
+
+    <div id="suggestion-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">Gợi ý bài tập</h2>
+                <button id="close-modal-btn" class="close-modal">&times;</button>
+            </div>
+            <div id="modal-body" class="suggestions-grid">
+                <!-- Nội dung gợi ý sẽ được chèn vào đây bằng JavaScript -->
+            </div>
+        </div>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -328,6 +535,117 @@
             auth.signOut().then(() => {
                 window.location.href = 'dangnhap.html';
             });
+        });
+
+        const goalsListContainer = document.getElementById('goals-list');
+        const selectedGoalContainer = document.getElementById('selected-goal');
+        const completionMessageContainer = document.getElementById('completion-message');
+        
+        const selectedGoalContent = document.getElementById('selected-goal-content');
+        const completeBtn = document.getElementById('complete-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const selectButtons = document.querySelectorAll('.task-action button');
+        const todayDistanceValue = document.getElementById('today-distance-value');
+
+        // Modal elements
+        const suggestionModal = document.getElementById('suggestion-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalBody = document.getElementById('modal-body');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+
+        const suggestions = {
+            strength: [
+                { name: 'Chống đẩy', img: 'https://images.pexels.com/photos/1552249/pexels-photo-1552249.jpeg?auto=compress&cs=tinysrgb&w=600' },
+                { name: 'Hít xà', img: 'https://images.pexels.com/photos/3490360/pexels-photo-3490360.jpeg?auto=compress&cs=tinysrgb&w=600' },
+                { name: 'Kéo tạ đơn', img: 'https://images.pexels.com/photos/6550853/pexels-photo-6550853.jpeg?auto=compress&cs=tinysrgb&w=600' },
+                { name: 'Đẩy tạ qua đầu', img: 'https://images.pexels.com/photos/1229356/pexels-photo-1229356.jpeg?auto=compress&cs=tinysrgb&w=600' }
+            ],
+            yoga: [
+                { name: 'Chó úp mặt', img: 'https://images.pexels.com/photos/4056535/pexels-photo-4056535.jpeg?auto=compress&cs=tinysrgb&w=600' },
+                { name: 'Em bé', img: 'https://images.pexels.com/photos/7585295/pexels-photo-7585295.jpeg?auto=compress&cs=tinysrgb&w=600' },
+                { name: 'Mèo-Bò', img: 'https://images.pexels.com/photos/8982439/pexels-photo-8982439.jpeg?auto=compress&cs=tinysrgb&w=600' },
+                { name: 'Chiến binh II', img: 'https://images.pexels.com/photos/4056521/pexels-photo-4056521.jpeg?auto=compress&cs=tinysrgb&w=600' }
+            ]
+        };
+
+        function openSuggestionModal(type) {
+            const data = suggestions[type];
+            let title = '';
+            if (type === 'strength') title = 'Gợi ý bài tập sức mạnh';
+            
+            modalTitle.textContent = title;
+            modalBody.innerHTML = ''; // Clear previous content
+
+            data.forEach(item => {
+                const card = `
+                    <div class="suggestion-card" data-task-name="${item.name}">
+                        <img src="${item.img}" alt="${item.name}">
+                        <p>${item.name}</p>
+                    </div>
+                `;
+                modalBody.innerHTML += card;
+            });
+
+            document.querySelectorAll('.suggestion-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    const taskName = card.dataset.taskName;
+                    const originalTaskType = type; 
+                    const originalTaskElement = document.querySelector(`.task-item[data-goal="${originalTaskType}"]`);
+
+                    const clonedTask = originalTaskElement.cloneNode(true);
+                    clonedTask.querySelector('h3').textContent = taskName; 
+                    clonedTask.querySelector('.task-action').remove();
+
+                    selectedGoalContent.innerHTML = '';
+                    selectedGoalContent.appendChild(clonedTask);
+
+                    suggestionModal.classList.remove('visible');
+                    goalsListContainer.classList.add('hidden');
+                    selectedGoalContainer.classList.remove('hidden');
+                });
+            });
+
+            suggestionModal.classList.add('visible');
+        }
+
+        closeModalBtn.addEventListener('click', () => {
+            suggestionModal.classList.remove('visible');
+        });
+        suggestionModal.addEventListener('click', (e) => {
+            if (e.target === suggestionModal) {
+                suggestionModal.classList.remove('visible');
+            }
+        });
+
+
+        selectButtons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                const selectedTask = e.target.closest('.task-item');
+                const goalType = selectedTask.dataset.goal;
+                
+                if (goalType === 'strength') {
+                    openSuggestionModal(goalType);
+                } else {
+                    const clonedTask = selectedTask.cloneNode(true);
+                    clonedTask.querySelector('.task-action').remove();
+                    
+                    selectedGoalContent.innerHTML = '';
+                    selectedGoalContent.appendChild(clonedTask);
+
+                    goalsListContainer.classList.add('hidden');
+                    selectedGoalContainer.classList.remove('hidden');
+                }
+            });
+        });
+
+        completeBtn.addEventListener('click', () => {
+            selectedGoalContainer.classList.add('hidden');
+            completionMessageContainer.classList.remove('hidden');
+        });
+
+        resetBtn.addEventListener('click', () => {
+            completionMessageContainer.classList.add('hidden');
+            goalsListContainer.classList.remove('hidden');
         });
     </script>
 </body>
