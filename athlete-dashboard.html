@@ -109,15 +109,15 @@
             border-radius: 12px;
             margin-bottom: 15px;
             transition: box-shadow 0.3s, transform 0.3s;
-            border-left: 5px solid transparent;
+            border: 1px solid transparent;
         }
         .task-item.run {
-            border-left-color: var(--run-color);
-            background: linear-gradient(90deg, rgba(24, 144, 255, 0.05) 0%, rgba(255, 255, 255, 0) 100%);
+            background-color: #e6f7ff;
+            border-color: #91d5ff;
         }
         .task-item.strength {
-            border-left-color: var(--strength-color);
-            background: linear-gradient(90deg, rgba(250, 173, 20, 0.05) 0%, rgba(255, 255, 255, 0) 100%);
+            background-color: #fffbe6;
+            border-color: #ffe58f;
         }
         .task-item:hover {
             transform: translateY(-4px);
@@ -133,8 +133,8 @@
             justify-content: center;
         }
         .task-icon svg {
-            width: 24px;
-            height: 24px;
+            width: 28px;
+            height: 28px;
         }
         .task-icon.run { background-color: #e6f7ff; }
         .task-icon.run svg { stroke: var(--run-color); }
@@ -150,14 +150,29 @@
             border-radius: 20px; 
             cursor: pointer; 
             font-weight: 500;
-            transition: filter 0.3s;
+            transition: filter 0.3s, background-color 0.3s;
         }
         .task-action .btn-run { background-color: var(--run-color); }
         .task-action .btn-strength { background-color: var(--strength-color); }
         .task-action button:hover {
             filter: brightness(1.1);
         }
-
+        .submit-btn {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 25px;
+            border: none;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        .submit-btn:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
         .main-functions { 
             display: grid; 
             grid-template-columns: 1fr 1fr; 
@@ -422,7 +437,6 @@
                             </div>
                             <div class="task-action"><button class="btn-strength">Chọn</button></div>
                         </div>
-                        <!-- === ĐÃ XÓA: MỤC TIÊU YOGA PHỤC HỒI === -->
                     </div>
 
                     <div id="selected-goal" class="hidden">
@@ -559,12 +573,6 @@
                 { name: 'Hít xà', img: 'https://images.pexels.com/photos/3490360/pexels-photo-3490360.jpeg?auto=compress&cs=tinysrgb&w=600' },
                 { name: 'Kéo tạ đơn', img: 'https://images.pexels.com/photos/6550853/pexels-photo-6550853.jpeg?auto=compress&cs=tinysrgb&w=600' },
                 { name: 'Đẩy tạ qua đầu', img: 'https://images.pexels.com/photos/1229356/pexels-photo-1229356.jpeg?auto=compress&cs=tinysrgb&w=600' }
-            ],
-            yoga: [
-                { name: 'Chó úp mặt', img: 'https://images.pexels.com/photos/4056535/pexels-photo-4056535.jpeg?auto=compress&cs=tinysrgb&w=600' },
-                { name: 'Em bé', img: 'https://images.pexels.com/photos/7585295/pexels-photo-7585295.jpeg?auto=compress&cs=tinysrgb&w=600' },
-                { name: 'Mèo-Bò', img: 'https://images.pexels.com/photos/8982439/pexels-photo-8982439.jpeg?auto=compress&cs=tinysrgb&w=600' },
-                { name: 'Chiến binh II', img: 'https://images.pexels.com/photos/4056521/pexels-photo-4056521.jpeg?auto=compress&cs=tinysrgb&w=600' }
             ]
         };
 
