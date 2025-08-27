@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đặt Lại Mật Khẩu - Hỗ Trợ Huấn Luyện Thể Thao</title>
+    <title>Quên Mật Khẩu - Hỗ Trợ Huấn Luyện Thể Thao</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
         body { font-family: 'Roboto', sans-serif; margin: 0; background-color: #f0f2f5; color: #333; }
@@ -19,38 +19,50 @@
         .main-content { padding: 60px 30px; display: flex; justify-content: center; align-items: center; background-color: #f0f2f5; min-height: 50vh; }
         .form-container { background-color: #fff; border-radius: 16px; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1); padding: 40px; width: 100%; max-width: 450px; text-align: center; }
         .form-container h2 { font-size: 28px; font-weight: 700; color: #008080; margin-top: 0; margin-bottom: 15px; }
-        .form-container p { font-size: 16px; color: #555; margin-bottom: 30px; }
+        .form-container p { font-size: 16px; color: #555; margin-bottom: 30px; line-height: 1.6; }
         .form-group { margin-bottom: 20px; text-align: left; }
         .form-group label { display: block; font-size: 14px; font-weight: 500; color: #555; margin-bottom: 8px; }
         .form-group input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; box-sizing: border-box; }
-        .submit-btn { background-color: #008080; color: #fff; border: none; padding: 14px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 16px; width: 100%; transition: background-color 0.3s; }
+        .submit-btn { background-color: #008080; color: #fff; border: none; padding: 14px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 16px; width: 100%; transition: background-color 0.3s; text-decoration: none; }
         .back-link { display: block; text-align: center; margin-top: 20px; font-size: 14px; color: #008080; text-decoration: none; }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
     <div class="container">
         <header class="header">
-            <div class="header-left">
-                <div class="logo">LOGO</div>
-                <div class="project-info"><h1>HỖ TRỢ HUẤN LUYỆN THỂ THAO</h1><p>DỰ ÁN KHOA HỌC KỸ THUẬT - ỨNG DỤNG THEO DÕI CHỈ SỐ VẬN ĐỘNG VIÊN</p></div>
-            </div>
+            <div class="header-left"><div class="logo">LOGO</div><div class="project-info"><h1>HỖ TRỢ HUẤN LUYỆN THỂ THAO</h1><p>DỰ ÁN KHOA HỌC KỸ THUẬT</p></div></div>
             <a href="dangnhap.html" class="login-btn-header">Đăng nhập</a>
         </header>
-        <nav class="navbar">
-            <a href="index.html">Trang chủ</a><a href="gioithieu.html">Giới thiệu</a><a href="bangdieukhien.html">Bảng điều khiển</a>
-        </nav>
+        <nav class="navbar"><a href="index.html">Trang chủ</a><a href="gioithieu.html">Giới thiệu</a><a href="bangdieukhien.html">Bảng điều khiển</a></nav>
         <main class="main-content">
             <div class="form-container">
-                <h2>Đặt lại mật khẩu</h2>
-                <p>Nhập email của bạn và chúng tôi sẽ gửi một liên kết để bạn đặt lại mật khẩu.</p>
-                <form id="resetPasswordForm">
-                    <div class="form-group">
-                        <label for="email">EMAIL</label>
-                        <input type="email" id="email" name="email" required>
-                    </div>
-                    <button type="submit" class="submit-btn">Gửi liên kết đặt lại</button>
-                </form>
-                <a href="dangnhap.html" class="back-link">Quay lại trang đăng nhập</a>
+                <!-- Giai đoạn 1: Nhập Email -->
+                <div id="step1">
+                    <h2>Đặt lại mật khẩu</h2>
+                    <p>Nhập email của bạn để nhận mã xác thực.</p>
+                    <form id="sendCodeForm">
+                        <div class="form-group">
+                            <label for="email">EMAIL</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        <button type="submit" class="submit-btn">Gửi mã</button>
+                    </form>
+                    <a href="dangnhap.html" class="back-link">Quay lại trang đăng nhập</a>
+                </div>
+
+                <!-- Giai đoạn 2: Nhập mã xác thực -->
+                <div id="step2" class="hidden">
+                    <h2>Nhập mã xác thực</h2>
+                    <p>Chúng tôi đã gửi một email chứa hướng dẫn. Vui lòng làm theo để hoàn tất việc đặt lại mật khẩu.</p>
+                    <form id="verifyCodeForm">
+                        <div class="form-group">
+                            <label for="verificationCode">MÃ XÁC THỰC (Kiểm tra email)</label>
+                            <input type="text" id="verificationCode" name="verificationCode" placeholder="Nhập mã nếu có">
+                        </div>
+                        <button type="submit" class="submit-btn">Xác nhận</button>
+                    </form>
+                </div>
             </div>
         </main>
     </div>
@@ -58,7 +70,6 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script>
-        // Cấu hình Firebase của bạn
         const firebaseConfig = {
             apiKey: "AIzaSyA2dXWCyjL2xgCSyeW9QQ7RvjI_O7kFHJw",
             authDomain: "sporthealthdata.firebaseapp.com",
@@ -69,35 +80,44 @@
             measurementId: "G-ZWS9C7P359"
         };
 
-        // Khởi tạo Firebase
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const auth = firebase.auth();
 
-        // Xử lý form gửi link đặt lại mật khẩu
-        const resetPasswordForm = document.getElementById('resetPasswordForm');
-        resetPasswordForm.addEventListener('submit', (e) => {
+        const step1 = document.getElementById('step1');
+        const step2 = document.getElementById('step2');
+        const sendCodeForm = document.getElementById('sendCodeForm');
+        const verifyCodeForm = document.getElementById('verifyCodeForm');
+
+        // Xử lý Giai đoạn 1: Gửi email
+        sendCodeForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            // === THAY ĐỔI QUAN TRỌNG: Tự động xóa khoảng trắng thừa ===
-            const email = resetPasswordForm.email.value.trim();
-            const submitButton = resetPasswordForm.querySelector('.submit-btn');
+            const email = sendCodeForm.email.value.trim();
+            const submitButton = sendCodeForm.querySelector('.submit-btn');
             
             submitButton.disabled = true;
             submitButton.textContent = 'Đang gửi...';
 
-            // Sử dụng chức năng có sẵn và an toàn của Firebase
+            // Chức năng này sẽ gửi một email chứa LINK đặt lại mật khẩu
             auth.sendPasswordResetEmail(email)
                 .then(() => {
-                    alert('Đã gửi liên kết đặt lại mật khẩu. Vui lòng kiểm tra email của bạn.');
+                    // Sau khi gửi thành công, chuyển sang giao diện nhập mã
+                    step1.classList.add('hidden');
+                    step2.classList.remove('hidden');
                 })
                 .catch((error) => {
-                    console.error('Lỗi gửi email đặt lại mật khẩu:', error);
-                    // Hiển thị mã lỗi để dễ dàng xác định vấn đề
-                    alert('Có lỗi xảy ra: ' + error.message);
-                })
-                .finally(() => {
+                    console.error('Lỗi gửi email:', error);
+                    alert('Có lỗi xảy ra. Vui lòng kiểm tra lại địa chỉ email bạn đã nhập.');
                     submitButton.disabled = false;
-                    submitButton.textContent = 'Gửi liên kết đặt lại';
+                    submitButton.textContent = 'Gửi mã';
                 });
+        });
+
+        // Xử lý Giai đoạn 2: Hướng dẫn người dùng
+        verifyCodeForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            // Hướng dẫn người dùng kiểm tra email để hoàn tất
+            alert("Để hoàn tất, vui lòng nhấp vào liên kết đã được gửi đến email của bạn.");
+            window.location.href = 'dangnhap.html';
         });
     </script>
 </body>
