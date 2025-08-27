@@ -129,11 +129,19 @@
             submitButton.textContent = 'Đang xử lý...';
             try {
                 await auth.signInWithEmailAndPassword(email, password);
-                alert('Đăng nhập thành công!');
+                // === ĐÃ SỬA: BỎ ALERT VÀ CHUYỂN TRANG TRỰC TIẾP ===
                 window.location.href = 'bangdieukhien.html';
             } catch (error) {
-                console.error("Lỗi đăng nhập:", error);
-                alert('Đăng nhập thất bại. Vui lòng kiểm tra lại email và mật khẩu.');
+                console.error("Lỗi đăng nhập:", error.code);
+                let errorMessage = 'Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.';
+                if (error.code === 'auth/user-not-found') {
+                    errorMessage = 'Không tìm thấy tài khoản nào với email này. Vui lòng đăng ký.';
+                } else if (error.code === 'auth/wrong-password') {
+                    errorMessage = 'Mật khẩu không chính xác. Vui lòng thử lại.';
+                } else if (error.code === 'auth/too-many-requests') {
+                    errorMessage = 'Tài khoản đã bị tạm khóa do có quá nhiều lần thử. Vui lòng thử lại sau.';
+                }
+                alert(errorMessage);
             } finally {
                 submitButton.disabled = false;
                 submitButton.textContent = 'Đăng Nhập';
@@ -168,7 +176,7 @@
             e.preventDefault();
             const code = document.getElementById('otp-code').value;
             window.confirmationResult.confirm(code).then((result) => {
-                alert('Đăng nhập thành công!');
+                // === ĐÃ SỬA: BỎ ALERT VÀ CHUYỂN TRANG TRỰC TIẾP ===
                 window.location.href = 'bangdieukhien.html';
             }).catch((error) => {
                 alert("Mã OTP không chính xác.");
