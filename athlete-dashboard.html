@@ -3,168 +3,332 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bảng điều khiển - Vận Động Viên</title>
+    <title>Bảng điều khiển Vận Động Viên</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
-        body{font-family:'Roboto',sans-serif;margin:0;background-color:#f0f2f5;color:#333}
-        .container{max-width:1200px;margin:0 auto;background-color:#f0f2f5}
-        .header{display:flex;justify-content:space-between;align-items:center;padding:15px 30px;background-color:#008080;color:#fff}
-        .header-left{display:flex;align-items:center}
-        .logo{background-color:#fff;color:#008080;font-weight:700;padding:10px;border-radius:5px;margin-right:15px}
-        .project-info h1{font-size:24px;margin:0;font-weight:700}
-        .project-info p{font-size:12px;margin:0;opacity:.9}
-        .logout-btn{background-color:#fff;color:#008080;border:none;padding:10px 20px;border-radius:20px;cursor:pointer;font-weight:700;text-decoration:none;font-size:14px}
         
-        .navbar{display:flex;background-color:#fff;box-shadow:0 2px 4px rgba(0,0,0,.05);padding:0 30px}
-        .navbar a{padding:15px 25px;text-decoration:none;color:#333;font-weight:500}
-        .navbar a.active{color:#008080;font-weight:700}
+        :root {
+            --primary-color: #008080;
+            --secondary-color: #00a9a9;
+            --background-color: #f0f4f8;
+            --card-bg-color: #ffffff;
+            --text-color: #333;
+            --text-light-color: #6c757d;
+            --border-color: #e9ecef;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.07);
+        }
 
-        .main-content{padding:30px}
-        .dashboard-card{background-color:#fff;border-radius:16px;box-shadow:0 8px 25px rgba(0,0,0,.05);padding:30px;margin-bottom:30px}
-        .dashboard-card h2{font-size:24px;color:#008080;margin-top:0;border-bottom:2px solid #e6f2f2;padding-bottom:15px}
-        
-        .exercise-list{list-style:none;padding:0;max-height:250px;overflow-y:auto;padding-right:15px}
-        
-        .exercise-list::-webkit-scrollbar{width:8px}
-        .exercise-list::-webkit-scrollbar-track{background:#f1f1f1;border-radius:10px}
-        .exercise-list::-webkit-scrollbar-thumb{background:#008080;border-radius:10px}
-        .exercise-list::-webkit-scrollbar-thumb:hover{background:#006666}
-
-        .exercise-item{display:flex;align-items:center;padding:15px;border-radius:10px;margin-bottom:12px;background-color:#fff;border:1px solid #eee;transition:all .3s ease}
-        .exercise-item:hover{transform:translateY(-2px);box-shadow:0 4px 8px rgba(0,0,0,.08);border-left:4px solid #008080}
-        
-        .exercise-icon{margin-right:15px;color:#008080}
-        .exercise-icon svg{width:28px;height:28px}
-        
-        .exercise-info{flex-grow:1}
-        .exercise-info .title{font-weight:700;font-size:16px;margin:0}
-        .exercise-info .source{font-size:12px;color:#777;margin:0}
-
-        .select-btn{background-color:#008080;color:#fff;border:none;padding:8px 16px;border-radius:20px;cursor:pointer;font-size:14px;font-weight:500;transition:background-color .3s;white-space:nowrap}
-        .select-btn:hover{background-color:#006666}
-        
-        /* === CSS ĐÃ ĐƯỢC TRANG TRÍ LẠI === */
-        .action-buttons{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:25px}
-        .action-btn{
-            color:#fff;
-            border:none;
-            padding:30px 20px;
-            border-radius:15px;
-            cursor:pointer;
-            font-weight:700;
-            font-size:18px;
-            text-decoration:none;
-            transition:all .3s ease; 
+        body { 
+            font-family: 'Roboto', sans-serif; 
+            margin: 0; 
+            background-color: var(--background-color); 
+            color: var(--text-color);
+        }
+        .container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            background-color: var(--card-bg-color);
+        }
+        .header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 15px 30px; 
+            background-color: var(--primary-color); 
+            color: #fff; 
+        }
+        .header-left { display: flex; align-items: center; }
+        .logo { 
+            background-color: #fff; 
+            color: var(--primary-color); 
+            font-weight: 700; 
+            padding: 10px; 
+            border-radius: 8px; 
+            margin-right: 15px; 
+        }
+        .project-info h1 { font-size: 24px; margin: 0; font-weight: 700; }
+        .project-info p { font-size: 12px; margin: 0; opacity: 0.9; }
+        .user-actions a { 
+            background-color: #fff; 
+            color: var(--primary-color); 
+            border: none; 
+            padding: 10px 20px; 
+            border-radius: 20px; 
+            cursor: pointer; 
+            font-weight: 700; 
+            text-decoration: none; 
+            font-size: 14px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .user-actions a:hover {
+            background-color: #f0f0f0;
+        }
+        .navbar { 
+            display: flex; 
+            background-color: var(--card-bg-color); 
+            box-shadow: 0 2px 4px rgba(0,0,0,.05); 
+            padding: 0 30px; 
+        }
+        .navbar a { 
+            padding: 15px 25px; 
+            text-decoration: none; 
+            color: var(--text-light-color); 
+            font-weight: 500; 
+        }
+        .navbar a.active { 
+            color: var(--primary-color); 
+            border-bottom: 3px solid var(--primary-color); 
+        }
+        .main-content { 
+            padding: 30px; 
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+        }
+        .daily-goals { 
+            background-color: var(--card-bg-color); 
+            border-radius: 16px; 
+            padding: 30px; 
+            box-shadow: var(--shadow);
+        }
+        .daily-goals h2 { 
+            margin-top: 0; 
+            font-size: 24px; 
+            color: var(--text-color); 
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        .task-item { 
             display: flex; 
             align-items: center; 
+            justify-content: space-between; 
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            background-color: #f8f9fa;
+            transition: box-shadow 0.3s, transform 0.3s;
+        }
+        .task-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px -5px rgba(0,0,0,0.1);
+        }
+        .task-info { display: flex; align-items: center; gap: 20px; }
+        .task-icon { 
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            position: relative; /* Cần cho hình ảnh mờ */
-            overflow: hidden; /* Ẩn phần thừa của hình ảnh mờ */
-            text-align: center;
+            background-color: rgba(0, 128, 128, 0.1);
         }
-        .action-btn:hover{transform:translateY(-5px);box-shadow:0 8px 20px rgba(0,0,0,.2)}
-        
-        /* CSS cho hình ảnh mờ */
-        .action-btn .bg-icon {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 80px;
-            height: 80px;
-            opacity: 0.1;
-            z-index: 1;
+        .task-icon svg {
+            width: 24px;
+            height: 24px;
+            stroke: var(--primary-color);
         }
-        .action-btn span {
-            position: relative;
-            z-index: 2;
+        .task-details h3 { margin: 0; font-size: 16px; font-weight: 500; }
+        .task-details p { margin: 4px 0 0; font-size: 14px; color: var(--text-light-color); }
+        .task-action button { 
+            background-color: var(--primary-color); 
+            color: #fff; 
+            border: none; 
+            padding: 10px 25px; 
+            border-radius: 20px; 
+            cursor: pointer; 
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+        .task-action button:hover {
+            background-color: var(--secondary-color);
+        }
+        .main-functions { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 20px; 
+            margin-top: 30px; 
+        }
+        .function-button { 
+            padding: 20px; 
+            border-radius: 16px; 
+            text-align: center; 
+            color: #fff; 
+            font-weight: 700; 
+            font-size: 16px; 
+            cursor: pointer; 
+            transition: transform 0.2s, box-shadow 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: var(--shadow);
+        }
+        .function-button:hover { 
+            transform: translateY(-5px); 
+            box-shadow: 0 12px 30px -5px rgba(0,0,0,0.15);
+        }
+        .function-button svg {
+            width: 32px;
+            height: 32px;
+            stroke-width: 2;
+        }
+        .btn-blue { background: linear-gradient(45deg, #007bff, #0056b3); }
+        .btn-green { background: linear-gradient(45deg, #28a745, #1e7e34); }
+        .btn-yellow { background: linear-gradient(45deg, #ffc107, #d39e00); color: var(--text-color); }
+        .btn-red { background: linear-gradient(45deg, #dc3545, #b02a37); }
+
+        .quick-stats {
+            background-color: var(--card-bg-color);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+        }
+        .quick-stats h2 {
+            margin-top: 0; 
+            font-size: 24px; 
+            color: var(--text-color); 
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background-color: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        .stat-card h3 {
+            margin: 0 0 5px 0;
+            font-size: 14px;
+            color: var(--text-light-color);
+            font-weight: 500;
+        }
+        .stat-card .value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary-color);
         }
 
-        /* Màu sắc đơn cho từng nút */
-        .btn-pose{background-color: #007bff;}
-        .btn-history{background-color: #28a745;}
-        .btn-chat{background-color: #ffc107;}
-        .btn-warning{background-color: #dc3545;}
+        @media (max-width: 992px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        @media (max-width: 576px) {
+            .main-functions {
+                grid-template-columns: 1fr;
+            }
+        }
 
     </style>
 </head>
 <body>
     <div class="container">
         <header class="header">
-            <div class="header-left">
-                <div class="logo">LOGO</div>
-                <div class="project-info">
-                    <h1>HỖ TRỢ HUẤN LUYỆN THỂ THAO</h1>
-                    <p>DỰ ÁN KHOA HỌC KỸ THUẬT - ỨNG DỤNG THEO DÕI CHỈ SỐ VẬN ĐỘNG VIÊN</p>
+            <div class="header-left"><div class="logo">LOGO</div><div class="project-info"><h1>HỖ TRỢ HUẤN LUYỆN THỂ THAO</h1><p>DỰ ÁN KHOA HỌC KỸ THUẬT</p></div></div>
+            <div class="user-actions"><a href="#" id="logout-btn">Đăng xuất</a></div>
+        </header>
+        <nav class="navbar">
+            <a href="index.html">Trang chủ</a><a href="gioithieu.html">Giới thiệu</a><a href="bangdieukhien.html" class="active">Bảng điều khiển</a>
+        </nav>
+        <main class="main-content">
+            <div class="left-column">
+                <div class="daily-goals">
+                    <h2>Mục tiêu hằng ngày</h2>
+                    <div class="task-item">
+                        <div class="task-info">
+                            <div class="task-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                            </div>
+                            <div class="task-details"><h3>Chạy bền 5km</h3><p>Bài tập từ HLV</p></div>
+                        </div>
+                        <div class="task-action"><button>Chọn</button></div>
+                    </div>
+                    <div class="task-item">
+                        <div class="task-info">
+                            <div class="task-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 2 4 4-7 7-4-4 7-7"/><path d="m2 22 4-4"/><path d="m16 6 4 4"/></svg>
+                            </div>
+                            <div class="task-details"><h3>Tập sức mạnh thân trên</h3><p>Gợi ý từ AI</p></div>
+                        </div>
+                        <div class="task-action"><button>Chọn</button></div>
+                    </div>
+                    <div class="task-item">
+                        <div class="task-info">
+                            <div class="task-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 10.5c-2.5 1.5-2.5 5.5 0 7"/><path d="M19.5 10.5c2.5 1.5 2.5 5.5 0 7"/><path d="M10.5 4.5c1.5-2.5 5.5-2.5 7 0"/><path d="M10.5 19.5c1.5 2.5 5.5 2.5 7 0"/><circle cx="12" cy="12" r="7.5"/></svg>
+                            </div>
+                            <div class="task-details"><h3>Yoga phục hồi</h3><p>Gợi ý từ AI</p></div>
+                        </div>
+                        <div class="task-action"><button>Chọn</button></div>
+                    </div>
+                </div>
+                 <div class="main-functions">
+                    <div class="function-button btn-blue">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/><path d="M12 12a6 6 0 1 0 6 6 6 6 0 0 0-6-6z"/><path d="M12 12a2 2 0 1 0 2 2 2 2 0 0 0-2-2z"/></svg>
+                        <span>Phân tích tư thế</span>
+                    </div>
+                    <div class="function-button btn-green">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20V16"/></svg>
+                        <span>Lịch sử thành tích</span>
+                    </div>
+                    <div class="function-button btn-yellow">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                        <span>Chat với HLV</span>
+                    </div>
+                    <div class="function-button btn-red">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m21.73 18-8-14a2 2 0 0 0-3.46 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                        <span>Cảnh báo chấn thương</span>
+                    </div>
                 </div>
             </div>
-            <a href="#" class="logout-btn">Đăng xuất</a>
-        </header>
-
-        <nav class="navbar">
-            <a href="index.html">Trang chủ</a>
-            <a href="gioithieu.html">Giới thiệu</a>
-            <a href="#" class="active">Bảng điều khiển</a>
-        </nav>
-
-        <main class="main-content">
-            <div class="dashboard-card">
-                <h2>Mục tiêu hàng ngày</h2>
-                <ul class="exercise-list">
-                    <li class="exercise-item">
-                        <div class="exercise-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z" /></svg>
-                        </div>
-                        <div class="exercise-info">
-                            <p class="title">Chạy bền 5km</p>
-                            <p class="source">Bài tập từ HLV</p>
-                        </div>
-                        <button class="select-btn">Chọn</button>
-                    </li>
-                    <li class="exercise-item">
-                        <div class="exercise-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456Z" /></svg>
-                        </div>
-                        <div class="exercise-info">
-                            <p class="title">Tập sức mạnh thân trên</p>
-                            <p class="source">Gợi ý từ AI</p>
-                        </div>
-                        <button class="select-btn">Chọn</button>
-                    </li>
-                    <li class="exercise-item">
-                        <div class="exercise-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.82m5.84-2.56a12.022 12.022 0 0 1-1.025 6.16m-5.84-7.38a11.953 11.953 0 0 0-5.84-7.38m5.84 7.38v-4.82" /></svg>
-                        </div>
-                        <div class="exercise-info">
-                            <p class="title">Yoga phục hồi</p>
-                            <p class="source">Gợi ý từ AI</p>
-                        </div>
-                        <button class="select-btn">Chọn</button>
-                    </li>
-                </ul>
-            </div>
-
-            <div class="action-buttons">
-                <a href="phantich.html" class="action-btn btn-pose">
-                    <svg class="bg-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.182 15.182a4.5 4.5 0 0 1-6.364 0M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75s.168-.75.375-.75.375.336.375.75Zm4.5 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75Z" /></svg>
-                    <span>Phân tích tư thế</span>
-                </a>
-                <a href="#" class="action-btn btn-history">
-                    <svg class="bg-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941" /></svg>
-                    <span>Lịch sử thành tích</span>
-                </a>
-                <a href="#" class="action-btn btn-chat">
-                    <svg class="bg-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.76 9.76 0 0 1-2.53-0.417m-4.754-4.205A9.75 9.75 0 0 1 3 12c0-4.556 4.03-8.25 9-8.25a9.75 9.75 0 0 1 8.25 4.754" /></svg>
-                    <span>Chat với HLV</span>
-                </a>
-                <a href="#" class="action-btn btn-warning">
-                    <svg class="bg-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" /></svg>
-                    <span>Cảnh báo chấn thương</span>
-                </a>
+            <div class="right-column">
+                <div class="quick-stats">
+                    <h2>Thống kê nhanh</h2>
+                    <div class="stat-card">
+                        <h3>Tổng quãng đường (tuần)</h3>
+                        <p class="value">25.7 km</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Thời gian tập (tuần)</h3>
+                        <p class="value">4h 32m</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Calo tiêu thụ (hôm nay)</h3>
+                        <p class="value">540 kcal</p>
+                    </div>
+                </div>
             </div>
         </main>
     </div>
-    <script src="athlete-dashboard.js"></script>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyA2dXWCyjL2xgCSyeW9QQ7RvjI_O7kFHJw",
+            authDomain: "sporthealthdata.firebaseapp.com",
+            projectId: "sporthealthdata",
+            storageBucket: "sporthealthdata.appspot.com",
+            messagingSenderId: "789054240877",
+            appId: "1:789054240877:web:04a400c9ea586523a86764",
+            measurementId: "G-ZWS9C7P359"
+        };
+
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+        const auth = firebase.auth();
+
+        // Xử lý đăng xuất
+        const logoutButton = document.getElementById('logout-btn');
+        logoutButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            auth.signOut().then(() => {
+                window.location.href = 'dangnhap.html';
+            });
+        });
+    </script>
 </body>
 </html>
