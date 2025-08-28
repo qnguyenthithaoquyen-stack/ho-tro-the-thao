@@ -28,14 +28,8 @@
       from { opacity: 0; transform: translateY(20px);}
       to { opacity: 1; transform: translateY(0);}
     }
-    h2 {
-      color: #008080;
-      margin-bottom: 10px;
-    }
-    p {
-      color: #555;
-      margin-bottom: 30px;
-    }
+    h2 { color: #008080; margin-bottom: 10px; }
+    p { color: #555; margin-bottom: 30px; }
     .role-options {
       display: flex;
       justify-content: center;
@@ -54,9 +48,7 @@
       transition: all 0.25s ease;
       color: #008080;
     }
-    .role-btn:hover {
-      background-color: #e6fffa;
-    }
+    .role-btn:hover { background-color: #e6fffa; }
     .role-btn.active {
       background-color: #008080;
       color: #fff;
@@ -121,9 +113,9 @@
       localStorage.setItem("signupData", JSON.stringify(signupData));
 
       if (selectedRole === "Huấn luyện viên") {
-        window.location.href = "coach-dashboard.html";   // ✅ đúng file HLV
+        window.location.href = "coach-dashboard.html";
       } else if (selectedRole === "Vận động viên") {
-        window.location.href = "athlete-dashboard.html"; // ✅ đúng file VĐV
+        window.location.href = "athlete-dashboard.html";
       }
     });
   </script>
