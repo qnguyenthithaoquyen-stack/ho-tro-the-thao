@@ -6,52 +6,260 @@
     <title>Bảng điều khiển - Huấn Luyện Viên</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
-        body{font-family:'Roboto',sans-serif;margin:0;background-color:#f0f2f5;color:#333}
-        .container{max-width:1200px;margin:0 auto;background-color:#f0f2f5}
-        .header{display:flex;justify-content:space-between;align-items:center;padding:15px 30px;background-color:#008080;color:#fff}
-        .header-left{display:flex;align-items:center}
-        .logo{background-color:#fff;color:#008080;font-weight:700;padding:10px;border-radius:5px;margin-right:15px}
-        .project-info h1{font-size:24px;margin:0;font-weight:700}
-        .project-info p{font-size:12px;margin:0;opacity:.9}
-        .logout-btn{background-color:#fff;color:#008080;border:none;padding:10px 20px;border-radius:20px;cursor:pointer;font-weight:700;text-decoration:none;font-size:14px}
+        
+        :root {
+            --primary-color: #008080;
+            --secondary-color: #00a9a9;
+            --background-color: #f0f4f8;
+            --card-bg-color: #ffffff;
+            --text-color: #333;
+            --text-light-color: #6c757d;
+            --border-color: #e9ecef;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.07);
+        }
 
-        /* Thanh điều hướng */
-        .navbar{display:flex;background-color:#fff;box-shadow:0 2px 4px rgba(0,0,0,.05);padding:0 30px}
-        .navbar a{padding:15px 25px;text-decoration:none;color:#333;font-weight:500}
-        .navbar a.active{color:#008080;font-weight:700}
+        body { 
+            font-family: 'Roboto', sans-serif; 
+            margin: 0; 
+            background-color: var(--background-color); 
+            color: var(--text-color);
+        }
+        .container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            background-color: var(--card-bg-color);
+        }
+        .header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 15px 30px; 
+            background-color: var(--primary-color); 
+            color: #fff; 
+        }
+        .header-left { display: flex; align-items: center; }
+        .logo { 
+            background-color: #fff; 
+            color: var(--primary-color); 
+            font-weight: 700; 
+            padding: 10px; 
+            border-radius: 8px; 
+            margin-right: 15px; 
+        }
+        .project-info h1 { font-size: 24px; margin: 0; font-weight: 700; }
+        .project-info p { font-size: 12px; margin: 0; opacity: 0.9; }
+        .user-actions a { 
+            background-color: #fff; 
+            color: var(--primary-color); 
+            border: none; 
+            padding: 10px 20px; 
+            border-radius: 20px; 
+            cursor: pointer; 
+            font-weight: 700; 
+            text-decoration: none; 
+            font-size: 14px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .user-actions a:hover {
+            background-color: #f0f0f0;
+        }
+        .navbar { 
+            display: flex; 
+            background-color: var(--card-bg-color); 
+            box-shadow: 0 2px 4px rgba(0,0,0,.05); 
+            padding: 0 30px; 
+        }
+        .navbar a { 
+            padding: 15px 25px; 
+            text-decoration: none; 
+            color: var(--text-light-color); 
+            font-weight: 500; 
+        }
+        .navbar a.active { 
+            color: var(--primary-color); 
+            border-bottom: 3px solid var(--primary-color); 
+        }
+        .main-content { 
+            padding: 30px; 
+            display: flex;
+            gap: 30px;
+            align-items: flex-start;
+        }
+        .athlete-list-section {
+            flex: 1;
+        }
+        .athlete-details-section {
+            flex: 2;
+            display: none; /* Ẩn mặc định */
+        }
+        .dashboard-card {
+            background-color: var(--card-bg-color);
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            padding: 30px;
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        .card-header h2 {
+            font-size: 24px;
+            color: var(--primary-color);
+            margin: 0;
+        }
+        .add-athlete-btn {
+            background-color: var(--primary-color);
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color .3s;
+        }
+        .add-athlete-btn:hover {
+            background-color: var(--secondary-color);
+        }
+        .athlete-list {
+            list-style: none;
+            padding: 0;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        .athlete-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all .3s ease;
+            border: 1px solid transparent;
+        }
+        .athlete-item:hover, .athlete-item.selected {
+            background-color: #e6f2f2;
+            border-color: var(--primary-color);
+        }
+        .athlete-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-item {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            transition: all .3s ease;
+        }
+        .stat-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 10px rgba(0,0,0,.1);
+        }
+        .stat-item svg {
+            width: 32px;
+            height: 32px;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+        .stat-item .label {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 5px;
+        }
+        .stat-item .value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .action-btn {
+            color: #fff;
+            border: none;
+            padding: 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 16px;
+            text-decoration: none;
+            transition: all .3s ease; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+            background-size: cover;
+            background-position: center;
+        }
+        .action-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,.2);
+        }
+        .action-btn svg {
+            width: 24px;
+            height: 24px;
+            z-index: 2;
+        }
+        .action-btn span {
+            z-index: 2;
+        }
+        .action-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            transition: background-color 0.3s;
+        }
+        .action-btn:hover::before {
+            background-color: rgba(0,0,0,0.2);
+        }
+        .btn-send-exercise { 
+            background-image: url('https://images.pexels.com/photos/949126/pexels-photo-949126.jpeg?auto=compress&cs=tinysrgb&w=600');
+        }
+        .btn-send-exercise::before { background-color: rgba(0, 123, 255, 0.7); }
 
-        .main-content{padding:30px;display:flex;gap:30px;align-items:flex-start}
-        .athlete-list-section{flex:1}
-        .athlete-details-section{flex:2;display:none}
-        .dashboard-card{background-color:#fff;border-radius:16px;box-shadow:0 4px 12px rgba(0,0,0,.1);padding:30px}
-        .card-header{display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #e6f2f2;padding-bottom:15px;margin-bottom:20px}
-        .card-header h2{font-size:24px;color:#008080;margin:0}
-        .add-athlete-btn{background-color:#008080;color:#fff;border:none;padding:10px 20px;border-radius:20px;cursor:pointer;font-size:14px;transition:background-color .3s}
-        .add-athlete-btn:hover{background-color:#006666}
-        
-        /* === CSS CẬP NHẬT CHO DANH SÁCH VĐV === */
-        .athlete-list{list-style:none;padding:0;max-height:400px;overflow-y:auto;}
-        .athlete-item{display:flex;align-items:center;gap:15px;padding:12px;border-radius:10px;margin-bottom:10px;background-color:#f8f9fa;border:1px solid #eee;cursor:pointer;transition:all .3s ease}
-        .athlete-item:hover, .athlete-item.selected{background-color:#e6f2f2;transform:translateX(5px);border-left:4px solid #008080}
-        .athlete-avatar{width:40px;height:40px;border-radius:50%;background-color:#008080;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0}
-        
-        /* === CSS CẬP NHẬT CHO KHUNG CHỈ SỐ === */
-        .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:20px;margin-bottom:30px}
-        .stat-item{background-color:#f8f9fa;padding:20px;border-radius:12px;text-align:center;border:1px solid #eee;transition:all .3s ease}
-        .stat-item:hover{transform:translateY(-5px);box-shadow:0 4px 10px rgba(0,0,0,.1)}
-        .stat-item svg{width:32px;height:32px;margin-bottom:10px;color:#008080}
-        .stat-item .label{font-size:14px;color:#555;margin-bottom:5px}
-        .stat-item .value{font-size:24px;font-weight:700;color:#333}
-        
-        /* === CSS CẬP NHẬT CHO CÁC NÚT HÀNH ĐỘNG === */
-        .action-buttons{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px}
-        .action-btn{color:#fff;border:none;padding:15px;border-radius:12px;cursor:pointer;font-weight:700;font-size:16px;text-decoration:none;transition:all .3s ease; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;}
-        .action-btn:hover{transform:translateY(-5px);box-shadow:0 6px 12px rgba(0,0,0,.2)}
-        .action-btn svg{width:24px;height:24px}
-        .btn-send-exercise{background-image:linear-gradient(45deg, #0093E9 0%, #80D0C7 100%)}
-        .btn-view-warnings{background-image:linear-gradient(45deg, #FBDA61 0%, #FF5ACD 100%)}
-        .btn-chat{background-image:linear-gradient(45deg, #85FFBD 0%, #FFFB7D 100%);color:#333}
-        .btn-history{background-image:linear-gradient(45deg, #FA8BFF 0%, #2BD2FF 52%, #2BFF88 90%);color:#333}
+        .btn-view-warnings { 
+            background-image: url('https://images.pexels.com/photos/7991379/pexels-photo-7991379.jpeg?auto=compress&cs=tinysrgb&w=600');
+        }
+        .btn-view-warnings::before { background-color: rgba(220, 53, 69, 0.7); }
+
+        .btn-chat { 
+            background-image: url('https://images.pexels.com/photos/4098228/pexels-photo-4098228.jpeg?auto=compress&cs=tinysrgb&w=600');
+        }
+        .btn-chat::before { background-color: rgba(25, 135, 84, 0.7); }
+
+        .btn-history { 
+            background-image: url('https://images.pexels.com/photos/590022/pexels-photo-590022.jpeg?auto=compress&cs=tinysrgb&w=600');
+        }
+        .btn-history::before { background-color: rgba(108, 117, 125, 0.7); }
     </style>
 </head>
 <body>
@@ -61,23 +269,23 @@
                 <div class="logo">LOGO</div>
                 <div class="project-info">
                     <h1>HỖ TRỢ HUẤN LUYỆN THỂ THAO</h1>
-                    <p>DỰ ÁN KHOA HỌC KỸ THUẬT - ỨNG DỤNG THEO DÕI CHỈ SỐ VẬN ĐỘNG VIÊN</p>
+                    <p>DỰ ÁN KHOA HỌC KỸ THUẬT</p>
                 </div>
             </div>
-            <a href="#" class="logout-btn">Đăng xuất</a>
+            <div class="user-actions"><a href="#" id="logout-btn">Đăng xuất</a></div>
         </header>
 
         <nav class="navbar">
-            <a href="#">Trang chủ</a>
-            <a href="#">Giới thiệu</a>
-            <a href="#" class="active">Bảng điều khiển</a>
+            <a href="index.html">Trang chủ</a>
+            <a href="gioithieu.html">Giới thiệu</a>
+            <a href="bangdieukhien.html" class="active">Bảng điều khiển</a>
         </nav>
 
         <main class="main-content">
             <section class="athlete-list-section dashboard-card">
                 <div class="card-header">
                     <h2>Danh sách VĐV</h2>
-                    <button class="add-athlete-btn">Thêm VĐV</button>
+                    <button class="add-athlete-btn">+ Thêm VĐV</button>
                 </div>
                 <ul class="athlete-list">
                     <li class="athlete-item" data-athlete-id="1">
@@ -142,6 +350,43 @@
             </section>
         </main>
     </div>
-    <script src="coach-dashboard.js"></script>
+    <script>
+        // JavaScript để xử lý tương tác
+        const athleteItems = document.querySelectorAll('.athlete-item');
+        const detailsSection = document.getElementById('detailsSection');
+        const athleteNameEl = document.getElementById('athleteName');
+        const heartRateEl = document.getElementById('heartRate');
+        const spo2El = document.getElementById('spo2');
+        const bloodPressureEl = document.getElementById('bloodPressure');
+        const accelerationEl = document.getElementById('acceleration');
+
+        // Dữ liệu mẫu
+        const athleteData = {
+            1: { name: 'Nguyễn Văn A', heartRate: 75, spo2: 98, bloodPressure: '120/80', acceleration: 1.5 },
+            2: { name: 'Trần Thị B', heartRate: 80, spo2: 97, bloodPressure: '110/70', acceleration: 1.2 },
+            3: { name: 'Lê Văn C', heartRate: 72, spo2: 99, bloodPressure: '115/75', acceleration: 1.8 }
+        };
+
+        athleteItems.forEach(item => {
+            item.addEventListener('click', () => {
+                // Xóa lớp 'selected' khỏi tất cả các mục
+                athleteItems.forEach(el => el.classList.remove('selected'));
+                // Thêm lớp 'selected' vào mục được nhấp
+                item.classList.add('selected');
+
+                const athleteId = item.dataset.athleteId;
+                const data = athleteData[athleteId];
+
+                if (data) {
+                    detailsSection.style.display = 'block';
+                    athleteNameEl.textContent = 'Chi tiết của ' + data.name;
+                    heartRateEl.textContent = data.heartRate;
+                    spo2El.textContent = data.spo2;
+                    bloodPressureEl.textContent = data.bloodPressure;
+                    accelerationEl.textContent = data.acceleration;
+                }
+            });
+        });
+    </script>
 </body>
 </html>
