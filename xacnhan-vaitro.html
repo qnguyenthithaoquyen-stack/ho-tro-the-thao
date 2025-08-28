@@ -22,6 +22,11 @@
       text-align: center;
       width: 100%;
       max-width: 500px;
+      animation: fadeIn 0.4s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px);}
+      to { opacity: 1; transform: translateY(0);}
     }
     h2 {
       color: #008080;
@@ -39,32 +44,38 @@
       flex-wrap: wrap;
     }
     .role-btn {
-      padding: 12px 24px;
-      border-radius: 10px;
-      border: 2px solid #ccc;
-      background-color: #f2f2f2;
+      padding: 12px 28px;
+      border-radius: 30px;
+      border: 2px solid #008080;
+      background-color: #fff;
       cursor: pointer;
       font-weight: 600;
-      transition: 0.2s;
+      font-size: 15px;
+      transition: all 0.25s ease;
+      color: #008080;
+    }
+    .role-btn:hover {
+      background-color: #e6fffa;
     }
     .role-btn.active {
       background-color: #008080;
       color: #fff;
-      border-color: #008080;
+      box-shadow: 0 4px 10px rgba(0,128,128,0.3);
     }
     .submit-btn {
-      padding: 14px 28px;
+      padding: 14px 32px;
       border: none;
-      border-radius: 10px;
+      border-radius: 30px;
       background-color: #22c55e;
       color: #fff;
       font-size: 16px;
       font-weight: bold;
       cursor: pointer;
-      transition: 0.2s;
+      transition: 0.25s;
     }
     .submit-btn:hover {
       background-color: #16a34a;
+      box-shadow: 0 4px 10px rgba(34,197,94,0.3);
     }
   </style>
 </head>
@@ -83,14 +94,9 @@
 
   <script>
     let selectedRole = null;
-
-    // Lấy role từ localStorage (nếu có)
     const signupData = JSON.parse(localStorage.getItem("signupData")) || {};
-    if (signupData.role) {
-      selectedRole = signupData.role;
-    }
+    if (signupData.role) selectedRole = signupData.role;
 
-    // Highlight nút đã chọn
     const roleBtns = document.querySelectorAll(".role-btn");
     function updateActive() {
       roleBtns.forEach(btn => {
@@ -111,17 +117,13 @@
         alert("Vui lòng chọn vai trò!");
         return;
       }
-      // cập nhật role vào localStorage
       signupData.role = selectedRole;
       localStorage.setItem("signupData", JSON.stringify(signupData));
 
-      // chuyển tới dashboard tương ứng
       if (selectedRole === "Huấn luyện viên") {
         window.location.href = "dashboard-huanluyenvien.html";
       } else if (selectedRole === "Vận động viên") {
         window.location.href = "dashboard-vandongvien.html";
-      } else {
-        window.location.href = "dangki.html";
       }
     });
   </script>
