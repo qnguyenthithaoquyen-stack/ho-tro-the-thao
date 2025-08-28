@@ -1,65 +1,52 @@
-// Đợi cho toàn bộ trang HTML tải xong rồi mới chạy code bên trong
-document.addEventListener('DOMContentLoaded', () => {
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyA2dXWCyjL2xgCSyeW9QQ7RvjI_O7kFHJw",
+  authDomain: "sporthealthdata.firebaseapp.com",
+  projectId: "sporthealthdata",
+  storageBucket: "sporthealthdata.appspot.com",
+  messagingSenderId: "789054240877",
+  appId: "1:789054240877:web:04a400c9ea586523a86764",
+  measurementId: "G-ZWS9C7P359"
+};
 
-    // Giả sử Firebase đã được khởi tạo và gán vào window.firebase trong file HTML
-    if (!window.firebase || !window.firebase.auth || !window.firebase.db) {
-        console.error("Firebase chưa được khởi tạo! Hãy chắc chắn bạn đã nhúng mã cấu hình Firebase vào file HTML.");
-        alert("Lỗi kết nối đến máy chủ. Vui lòng thử lại sau.");
-        return;
-    }
+// Initialize Firebase using v8 syntax
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
+const auth = firebase.auth();
 
-    const { auth, db } = window.firebase;
-    const { signInWithEmailAndPassword, getDoc, doc } = window.firebase.firestore; // Lấy các hàm cần thiết
+// Get the login form from the HTML
+const loginForm = document.getElementById('loginForm');
 
-    // --- XỬ LÝ FORM ĐĂNG NHẬP ---
-    const loginForm = document.getElementById('loginForm'); // Đảm bảo form của bạn có id="loginForm"
+if (loginForm) {
+    loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault(); // Prevent the page from reloading
 
-    if (loginForm) {
-        loginForm.addEventListener('submit', (e) => {
-            e.preventDefault(); // Ngăn trang tải lại
+        // Get email and password from the input fields
+        const email = e.target.email.value;
+        const password = e.target.password.value;
+        const submitButton = e.target.querySelector('.submit-btn');
 
-            const email = loginForm.email.value;
-            const password = loginForm.password.value;
+        // Disable the button and show a loading state
+        submitButton.disabled = true;
+        submitButton.textContent = 'Đang xử lý...';
 
-            if (!email || !password) {
-                alert("Vui lòng nhập đầy đủ email và mật khẩu.");
-                return;
-            }
+        try {
+            // 1. Use the Firebase SDK to sign in the user
+            const userCredential = await auth.signInWithEmailAndPassword(email, password);
+            
+            // 2. If successful, redirect to the role confirmation page
+            alert('Đăng nhập thành công!');
+            window.location.href = 'xacnhan-vaitro.html'; 
 
-            // Đăng nhập bằng Firebase Auth
-            signInWithEmailAndPassword(auth, email, password)
-                .then(async (userCredential) => {
-                    const userId = userCredential.user.uid;
-                    
-                    // Lấy thông tin vai trò từ Firestore
-                    const userDocRef = doc(db, 'users', userId);
-                    const docSnap = await getDoc(userDocRef);
-
-                    if (docSnap.exists()) {
-                        const userData = docSnap.data();
-                        // Chuyển hướng dựa trên vai trò
-                        if (userData.role === 'Huấn luyện viên') {
-                            window.location.href = 'coach-dashboard.html';
-                        } else if (userData.role === 'Vận động viên') {
-                            window.location.href = 'athlete-dashboard.html';
-                        } else {
-                            // Chuyển về trang chủ nếu không có vai trò
-                            alert('Đăng nhập thành công nhưng không xác định được vai trò.');
-                            window.location.href = 'index.html';
-                        }
-                    } else {
-                        alert('Đăng nhập thành công nhưng không tìm thấy thông tin người dùng.');
-                    }
-                })
-                .catch(error => {
-                    console.error("Lỗi đăng nhập:", error);
-                    let errorMessage = 'Đã có lỗi xảy ra. Vui lòng thử lại.';
-                    // Cung cấp thông báo lỗi thân thiện hơn
-                    if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
-                        errorMessage = 'Email hoặc mật khẩu không chính xác.';
-                    }
-                    alert(errorMessage);
-                });
-        });
-    }
-});
+        } catch (error) {
+            // Display an error to the user if login fails
+            console.error("Lỗi đăng nhập:", error);
+            alert('Đăng nhập thất bại: ' + error.message);
+            
+            // Re-enable the button
+            submitButton.disabled = false;
+            submitButton.textContent = 'Đăng Nhập';
+        }
+    });
+}
