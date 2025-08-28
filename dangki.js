@@ -1,53 +1,59 @@
-// =================================================================================
-// LƯU Ý: BẠN CẦN THAY THẾ CẤU HÌNH FIREBASE CỦA MÌNH VÀO ĐÂY
-// Bạn có thể lấy nó từ Firebase Console -> Project settings (Cài đặt dự án)
-// =================================================================================
+// Your web app's Firebase configuration
 const firebaseConfig = {
-    apiKey: "AIza...",
-    authDomain: "your-project-id.firebaseapp.com",
-    projectId: "your-project-id",
-    storageBucket: "your-project-id.appspot.com",
-    messagingSenderId: "...",
-    appId: "..."
+  apiKey: "AIzaSyA2dXWCyjL2xgCSyeW9QQ7RvjI_O7kFHJw",
+  authDomain: "sporthealthdata.firebaseapp.com",
+  projectId: "sporthealthdata",
+  storageBucket: "sporthealthdata.appspot.com",
+  messagingSenderId: "789054240877",
+  appId: "1:789054240877:web:04a400c9ea586523a86764",
+  measurementId: "G-ZWS9C7P359"
 };
 
-// Khởi tạo Firebase
+// Initialize Firebase using v8 syntax
 if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
 const auth = firebase.auth();
 
-// Lấy form đăng nhập từ HTML
-const loginForm = document.getElementById('loginForm');
+// Get the signup form from the HTML
+const signupForm = document.getElementById('signupForm');
 
-loginForm.addEventListener('submit', async (e) => {
-    e.preventDefault(); // Ngăn trang web tải lại
+if (signupForm) {
+    signupForm.addEventListener('submit', async (event) => {
+        event.preventDefault(); // Prevent the form from submitting normally
 
-    // Lấy email và mật khẩu từ các ô input
-    const email = e.target.email.value;
-    const password = e.target.password.value;
-    const submitButton = e.target.querySelector('.submit-btn');
+        // Get user data from the form
+        const email = event.target.email.value;
+        const password = event.target.password.value;
+        const userRole = event.target.role.value;
+        const submitButton = event.target.querySelector('.submit-btn');
 
-    // Vô hiệu hóa nút bấm và hiển thị trạng thái chờ
-    submitButton.disabled = true;
-    submitButton.textContent = 'Đang xử lý...';
+        // Disable the button
+        submitButton.disabled = true;
+        submitButton.textContent = 'Đang tạo tài khoản...';
 
-    try {
-        // 1. Dùng Firebase SDK để đăng nhập người dùng
-        const userCredential = await auth.signInWithEmailAndPassword(email, password);
-        
-        // 2. Nếu thành công, chuyển hướng đến trang xác nhận vai trò
-        alert('Đăng nhập thành công!');
-        // Chuyển hướng đến trang xác nhận vai trò để nhất quán với luồng đăng ký
-        window.location.href = 'xacnhan-vaitro.html'; 
+        try {
+            // 1. Use Firebase to create a new user
+            const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+            console.log('Tạo tài khoản thành công:', userCredential.user);
 
-    } catch (error) {
-        // Hiển thị lỗi cho người dùng nếu đăng nhập thất bại
-        console.error("Lỗi đăng nhập:", error);
-        alert('Đăng nhập thất bại: ' + error.message);
-        
-        // Kích hoạt lại nút bấm
-        submitButton.disabled = false;
-        submitButton.textContent = 'Đăng Nhập';
-    }
-});
+            // TODO: You can add code here to save additional user info 
+            // (like full name, role, etc.) to a Firestore database.
+
+            // 2. Save the chosen role to the browser's local storage
+            localStorage.setItem('userRole', userRole);
+
+            // 3. Redirect the user to the role confirmation page
+            alert('Đăng ký thành công!');
+            window.location.href = 'xacnhan-vaitro.html';
+
+        } catch (error) {
+            console.error("Lỗi đăng ký:", error);
+            alert('Đăng ký thất bại: ' + error.message);
+
+            // Re-enable the button
+            submitButton.disabled = false;
+            submitButton.textContent = 'Đăng Ký';
+        }
+    });
+}
