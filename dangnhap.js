@@ -1,33 +1,65 @@
-// Đợi cho toàn bộ nội dung trang (DOM) được tải xong
+// Đợi cho toàn bộ trang HTML tải xong rồi mới chạy code bên trong
 document.addEventListener('DOMContentLoaded', () => {
 
-    // Lấy biểu mẫu đăng nhập bằng ID của nó
-    const loginForm = document.getElementById('loginForm');
+    // Giả sử Firebase đã được khởi tạo và gán vào window.firebase trong file HTML
+    if (!window.firebase || !window.firebase.auth || !window.firebase.db) {
+        console.error("Firebase chưa được khởi tạo! Hãy chắc chắn bạn đã nhúng mã cấu hình Firebase vào file HTML.");
+        alert("Lỗi kết nối đến máy chủ. Vui lòng thử lại sau.");
+        return;
+    }
 
-    // Kiểm tra xem biểu mẫu có tồn tại không
+    const { auth, db } = window.firebase;
+    const { signInWithEmailAndPassword, getDoc, doc } = window.firebase.firestore; // Lấy các hàm cần thiết
+
+    // --- XỬ LÝ FORM ĐĂNG NHẬP ---
+    const loginForm = document.getElementById('loginForm'); // Đảm bảo form của bạn có id="loginForm"
+
     if (loginForm) {
-        // Thêm một trình nghe sự kiện 'submit' cho biểu mẫu
-        loginForm.addEventListener('submit', (event) => {
-            // Ngăn chặn hành vi mặc định của biểu mẫu (tải lại trang)
-            event.preventDefault();
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault(); // Ngăn trang tải lại
 
-            // Lấy giá trị từ các trường email và mật khẩu
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
+            const email = loginForm.email.value;
+            const password = loginForm.password.value;
 
-            // Kiểm tra đơn giản xem các trường có trống không
-            if (email.trim() === '' || password.trim() === '') {
-                alert('Vui lòng nhập cả email và mật khẩu.');
-                return; // Dừng thực thi nếu có lỗi
+            if (!email || !password) {
+                alert("Vui lòng nhập đầy đủ email và mật khẩu.");
+                return;
             }
 
-            // Nếu không có lỗi, mô phỏng việc đăng nhập thành công
-            console.log('Email:', email);
-            console.log('Password:', password);
-            alert(`Đăng nhập thành công với email: ${email}`);
+            // Đăng nhập bằng Firebase Auth
+            signInWithEmailAndPassword(auth, email, password)
+                .then(async (userCredential) => {
+                    const userId = userCredential.user.uid;
+                    
+                    // Lấy thông tin vai trò từ Firestore
+                    const userDocRef = doc(db, 'users', userId);
+                    const docSnap = await getDoc(userDocRef);
 
-            // Trong ứng dụng thực tế, bạn sẽ gửi dữ liệu này đến máy chủ
-            // để xác thực ở đây.
+                    if (docSnap.exists()) {
+                        const userData = docSnap.data();
+                        // Chuyển hướng dựa trên vai trò
+                        if (userData.role === 'Huấn luyện viên') {
+                            window.location.href = 'coach-dashboard.html';
+                        } else if (userData.role === 'Vận động viên') {
+                            window.location.href = 'athlete-dashboard.html';
+                        } else {
+                            // Chuyển về trang chủ nếu không có vai trò
+                            alert('Đăng nhập thành công nhưng không xác định được vai trò.');
+                            window.location.href = 'index.html';
+                        }
+                    } else {
+                        alert('Đăng nhập thành công nhưng không tìm thấy thông tin người dùng.');
+                    }
+                })
+                .catch(error => {
+                    console.error("Lỗi đăng nhập:", error);
+                    let errorMessage = 'Đã có lỗi xảy ra. Vui lòng thử lại.';
+                    // Cung cấp thông báo lỗi thân thiện hơn
+                    if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+                        errorMessage = 'Email hoặc mật khẩu không chính xác.';
+                    }
+                    alert(errorMessage);
+                });
         });
     }
 });
