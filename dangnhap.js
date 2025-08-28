@@ -30,8 +30,20 @@ document.addEventListener('DOMContentLoaded', () => {
             // Thông báo thành công
             alert(`Đăng nhập thành công với email: ${email}`);
 
-            // 👉 Thay vì vào dashboard, chuyển hướng qua trang xác nhận vai trò
-            window.location.href = 'xacnhan-vaitro.html';
+            // ✅ Kiểm tra role
+            const signupData = JSON.parse(localStorage.getItem("signupData"));
+
+            if (signupData && signupData.role) {
+                // Đã có role => vào thẳng dashboard theo role
+                if (signupData.role === "Huấn luyện viên") {
+                    window.location.href = "coach-dashboard.html";
+                } else if (signupData.role === "Vận động viên") {
+                    window.location.href = "athlete-dashboard.html";
+                }
+            } else {
+                // Chưa có role (người mới đăng ký) => sang trang xác nhận vai trò
+                window.location.href = "xacnhan-vaitro.html";
+            }
         });
     }
 });
