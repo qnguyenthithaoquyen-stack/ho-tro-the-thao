@@ -7,12 +7,40 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-color: #f0f2f5;
+      background-color: #f3f4f6;
       margin: 0;
+      padding: 0;
+    }
+    header {
+      background: #008080;
+      color: #fff;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logo {
+      font-weight: bold;
+      background: #fff;
+      color: #008080;
+      padding: 8px 15px;
+      border-radius: 6px;
+    }
+    nav a {
+      margin: 0 10px;
+      color: #fff;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    nav a.active {
+      border-bottom: 2px solid #fff;
+      padding-bottom: 3px;
+    }
+    main {
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      min-height: 80vh;
     }
     .card {
       background: #fff;
@@ -38,26 +66,26 @@
   </style>
 </head>
 <body>
-  <div class="card" id="loginRequired">
-    <h2>Vui lòng đăng nhập</h2>
-    <p>Bạn cần đăng nhập để xem Bảng điều khiển.</p>
-    <a href="dangnhap.html" class="btn" id="gotoLogin">Đi đến trang đăng nhập</a>
-  </div>
+  <header>
+    <div class="logo">LOGO</div>
+    <nav>
+      <a href="index.html">Trang chủ</a>
+      <a href="gioithieu.html">Giới thiệu</a>
+      <a href="bangdieukhien.html" class="active">Bảng điều khiển</a>
+    </nav>
+    <a href="dangnhap.html" class="btn">Đăng nhập</a>
+  </header>
 
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const signupData = JSON.parse(localStorage.getItem("signupData"));
+  <main>
+    <div class="card" id="loginRequired">
+      <h2>Vui lòng đăng nhập</h2>
+      <p>Bạn cần đăng nhập để xem Bảng điều khiển.</p>
+      <!-- ✅ Nút này có id để JS bắt sự kiện -->
+      <a href="dangnhap.html" class="btn" id="gotoLogin">Đi đến trang đăng nhập</a>
+    </div>
+  </main>
 
-      if (signupData && signupData.role) {
-        // Nếu đã có role thì chuyển thẳng đến dashboard
-        if (signupData.role === "Huấn luyện viên") {
-          window.location.href = "coach-dashboard.html";
-        } else if (signupData.role === "Vận động viên") {
-          window.location.href = "athlete-dashboard.html";
-        }
-      }
-      // Nếu chưa đăng nhập thì giữ nguyên giao diện "Vui lòng đăng nhập"
-    });
-  </script>
+  <!-- Import script xử lý -->
+  <script src="bangdieukhien.js"></script>
 </body>
 </html>
