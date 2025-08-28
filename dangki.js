@@ -1,37 +1,53 @@
-// Bạn cần thêm đoạn khởi tạo Firebase vào đầu file hoặc trong file HTML
-// (Tương tự như trang dangnhap.html)
+// =================================================================================
+// LƯU Ý: BẠN CẦN THAY THẾ CẤU HÌNH FIREBASE CỦA MÌNH VÀO ĐÂY
+// Bạn có thể lấy nó từ Firebase Console -> Project settings (Cài đặt dự án)
+// =================================================================================
+const firebaseConfig = {
+    apiKey: "AIza...",
+    authDomain: "your-project-id.firebaseapp.com",
+    projectId: "your-project-id",
+    storageBucket: "your-project-id.appspot.com",
+    messagingSenderId: "...",
+    appId: "..."
+};
 
-document.addEventListener('DOMContentLoaded', () => {
-    const signupForm = document.getElementById('signupForm');
-    const auth = firebase.auth(); // Giả sử Firebase đã được khởi tạo
+// Khởi tạo Firebase
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
+const auth = firebase.auth();
 
-    if (signupForm) {
-        signupForm.addEventListener('submit', async (event) => {
-            event.preventDefault();
+// Lấy form đăng nhập từ HTML
+const loginForm = document.getElementById('loginForm');
 
-            const email = event.target.email.value;
-            const password = event.target.password.value;
-            const userRole = event.target.role.value;
+loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault(); // Ngăn trang web tải lại
 
-            try {
-                // 1. Dùng Firebase để tạo người dùng mới
-                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-                console.log('Tạo tài khoản thành công:', userCredential.user);
+    // Lấy email và mật khẩu từ các ô input
+    const email = e.target.email.value;
+    const password = e.target.password.value;
+    const submitButton = e.target.querySelector('.submit-btn');
 
-                // (Tùy chọn) Lưu thêm thông tin như tên, vai trò vào Firestore/Realtime Database
-                // Gắn liền với user.uid
+    // Vô hiệu hóa nút bấm và hiển thị trạng thái chờ
+    submitButton.disabled = true;
+    submitButton.textContent = 'Đang xử lý...';
 
-                // 2. Lưu vai trò vào localStorage để trang sau sử dụng
-                localStorage.setItem('userRole', userRole);
+    try {
+        // 1. Dùng Firebase SDK để đăng nhập người dùng
+        const userCredential = await auth.signInWithEmailAndPassword(email, password);
+        
+        // 2. Nếu thành công, chuyển hướng đến trang xác nhận vai trò
+        alert('Đăng nhập thành công!');
+        // Chuyển hướng đến trang xác nhận vai trò để nhất quán với luồng đăng ký
+        window.location.href = 'xacnhan-vaitro.html'; 
 
-                // 3. Chuyển hướng đến trang xác nhận
-                alert('Đăng ký thành công!');
-                window.location.href = 'xacnhan-vaitro.html';
-
-            } catch (error) {
-                console.error("Lỗi đăng ký:", error);
-                alert('Đăng ký thất bại: ' + error.message);
-            }
-        });
+    } catch (error) {
+        // Hiển thị lỗi cho người dùng nếu đăng nhập thất bại
+        console.error("Lỗi đăng nhập:", error);
+        alert('Đăng nhập thất bại: ' + error.message);
+        
+        // Kích hoạt lại nút bấm
+        submitButton.disabled = false;
+        submitButton.textContent = 'Đăng Nhập';
     }
 });
