@@ -121,9 +121,9 @@
       localStorage.setItem("signupData", JSON.stringify(signupData));
 
       if (selectedRole === "Huấn luyện viên") {
-        window.location.href = "dashboard-huanluyenvien.html";
+        window.location.href = "coach-dashboard.html";   // ✅ đúng file HLV
       } else if (selectedRole === "Vận động viên") {
-        window.location.href = "dashboard-vandongvien.html";
+        window.location.href = "athlete-dashboard.html"; // ✅ đúng file VĐV
       }
     });
   </script>
