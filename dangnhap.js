@@ -13,12 +13,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            console.log('Email:', email);
-            console.log('Password:', password);
-
             let signupData = JSON.parse(localStorage.getItem("signupData"));
 
-            // 👉 Nếu user đã có role => login xong vào thẳng dashboard
+            // Nếu user đã có role => login vào thẳng dashboard
             if (signupData && signupData.role) {
                 if (signupData.role === "Huấn luyện viên") {
                     window.location.href = "coach-dashboard.html";
@@ -26,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     window.location.href = "athlete-dashboard.html";
                 }
             } else {
-                // 👉 Chỉ khi user vừa đăng ký (chưa chọn role) thì mới sang xác nhận vai trò
+                // Nếu là đăng ký mới, chưa chọn role => sang xác nhận vai trò
                 signupData = { email, role: "" };
                 localStorage.setItem("signupData", JSON.stringify(signupData));
                 window.location.href = "xacnhan-vaitro.html";
