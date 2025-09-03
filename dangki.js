@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Khởi tạo Firebase Authentication
+    // Khởi tạo các dịch vụ Firebase
     const auth = firebase.auth();
+    const db = firebase.firestore(); // Khởi tạo Firestore
 
     const signupForm = document.getElementById('signupForm');
 
@@ -8,13 +9,18 @@ document.addEventListener('DOMContentLoaded', () => {
         signupForm.addEventListener('submit', (event) => {
             event.preventDefault(); // Ngăn form tự gửi đi
 
-            // Lấy email và mật khẩu từ form
+            // Lấy tất cả dữ liệu từ form
+            const fullName = signupForm.fullName.value;
+            const username = signupForm.username.value;
             const email = signupForm.email.value;
             const password = signupForm.password.value;
+            const age = signupForm.age.value;
+            const city = signupForm.city.value;
+            // Trường 'role' từ form này sẽ không được sử dụng nữa
 
-            // Kiểm tra dữ liệu đầu vào đơn giản
-            if (!email || !password) {
-                alert('Vui lòng nhập đầy đủ email và mật khẩu.');
+            // Kiểm tra dữ liệu đầu vào
+            if (!fullName || !username || !email || !password || !age || !city) {
+                alert('Vui lòng điền đầy đủ tất cả các trường.');
                 return;
             }
             if (password.length < 6) {
@@ -26,40 +32,38 @@ document.addEventListener('DOMContentLoaded', () => {
             submitButton.disabled = true;
             submitButton.textContent = 'Đang xử lý...';
 
-            // --- BƯỚC QUAN TRỌNG: GỌI FIREBASE ĐỂ TẠO TÀI KHOẢN ---
+            // Bước 1: Tạo tài khoản người dùng với email và mật khẩu
             auth.createUserWithEmailAndPassword(email, password)
                 .then(userCredential => {
-                    // Đăng ký thành công, Firebase sẽ tự động đăng nhập cho người dùng
-                    console.log('Tạo tài khoản thành công:', userCredential.user.uid);
+                    const user = userCredential.user;
+                    console.log('Tạo tài khoản thành công:', user.uid);
 
-                    // Chuyển hướng người dùng đến trang xác nhận vai trò
+                    // Bước 2: Lưu các thông tin bổ sung (không bao gồm vai trò) vào Firestore
+                    return db.collection('users').doc(user.uid).set({
+                        fullName: fullName,
+                        username: username,
+                        email: email,
+                        age: age,
+                        city: city,
+                        // Vai trò sẽ được thêm ở trang xác nhận
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                })
+                .then(() => {
+                    console.log('Đã lưu thông tin ban đầu. Chuyển đến trang xác nhận vai trò.');
+                    
+                    // Bước 3: Chuyển hướng đến trang xác nhận vai trò
+                    alert('Đăng ký thành công! Vui lòng xác nhận vai trò của bạn.');
                     window.location.href = 'xacnhan-vaitro.html';
                 })
                 .catch(error => {
-                    // Xử lý các lỗi có thể xảy ra (ví dụ: email đã tồn tại)
                     console.error("Lỗi đăng ký:", error.message);
                     alert(`Đăng ký thất bại: ${error.message}`);
                     
-                    // Kích hoạt lại nút bấm
                     submitButton.disabled = false;
                     submitButton.textContent = 'Đăng Ký';
                 });
         });
     }
 });
-```
 
-### Các bước cần thực hiện
-
-1.  **Cập nhật `dangki.js`:** Xóa toàn bộ nội dung trong tệp `dangki.js` hiện tại của bạn và dán đoạn mã mới ở trên vào.
-2.  **Nhúng Firebase SDK vào `dangki.html`:** Đảm bảo rằng tệp `dangki.html` của bạn có nhúng các thư viện Firebase và tệp `firebase-config.js` **trước** khi nhúng tệp `dangki.js`. Nếu chưa có, hãy thêm các dòng sau vào trước thẻ đóng `</body>`:
-
-    ```html
-    <!-- ... các phần tử HTML khác ... -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-    <script src="firebase-config.js"></script> <!-- Tệp cấu hình của bạn -->
-    <script src="js/dangki.js"></script> <!-- Tệp JS đã sửa lỗi -->
-    </body>
-    </html>
-    
