@@ -419,7 +419,8 @@
             <div class="left-column">
                 <div class="daily-goals">
                     <div id="goals-list">
-                        <h2>Mục tiêu hằng ngày</h2>
+                        <!-- THAY ĐỔI: Thêm span để hiển thị tên người dùng -->
+                        <h2>Mục tiêu của <span id="user-name">...</span></h2>
                         <div class="task-item run" data-goal="run" data-target-km="5">
                             <div class="task-info">
                                 <div class="task-icon run">
@@ -527,135 +528,9 @@
         </div>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyA2dXWCyjL2xgCSyeW9QQ7RvjI_O7kFHJw",
-            authDomain: "sporthealthdata.firebaseapp.com",
-            projectId: "sporthealthdata",
-            storageBucket: "sporthealthdata.appspot.com",
-            messagingSenderId: "789054240877",
-            appId: "1:789054240877:web:04a400c9ea586523a86764",
-            measurementId: "G-ZWS9C7P359"
-        };
+    <!-- XÓA: Toàn bộ script inline cũ -->
+    <!-- THÊM: Script mới dạng module -->
+    <script type="module" src="athlete-dashboard.js"></script>
 
-        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
-        const auth = firebase.auth();
-
-        // Xử lý đăng xuất
-        const logoutButton = document.getElementById('logout-btn');
-        logoutButton.addEventListener('click', (e) => {
-            e.preventDefault();
-            auth.signOut().then(() => {
-                window.location.href = 'dangnhap.html';
-            });
-        });
-
-        const goalsListContainer = document.getElementById('goals-list');
-        const selectedGoalContainer = document.getElementById('selected-goal');
-        const completionMessageContainer = document.getElementById('completion-message');
-        
-        const selectedGoalContent = document.getElementById('selected-goal-content');
-        const completeBtn = document.getElementById('complete-btn');
-        const resetBtn = document.getElementById('reset-btn');
-        const selectButtons = document.querySelectorAll('.task-action button');
-        const todayDistanceValue = document.getElementById('today-distance-value');
-
-        // Modal elements
-        const suggestionModal = document.getElementById('suggestion-modal');
-        const modalTitle = document.getElementById('modal-title');
-        const modalBody = document.getElementById('modal-body');
-        const closeModalBtn = document.getElementById('close-modal-btn');
-
-        const suggestions = {
-            strength: [
-                { name: 'Chống đẩy', img: 'https://images.pexels.com/photos/1552249/pexels-photo-1552249.jpeg?auto=compress&cs=tinysrgb&w=600' },
-                { name: 'Hít xà', img: 'https://images.pexels.com/photos/3490360/pexels-photo-3490360.jpeg?auto=compress&cs=tinysrgb&w=600' },
-                { name: 'Kéo tạ đơn', img: 'https://images.pexels.com/photos/6550853/pexels-photo-6550853.jpeg?auto=compress&cs=tinysrgb&w=600' },
-                { name: 'Đẩy tạ qua đầu', img: 'https://images.pexels.com/photos/1229356/pexels-photo-1229356.jpeg?auto=compress&cs=tinysrgb&w=600' }
-            ]
-        };
-
-        function openSuggestionModal(type) {
-            const data = suggestions[type];
-            let title = '';
-            if (type === 'strength') title = 'Gợi ý bài tập sức mạnh';
-            
-            modalTitle.textContent = title;
-            modalBody.innerHTML = ''; // Clear previous content
-
-            data.forEach(item => {
-                const card = `
-                    <div class="suggestion-card" data-task-name="${item.name}">
-                        <img src="${item.img}" alt="${item.name}">
-                        <p>${item.name}</p>
-                    </div>
-                `;
-                modalBody.innerHTML += card;
-            });
-
-            document.querySelectorAll('.suggestion-card').forEach(card => {
-                card.addEventListener('click', () => {
-                    const taskName = card.dataset.taskName;
-                    const originalTaskType = type; 
-                    const originalTaskElement = document.querySelector(`.task-item[data-goal="${originalTaskType}"]`);
-
-                    const clonedTask = originalTaskElement.cloneNode(true);
-                    clonedTask.querySelector('h3').textContent = taskName; 
-                    clonedTask.querySelector('.task-action').remove();
-
-                    selectedGoalContent.innerHTML = '';
-                    selectedGoalContent.appendChild(clonedTask);
-
-                    suggestionModal.classList.remove('visible');
-                    goalsListContainer.classList.add('hidden');
-                    selectedGoalContainer.classList.remove('hidden');
-                });
-            });
-
-            suggestionModal.classList.add('visible');
-        }
-
-        closeModalBtn.addEventListener('click', () => {
-            suggestionModal.classList.remove('visible');
-        });
-        suggestionModal.addEventListener('click', (e) => {
-            if (e.target === suggestionModal) {
-                suggestionModal.classList.remove('visible');
-            }
-        });
-
-
-        selectButtons.forEach(button => {
-            button.addEventListener('click', (e) => {
-                const selectedTask = e.target.closest('.task-item');
-                const goalType = selectedTask.dataset.goal;
-                
-                if (goalType === 'strength') {
-                    openSuggestionModal(goalType);
-                } else {
-                    const clonedTask = selectedTask.cloneNode(true);
-                    clonedTask.querySelector('.task-action').remove();
-                    
-                    selectedGoalContent.innerHTML = '';
-                    selectedGoalContent.appendChild(clonedTask);
-
-                    goalsListContainer.classList.add('hidden');
-                    selectedGoalContainer.classList.remove('hidden');
-                }
-            });
-        });
-
-        completeBtn.addEventListener('click', () => {
-            selectedGoalContainer.classList.add('hidden');
-            completionMessageContainer.classList.remove('hidden');
-        });
-
-        resetBtn.addEventListener('click', () => {
-            completionMessageContainer.classList.add('hidden');
-            goalsListContainer.classList.remove('hidden');
-        });
-    </script>
 </body>
 </html>
