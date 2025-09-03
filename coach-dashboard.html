@@ -18,7 +18,7 @@
 
         .navbar{display:flex;background-color:#fff;box-shadow:0 2px 4px rgba(0,0,0,.05);padding:0 30px}
         .navbar a{padding:15px 25px;text-decoration:none;color:#333;font-weight:500}
-        .navbar a.active{color:#008080;font-weight:700}
+        .navbar a.active{color:#008080;font-weight:700; border-bottom: 3px solid #008080;}
 
         .main-content{padding:30px;display:grid; grid-template-columns: 1fr 2fr; gap:30px;align-items:flex-start}
         .dashboard-card{background-color:#fff;border-radius:16px;box-shadow:0 4px 12px rgba(0,0,0,.1);padding:30px}
@@ -27,25 +27,26 @@
         .add-athlete-btn{background-color:#008080;color:#fff;border:none;padding:10px 20px;border-radius:20px;cursor:pointer;font-size:14px;transition:background-color .3s; text-decoration: none;}
         .add-athlete-btn:hover{background-color:#006666}
         
-        .athlete-list{list-style:none;padding:0;max-height:400px;overflow-y:auto;}
+        #athlete-list{list-style:none;padding:0;max-height:400px;overflow-y:auto;}
         .athlete-item{display:flex;align-items:center;gap:15px;padding:12px;border-radius:10px;margin-bottom:10px;background-color:#f8f9fa;border:1px solid #eee;cursor:pointer;transition:all .3s ease}
-        .athlete-item:hover, .athlete-item.selected{background-color:#e6f2f2;transform:translateX(5px);border-left:4px solid #008080}
-        .athlete-avatar{width:40px;height:40px;border-radius:50%;background-color:#008080;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0}
+        .athlete-item:hover, .athlete-item.active{background-color:#e6f2f2;transform:translateX(5px);border-left:4px solid #008080}
+        .athlete-initial{width:40px;height:40px;border-radius:50%;background-color:#008080;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0}
         
         .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:20px;margin-bottom:30px}
-        .stat-item{background-color:#f8f9fa;padding:20px;border-radius:12px;text-align:center;border:1px solid #eee;transition:all .3s ease}
-        .stat-item:hover{transform:translateY(-5px);box-shadow:0 4px 10px rgba(0,0,0,.1)}
-        .stat-item svg{width:32px;height:32px;margin-bottom:10px;color:#008080}
-        .stat-item .label{font-size:14px;color:#555;margin-bottom:5px}
-        .stat-item .value{font-size:24px;font-weight:700;color:#333}
+        .stat-card{background-color:#f8f9fa;padding:20px;border-radius:12px;text-align:center;border:1px solid #eee;transition:all .3s ease}
+        .stat-card:hover{transform:translateY(-5px);box-shadow:0 4px 10px rgba(0,0,0,.1)}
+        .stat-card h4{font-size:14px;color:#555;margin: 0 0 10px 0; font-weight: 500;}
+        .stat-card p{font-size:24px;font-weight:700;color:#333; margin: 0;}
         
-        .action-buttons{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px}
-        .action-btn{color:#fff;border:none;padding:15px;border-radius:12px;cursor:pointer;font-weight:700;font-size:16px;text-decoration:none;transition:all .3s ease; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;}
+        .actions-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px}
+        .action-btn{color:#fff;border:none;padding:15px;border-radius:12px;cursor:pointer;font-weight:700;font-size:16px;text-decoration:none;transition:all .3s ease; text-align: center;}
         .action-btn:hover{transform:translateY(-5px);box-shadow:0 6px 12px rgba(0,0,0,.2)}
-        .btn-send-exercise{background-image:linear-gradient(45deg, #0093E9 0%, #80D0C7 100%)}
-        .btn-view-warnings{background-image:linear-gradient(45deg, #FBDA61 0%, #FF5ACD 100%)}
-        .btn-chat{background-image:linear-gradient(45deg, #85FFBD 0%, #FFFB7D 100%);color:#333}
-        .btn-history{background-image:linear-gradient(45deg, #FA8BFF 0%, #2BD2FF 52%, #2BFF88 90%);color:#333}
+        .action-btn.disabled { pointer-events: none; opacity: 0.5; filter: grayscale(80%); }
+
+        .blue{background-image:linear-gradient(45deg, #0093E9 0%, #80D0C7 100%)}
+        .red{background-image:linear-gradient(45deg, #FBDA61 0%, #FF5ACD 100%)}
+        .green{background-image:linear-gradient(45deg, #85FFBD 0%, #FFFB7D 100%);color:#333}
+        .purple{background-image:linear-gradient(45deg, #FA8BFF 0%, #2BD2FF 52%, #2BFF88 90%);color:#333}
     </style>
 </head>
 <body>
@@ -58,7 +59,7 @@
                     <p>DỰ ÁN KHOA HỌC KỸ THUẬT - ỨNG DỤNG THEO DÕI CHỈ SỐ VẬN ĐỘNG VIÊN</p>
                 </div>
             </div>
-            <a href="#" id="logoutButton" class="logout-btn">Đăng xuất</a>
+            <a href="#" id="logout-btn" class="logout-btn">Đăng xuất</a>
         </header>
 
         <nav class="navbar">
@@ -71,138 +72,52 @@
             <section class="athlete-list-section dashboard-card">
                 <div class="card-header">
                     <h2>Danh sách VĐV</h2>
-                    <!-- ĐÃ THAY ĐỔI: Chuyển thành thẻ <a> để liên kết đến trang mới -->
                     <a href="add-athlete.html" class="add-athlete-btn">+ Thêm VĐV</a>
                 </div>
-                <ul id="athleteList" class="athlete-list">
+                <ul id="athlete-list" class="athlete-list">
                     <!-- Danh sách VĐV sẽ được tải vào đây bằng JavaScript -->
                 </ul>
             </section>
 
-            <section id="detailsSection" class="athlete-details-section dashboard-card" style="display: none;">
-                <div class="card-header">
-                    <h2 id="athleteName">Chọn một vận động viên</h2>
-                </div>
-                <div id="athleteInfo" style="display: none;">
-                    <div class="stats-grid">
-                        <div class="stat-item"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" /></svg><div class="label">Nhịp tim (bpm)</div><div class="value" id="heartRate">--</div></div>
-                        <div class="stat-item"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h8.25a2.25 2.25 0 0 1 2.25 2.25v9a2.25 2.25 0 0 1-2.25-2.25H8.25a2.25 2.25 0 0 1-2.25-2.25v-9a2.25 2.25 0 0 1 2.25-2.25Z" /></svg><div class="label">Oxi trong máu (%)</div><div class="value" id="spo2">--</div></div>
-                        <div class="stat-item"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z" /></svg><div class="label">Huyết áp</div><div class="value" id="bloodPressure">--</div></div>
-                        <div class="stat-item"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z" /></svg><div class="label">Gia tốc (m/s²)</div><div class="value" id="acceleration">--</div></div>
+            <section class="athlete-details-section dashboard-card">
+                 <div class="card-header">
+                    <h2 id="athlete-name-heading">Chi tiết Vận động viên</h2>
+                 </div>
+                 <div id="athlete-details-content">
+                     <div class="stats-grid">
+                        <div class="stat-card">
+                            <h4>Nhịp tim (bpm)</h4>
+                            <p id="stat-heart-rate">--</p>
+                        </div>
+                        <div class="stat-card">
+                            <h4>Oxi trong máu (%)</h4>
+                            <p id="stat-spo2">--</p>
+                        </div>
+                        <div class="stat-card">
+                            <h4>Huyết áp</h4>
+                            <p id="stat-blood-pressure">--</p>
+                        </div>
+                         <div class="stat-card">
+                            <h4>Tuổi</h4>
+                            <p id="stat-age">--</p>
+                        </div>
                     </div>
-                    <div class="action-buttons">
-                        <a href="#" class="action-btn btn-send-exercise"><span>Gửi bài tập</span></a>
-                        <a href="#" class="action-btn btn-view-warnings"><span>Xem cảnh báo</span></a>
-                        <a href="#" class="action-btn btn-chat"><span>Chat với VĐV</span></a>
-                        <a href="#" class="action-btn btn-history"><span>Lịch sử thành tích</span></a>
+                    <div class="actions-grid">
+                        <button class="action-btn blue disabled" id="action-send-exercise">Gửi bài tập</button>
+                        <button class="action-btn red disabled" id="action-view-warnings">Xem cảnh báo</button>
+                        <button class="action-btn green disabled" id="action-chat">Chat với VĐV</button>
+                        <button class="action-btn purple disabled" id="action-history">Lịch sử thành tích</button>
                     </div>
-                </div>
+                 </div>
+                 <div id="athlete-prompt" style="text-align: center; color: #888;">
+                    <p>Chọn một vận động viên từ danh sách để xem chi tiết.</p>
+                 </div>
             </section>
         </main>
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
-        import { getFirestore, collection, query, where, onSnapshot, doc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyCbD3EvA6kzSzZladf8MR9cQBkBaDRkJI_MI",
-            authDomain: "huan-luyen-vien-app.firebaseapp.com",
-            projectId: "huan-luyen-vien-app",
-            storageBucket: "huan-luyen-vien-app.appspot.com",
-            messagingSenderId: "379334059378",
-            appId: "1:379334059378:web:1bceb27ea9f77e26b969eb"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-        const logoutButton = document.getElementById('logoutButton');
-        const athleteListUl = document.getElementById('athleteList');
-        const detailsSection = document.getElementById('detailsSection');
-        const athleteNameH2 = document.getElementById('athleteName');
-        const athleteInfoDiv = document.getElementById('athleteInfo');
-        
-        let unsubscribeSensor;
-
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                initializeDashboard(user);
-            } else {
-                window.location.href = 'login.html';
-            }
-        });
-
-        function initializeDashboard(user) {
-            logoutButton.addEventListener('click', () => {
-                signOut(auth).then(() => {
-                    window.location.href = 'index.html';
-                });
-            });
-            
-            listenForAthletes(user.uid);
-        }
-
-        function listenForAthletes(coachId) {
-            const q = query(collection(db, "athletes"), where("coachId", "==", coachId));
-            onSnapshot(q, (snapshot) => {
-                athleteListUl.innerHTML = '';
-                if (snapshot.empty) {
-                    athleteListUl.innerHTML = '<p style="padding: 12px;">Chưa có VĐV nào.</p>';
-                    return;
-                }
-                snapshot.forEach(doc => {
-                    const athlete = doc.data();
-                    const athleteId = doc.id;
-                    const li = document.createElement('li');
-                    li.className = 'athlete-item';
-                    li.dataset.athleteId = athleteId;
-                    li.innerHTML = `
-                        <div class="athlete-avatar">${athlete.name.charAt(0).toUpperCase()}</div>
-                        <span>${athlete.name}</span>
-                    `;
-                    li.addEventListener('click', () => {
-                        document.querySelectorAll('.athlete-item').forEach(item => item.classList.remove('selected'));
-                        li.classList.add('selected');
-                        displayAthleteDetails(athleteId, athlete);
-                    });
-                    athleteListUl.appendChild(li);
-                });
-            });
-        }
-
-        function displayAthleteDetails(athleteId, athlete) {
-            detailsSection.style.display = 'block';
-            athleteInfoDiv.style.display = 'block';
-            athleteNameH2.textContent = `Chi tiết của ${athlete.name}`;
-
-            if (unsubscribeSensor) {
-                unsubscribeSensor();
-            }
-
-            const sensorDocRef = doc(db, 'sensor_data', athleteId);
-            unsubscribeSensor = onSnapshot(sensorDocRef, (doc) => {
-                const heartRateEl = document.getElementById('heartRate');
-                const spo2El = document.getElementById('spo2');
-                const bloodPressureEl = document.getElementById('bloodPressure');
-                const accelerationEl = document.getElementById('acceleration');
-
-                if (doc.exists()) {
-                    const data = doc.data();
-                    heartRateEl.textContent = data.heart_rate || '--';
-                    spo2El.textContent = data.spo2 || '--';
-                    bloodPressureEl.textContent = data.blood_pressure || '--';
-                    accelerationEl.textContent = data.acceleration || '--';
-                } else {
-                    heartRateEl.textContent = '--';
-                    spo2El.textContent = '--';
-                    bloodPressureEl.textContent = '--';
-                    accelerationEl.textContent = '--';
-                }
-            });
-        }
-    </script>
+    <!-- Quan trọng: Sử dụng type="module" để import/export hoạt động -->
+    <script type="module" src="coach-dashboard.js"></script>
 </body>
 </html>
+
