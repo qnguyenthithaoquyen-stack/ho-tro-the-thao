@@ -1,20 +1,32 @@
-document.addEventListener("DOMContentLoaded", () => {
-    const signupData = JSON.parse(localStorage.getItem("signupData"));
-    const menu = document.getElementById("mainMenu");
+document.addEventListener('DOMContentLoaded', () => {
+    const auth = firebase.auth();
+    const db = firebase.firestore();
 
-    if (signupData && signupData.role) {
-        // Nếu đã login -> thêm menu Bảng điều khiển
-        const dashboardLink = document.createElement("a");
-        dashboardLink.textContent = "Bảng điều khiển";
-        dashboardLink.href = "bangdieukhien.html";
-        dashboardLink.classList.add("active");
-        menu.appendChild(dashboardLink);
-
-        // Redirect sang dashboard tương ứng
-        if (signupData.role === "Huấn luyện viên") {
-            window.location.href = "coach-dashboard.html";
-        } else if (signupData.role === "Vận động viên") {
-            window.location.href = "athlete-dashboard.html";
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            db.collection('users').doc(user.uid).get()
+                .then(doc => {
+                    if (doc.exists) {
+                        const userRole = doc.data().role;
+                        if (userRole === 'coach') {
+                            window.location.replace('coach-dashboard.html');
+                        } else if (userRole === 'athlete') {
+                            window.location.replace('athlete-dashboard.html');
+                        } else {
+                            // Nếu vai trò chưa được đặt, có thể gửi họ đến trang xác nhận
+                            window.location.replace('xacnhan-vaitro.html');
+                        }
+                    } else {
+                        // Nếu không có dữ liệu, gửi đến trang xác nhận
+                        window.location.replace('xacnhan-vaitro.html');
+                    }
+                })
+                .catch(error => {
+                    console.error("Lỗi lấy dữ liệu:", error);
+                    window.location.replace('dangnhap.html');
+                });
+        } else {
+            window.location.replace('dangnhap.html');
         }
-    }
+    });
 });
