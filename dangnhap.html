@@ -210,7 +210,6 @@
 
         <main class="main-content">
             <div class="login-form-container">
-                <!-- ĐÃ SỬA: Đổi ID thành "loginForm" để khớp với file JS -->
                 <form id="loginForm">
                     <h2>Đăng nhập</h2>
                     <div class="form-group">
@@ -221,10 +220,6 @@
                         <label for="password">MẬT KHẨU</label>
                         <input type="password" id="password" name="password" required>
                     </div>
-
-                    <!-- ĐÃ THÊM: Thẻ div để hiển thị thông báo lỗi -->
-                    <div id="error-message" style="color: red; text-align: center; margin-bottom: 15px;"></div>
-
                     <button type="submit" class="submit-btn">Đăng Nhập</button>
                 </form>
                 <div class="signup-link">
@@ -234,10 +229,14 @@
         </main>
     </div>
 
-    <!-- ============================================================== -->
-    <!-- ĐÃ SỬA: Xóa toàn bộ script cũ và chỉ nạp file JS bên ngoài -->
-    <!-- Thêm "type=module" là bước quan trọng nhất -->
-    <!-- ============================================================== -->
-    <script type="module" src="dangnhap.js"></script>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+    <!-- Your Firebase config and login script -->
+    <script src="firebase-config.js"></script>
+    <script src="js/dangnhap.js"></script>
+
 </body>
 </html>
