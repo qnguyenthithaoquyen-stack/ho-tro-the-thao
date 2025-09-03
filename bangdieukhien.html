@@ -1,76 +1,307 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bảng điều khiển</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f3f4f6;
-      margin: 0;
-      padding: 0;
-    }
-    header {
-      background: #008080;
-      color: #fff;
-      padding: 15px 30px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .logo {
-      font-weight: bold;
-      background: #fff;
-      color: #008080;
-      padding: 8px 15px;
-      border-radius: 6px;
-    }
-    nav {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-    }
-    nav a {
-      color: #fff;
-      text-decoration: none;
-      font-weight: 500;
-    }
-    nav a.active {
-      border-bottom: 2px solid #fff;
-      padding-bottom: 3px;
-    }
-    .btn-login {
-      background: #fff;
-      color: #008080;
-      padding: 8px 15px;
-      border-radius: 20px;
-      text-decoration: none;
-      font-weight: bold;
-      transition: 0.25s;
-    }
-    .btn-login:hover {
-      background: #e0e0e0;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Title sẽ được thay đổi bằng JavaScript -->
+    <title>Bảng điều khiển</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            background-color: #f0f2f5;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: #fff;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.07);
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            background-color: #008080;
+            color: #fff;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo {
+            background-color: #fff;
+            color: #008080;
+            font-weight: 700;
+            padding: 10px;
+            border-radius: 5px;
+            margin-right: 15px;
+        }
+
+        .project-info h1 {
+            font-size: 24px;
+            margin: 0;
+            font-weight: 700;
+        }
+
+        .project-info p {
+            font-size: 12px;
+            margin: 0;
+            opacity: 0.9;
+        }
+        
+        /* Đổi tên class để dễ quản lý bằng JS */
+        .auth-btn {
+            background-color: #fff;
+            color: #008080;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 700;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        /* Navigation */
+        .navbar {
+            display: flex;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,.05);
+            padding: 0 30px;
+        }
+
+        .navbar a {
+            padding: 15px 25px;
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            position: relative;
+        }
+        .navbar a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 3px;
+            background-color: #008080;
+            transition: width 0.3s ease;
+        }
+        .navbar a:hover, .navbar a.active {
+            color: #008080;
+        }
+        .navbar a.active::after {
+            width: 70%;
+        }
+
+        /* Giao diện YÊU CẦU ĐĂNG NHẬP */
+        .login-prompt-container {
+            padding: 80px 30px;
+            display: flex; /* Sửa lại thành flex để JS dễ điều khiển */
+            justify-content: center;
+            align-items: center;
+            background-color: #f0f2f5;
+        }
+
+        .login-prompt-card {
+            background-color: #fff;
+            border-radius: 16px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            padding: 60px 80px;
+            text-align: center;
+            max-width: 500px;
+        }
+
+        .login-prompt-card h2 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: #008080;
+        }
+
+        .login-prompt-card p {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #555;
+            margin-bottom: 30px;
+        }
+
+        .action-button {
+            background-color: #008080;
+            color: #fff;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 16px;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s;
+        }
+        
+        .action-button:hover {
+            background-color: #006666;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        /* CSS cho Bảng điều khiển thực tế */
+        .dashboard-container {
+            display: none; /* Mặc định ẩn đi */
+            padding: 30px;
+            background-color: #f0f2f5;
+        }
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+        }
+        .main-column, .sidebar-column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .card {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .card h3 {
+            margin-top: 0;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+    </style>
 </head>
 <body>
-  <header>
-    <div class="logo">LOGO</div>
-    <nav id="mainMenu">
-      <a href="index.html">Trang chủ</a>
-      <a href="gioithieu.html">Giới thiệu</a>
-    </nav>
-    <a href="dangnhap.html" class="btn-login" id="loginBtn">Đăng nhập</a>
-  </header>
 
-  <main>
-    <section style="text-align:center; padding:50px;">
-      <h2>Chào mừng đến hệ thống Hỗ trợ Huấn luyện Thể thao</h2>
-      <p>Vui lòng đăng nhập để sử dụng Bảng điều khiển.</p>
-    </section>
-  </main>
+    <div class="container">
+        <header class="header">
+            <div class="header-left">
+                <div class="logo">LOGO</div>
+                <div class="project-info">
+                    <h1>HỖ TRỢ HUẤN LUYỆN THỂ THAO</h1>
+                    <p>DỰ ÁN KHOA HỌC KỸ THUẬT - ỨNG DỤNG THEO DÕI CHỈ SỐ VẬN ĐỘNG VIÊN</p>
+                </div>
+            </div>
+            <!-- Nút này sẽ đổi thành "Đăng xuất" nếu đã login -->
+            <a href="dangnhap.html" class="auth-btn">Đăng nhập</a>
+        </header>
 
-  <script src="bangdieukhien.js"></script>
+        <nav class="navbar">
+            <a href="index.html">Trang chủ</a>
+            <a href="gioithieu.html">Giới thiệu</a>
+            <a href="bangdieukhien.html" class="active">Bảng điều khiển</a>
+        </nav>
+
+        <!-- Giao diện YÊU CẦU ĐĂNG NHẬP (Mặc định sẽ hiển thị) -->
+        <main class="login-prompt-container" id="login-prompt">
+            <div class="login-prompt-card">
+                <h2>Vui lòng đăng nhập</h2>
+                <p>Bạn cần đăng nhập để xem Bảng điều khiển.</p>
+                <a href="dangnhap.html" class="action-button">Đi đến trang đăng nhập</a>
+            </div>
+        </main>
+
+        <!-- Giao diện BẢNG ĐIỀU KHIỂN THỰC TẾ (Mặc định bị ẩn) -->
+        <main class="dashboard-container" id="dashboard-content">
+            <div class="dashboard-grid">
+                <div class="main-column">
+                    <div class="card">
+                        <h3>Mục tiêu hằng ngày</h3>
+                        <!-- Đây là nội dung giả lập, bạn sẽ thay bằng dữ liệu thật -->
+                        <p><strong>Chạy bền 5km:</strong> Bài tập từ HLV.</p>
+                        <p><strong>Tập sức mạnh thân trên:</strong> Gợi ý từ AI.</p>
+                    </div>
+                     <div class="card">
+                        <h3>Phân tích & Lịch sử</h3>
+                         <!-- Đây là nội dung giả lập -->
+                        <p>Phân tích tư thế</p>
+                        <p>Lịch sử thành tích</p>
+                    </div>
+                </div>
+                <div class="sidebar-column">
+                    <div class="card">
+                        <h3>Thống kê nhanh</h3>
+                        <!-- Đây là nội dung giả lập -->
+                        <p>Tổng quãng đường (tuần): 25.7 km</p>
+                        <p>Tổng quãng đường (hôm nay): 5.2 km</p>
+                        <p>Thời gian tập (tuần): 3 giờ 15 phút</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- SCRIPT KIỂM TRA ĐĂNG NHẬP CỦA FIREBASE -->
+    <script type="module">
+        // Import các hàm cần thiết từ Firebase SDK
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
+        // Đảm bảo đường dẫn đến file cấu hình Firebase của bạn là chính xác
+        import { app } from './firebase-config.js'; 
+
+        const auth = getAuth(app);
+
+        // Lấy các element trên trang
+        const loginPrompt = document.getElementById('login-prompt');
+        const dashboardContent = document.getElementById('dashboard-content');
+        const authBtn = document.querySelector('.auth-btn');
+        const pageTitle = document.querySelector('title');
+
+        // Luôn lắng nghe sự thay đổi trạng thái đăng nhập
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // ---- NGƯỜI DÙNG ĐÃ ĐĂNG NHẬP ----
+                console.log("Đã đăng nhập với user:", user.uid);
+                
+                // Ẩn thông báo và hiện bảng điều khiển
+                loginPrompt.style.display = 'none';
+                dashboardContent.style.display = 'block';
+
+                // Đổi nút "Đăng nhập" thành "Đăng xuất"
+                authBtn.textContent = 'Đăng xuất';
+                authBtn.href = '#'; // Bỏ link đến trang đăng nhập
+                authBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    signOut(auth).then(() => {
+                        console.log('Đăng xuất thành công.');
+                    }).catch((error) => {
+                        console.error('Lỗi đăng xuất:', error);
+                    });
+                });
+                
+                pageTitle.textContent = 'Bảng điều khiển';
+
+            } else {
+                // ---- NGƯỜI DÙNG CHƯA ĐĂNG NHẬP ----
+                console.log("Chưa đăng nhập.");
+
+                // Hiện thông báo và ẩn bảng điều khiển
+                loginPrompt.style.display = 'flex';
+                dashboardContent.style.display = 'none';
+
+                // Đảm bảo nút là "Đăng nhập"
+                authBtn.textContent = 'Đăng nhập';
+                authBtn.href = 'dangnhap.html';
+
+                pageTitle.textContent = 'Bảng điều khiển - Vui lòng đăng nhập';
+            }
+        });
+    </script>
 </body>
 </html>
