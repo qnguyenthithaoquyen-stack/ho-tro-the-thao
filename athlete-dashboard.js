@@ -33,8 +33,11 @@ onAuthStateChanged(auth, async (user) => {
 
         if (docSnap.exists()) {
             const userData = docSnap.data();
-            // Cập nhật tên trên giao diện
+            
+            // Tìm element trong HTML có id là "user-name"
             const userNameElement = document.getElementById('user-name');
+            
+            // Nếu tìm thấy, cập nhật nội dung của nó bằng tên người dùng
             if (userNameElement) {
                 userNameElement.textContent = userData.fullName;
             }
@@ -171,3 +174,4 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
