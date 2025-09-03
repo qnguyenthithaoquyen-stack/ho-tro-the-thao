@@ -6,182 +6,238 @@
     <title>Đăng nhập - Hỗ Trợ Huấn Luyện Thể Thao</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
-        body { font-family: 'Roboto', sans-serif; margin: 0; background-color: #f0f2f5; color: #333; }
-        .container { max-width: 1200px; margin: 0 auto; background-color: #fff; box-shadow: 0 0 15px rgba(0, 0, 0, 0.07); }
-        .header { display: flex; justify-content: space-between; align-items: center; padding: 15px 30px; background-color: #008080; color: #fff; }
-        .header-left { display: flex; align-items: center; }
-        .logo { background-color: #fff; color: #008080; font-weight: 700; padding: 10px; border-radius: 5px; margin-right: 15px; }
-        .project-info h1 { font-size: 24px; margin: 0; font-weight: 700; }
-        .project-info p { font-size: 12px; margin: 0; opacity: 0.9; }
-        .login-btn-header { background-color: #fff; color: #008080; border: none; padding: 10px 20px; border-radius: 20px; cursor: pointer; font-weight: 700; text-decoration: none; font-size: 14px; }
-        .navbar { display: flex; background-color: #fff; box-shadow: 0 2px 4px rgba(0,0,0,.05); padding: 0 30px; }
-        .navbar a { padding: 15px 25px; text-decoration: none; color: #333; font-weight: 500; position: relative; }
-        .main-content { padding: 60px 30px; display: flex; justify-content: center; align-items: center; background-color: #f0f2f5; }
-        .login-form-container { background-color: #fff; border-radius: 16px; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1); padding: 40px; width: 100%; max-width: 400px; }
-        .login-form-container h2 { font-size: 28px; font-weight: 700; color: #008080; text-align: center; margin-top: 0; margin-bottom: 20px; }
-        
-        .auth-tabs { display: flex; border-bottom: 1px solid #ddd; margin-bottom: 20px; }
-        .auth-tab { flex: 1; padding: 10px; text-align: center; cursor: pointer; font-weight: 500; color: #555; border-bottom: 3px solid transparent; }
-        .auth-tab.active { color: #008080; border-bottom-color: #008080; }
 
-        .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; font-size: 14px; font-weight: 500; color: #555; margin-bottom: 8px; }
-        .form-group input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; box-sizing: border-box; }
-        .submit-btn { background-color: #008080; color: #fff; border: none; padding: 14px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 16px; width: 100%; transition: background-color 0.3s; }
-        .form-options { display: flex; justify-content: flex-end; margin-top: 15px; font-size: 14px; }
-        .form-options a { color: #008080; text-decoration: none; }
-        .signup-link { text-align: center; margin-top: 20px; font-size: 14px; color: #555; }
-        .signup-link a { color: #008080; font-weight: 700; text-decoration: none; }
-        .hidden { display: none; }
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            background-color: #f0f2f5;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: #fff;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.07);
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            background-color: #008080;
+            color: #fff;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo {
+            background-color: #fff;
+            color: #008080;
+            font-weight: 700;
+            padding: 10px;
+            border-radius: 5px;
+            margin-right: 15px;
+        }
+
+        .project-info h1 {
+            font-size: 24px;
+            margin: 0;
+            font-weight: 700;
+        }
+
+        .project-info p {
+            font-size: 12px;
+            margin: 0;
+            opacity: 0.9;
+        }
+
+        .login-btn-header {
+            background-color: #fff;
+            color: #008080;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 700;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        /* Navigation */
+        .navbar {
+            display: flex;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,.05);
+            padding: 0 30px;
+        }
+
+        .navbar a {
+            padding: 15px 25px;
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            position: relative;
+        }
+        .navbar a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 3px;
+            background-color: #008080;
+            transition: width 0.3s ease;
+        }
+        .navbar a:hover, .navbar a.active {
+            color: #008080;
+        }
+        .navbar a.active::after {
+            width: 70%;
+        }
+
+
+        /* Main Content */
+        .main-content {
+            padding: 60px 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f0f2f5;
+        }
+
+        .login-form-container {
+            background-color: #fff;
+            border-radius: 16px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .login-form-container h2 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #008080;
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #555;
+            margin-bottom: 8px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box; /* Important for padding */
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #008080;
+            box-shadow: 0 0 0 2px rgba(0, 128, 128, 0.2);
+        }
+
+        .submit-btn {
+            background-color: #008080;
+            color: #fff;
+            border: none;
+            padding: 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 16px;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+        
+        .submit-btn:hover {
+            background-color: #006666;
+        }
+
+        .signup-link {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .signup-link a {
+            color: #008080;
+            font-weight: 700;
+            text-decoration: none;
+        }
     </style>
 </head>
 <body>
+
     <div class="container">
         <header class="header">
-            <div class="header-left"><div class="logo">LOGO</div><div class="project-info"><h1>HỖ TRỢ HUẤN LUYỆN THỂ THAO</h1><p>DỰ ÁN KHOA HỌC KỸ THUẬT</p></div></div>
+            <div class="header-left">
+                <div class="logo">LOGO</div>
+                <div class="project-info">
+                    <h1>HỖ TRỢ HUẤN LUYỆN THỂ THAO</h1>
+                    <p>DỰ ÁN KHOA HỌC KỸ THUẬT - ỨNG DỤNG THEO DÕI CHỈ SỐ VẬN ĐỘNG VIÊN</p>
+                </div>
+            </div>
             <a href="dangnhap.html" class="login-btn-header">Đăng nhập</a>
         </header>
-        <nav class="navbar"><a href="index.html">Trang chủ</a><a href="gioithieu.html">Giới thiệu</a><a href="bangdieukhien.html">Bảng điều khiển</a></nav>
+
+        <nav class="navbar">
+            <a href="index.html">Trang chủ</a>
+            <a href="gioithieu.html">Giới thiệu</a>
+            <a href="bangdieukhien.html">Bảng điều khiển</a>
+        </nav>
+
         <main class="main-content">
             <div class="login-form-container">
-                <h2>Đăng nhập</h2>
-                <div class="auth-tabs">
-                    <div class="auth-tab active" id="email-tab">Email</div>
-                    <div class="auth-tab" id="phone-tab">Số điện thoại</div>
-                </div>
-
-                <!-- Form đăng nhập bằng Email -->
-                <div id="email-login-form">
-                    <form id="loginForm">
-                        <div class="form-group"><label for="email">EMAIL</label><input type="email" id="email" name="email" required></div>
-                        <div class="form-group"><label for="password">MẬT KHẨU</label><input type="password" id="password" name="password" required></div>
-                        <button type="submit" class="submit-btn">Đăng Nhập</button>
-                        <div class="form-options"><a href="quenmatkhau.html">Quên mật khẩu?</a></div>
-                    </form>
-                    <div class="signup-link">Chưa có tài khoản? <a href="dangki.html">Đăng ký bằng Email</a></div>
-                </div>
-
-                <!-- Form đăng nhập bằng SĐT -->
-                <div id="phone-login-form" class="hidden">
-                    <div id="phone-step1">
-                        <form id="phone-form">
-                            <div class="form-group"><label for="phone-number">SỐ ĐIỆN THOẠI</label><input type="tel" id="phone-number" placeholder="+84912345678" required></div>
-                            <button type="submit" class="submit-btn">Gửi mã OTP</button>
-                        </form>
+                <!-- ĐÃ SỬA: Đổi ID thành "loginForm" để khớp với file JS -->
+                <form id="loginForm">
+                    <h2>Đăng nhập</h2>
+                    <div class="form-group">
+                        <label for="email">EMAIL</label>
+                        <input type="email" id="email" name="email" required>
                     </div>
-                    <div id="phone-step2" class="hidden">
-                        <form id="otp-form">
-                            <div class="form-group"><label for="otp-code">MÃ OTP</label><input type="text" id="otp-code" required></div>
-                            <button type="submit" class="submit-btn">Xác nhận</button>
-                        </form>
+                    <div class="form-group">
+                        <label for="password">MẬT KHẨU</label>
+                        <input type="password" id="password" name="password" required>
                     </div>
-                </div>
 
+                    <!-- ĐÃ THÊM: Thẻ div để hiển thị thông báo lỗi -->
+                    <div id="error-message" style="color: red; text-align: center; margin-bottom: 15px;"></div>
+
+                    <button type="submit" class="submit-btn">Đăng Nhập</button>
+                </form>
+                <div class="signup-link">
+                    Chưa có tài khoản? <a href="dangki.html">Đăng ký ngay</a>
+                </div>
             </div>
         </main>
     </div>
-    <div id="recaptcha-container"></div>
 
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyA2dXWCyjL2xgCSyeW9QQ7RvjI_O7kFHJw",
-            authDomain: "sporthealthdata.firebaseapp.com",
-            projectId: "sporthealthdata",
-            storageBucket: "sporthealthdata.appspot.com",
-            messagingSenderId: "789054240877",
-            appId: "1:789054240877:web:04a400c9ea586523a86764",
-            measurementId: "G-ZWS9C7P359"
-        };
-
-        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
-        const auth = firebase.auth();
-
-        // --- Chuyển đổi giữa các Tab ---
-        const emailTab = document.getElementById('email-tab');
-        const phoneTab = document.getElementById('phone-tab');
-        const emailForm = document.getElementById('email-login-form');
-        const phoneFormContainer = document.getElementById('phone-login-form');
-
-        emailTab.addEventListener('click', () => {
-            emailTab.classList.add('active');
-            phoneTab.classList.remove('active');
-            emailForm.classList.remove('hidden');
-            phoneFormContainer.classList.add('hidden');
-        });
-
-        phoneTab.addEventListener('click', () => {
-            phoneTab.classList.add('active');
-            emailTab.classList.remove('active');
-            phoneFormContainer.classList.remove('hidden');
-            emailForm.classList.add('hidden');
-        });
-
-        // --- Xử lý đăng nhập bằng Email ---
-        const loginForm = document.getElementById('loginForm');
-        loginForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = loginForm.email.value.trim();
-            const password = loginForm.password.value;
-            const submitButton = loginForm.querySelector('.submit-btn');
-            submitButton.disabled = true;
-            submitButton.textContent = 'Đang xử lý...';
-            try {
-                await auth.signInWithEmailAndPassword(email, password);
-                // === ĐÃ SỬA: BỎ ALERT VÀ CHUYỂN TRANG TRỰC TIẾP ===
-                window.location.href = 'bangdieukhien.html';
-            } catch (error) {
-                console.error("Lỗi đăng nhập:", error.code);
-                let errorMessage = 'Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.';
-                if (error.code === 'auth/user-not-found') {
-                    errorMessage = 'Không tìm thấy tài khoản nào với email này. Vui lòng đăng ký.';
-                } else if (error.code === 'auth/wrong-password') {
-                    errorMessage = 'Mật khẩu không chính xác. Vui lòng thử lại.';
-                } else if (error.code === 'auth/too-many-requests') {
-                    errorMessage = 'Tài khoản đã bị tạm khóa do có quá nhiều lần thử. Vui lòng thử lại sau.';
-                }
-                alert(errorMessage);
-            } finally {
-                submitButton.disabled = false;
-                submitButton.textContent = 'Đăng Nhập';
-            }
-        });
-
-        // --- Xử lý đăng nhập bằng SĐT ---
-        const phoneStep1 = document.getElementById('phone-step1');
-        const phoneStep2 = document.getElementById('phone-step2');
-        const phoneForm = document.getElementById('phone-form');
-        const otpForm = document.getElementById('otp-form');
-
-        window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', { 'size': 'invisible' });
-
-        phoneForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const phoneNumber = document.getElementById('phone-number').value;
-            const appVerifier = window.recaptchaVerifier;
-            auth.signInWithPhoneNumber(phoneNumber, appVerifier)
-                .then((confirmationResult) => {
-                    window.confirmationResult = confirmationResult;
-                    alert('Đã gửi mã OTP!');
-                    phoneStep1.classList.add('hidden');
-                    phoneStep2.classList.remove('hidden');
-                }).catch((error) => {
-                    alert("Lỗi: " + error.message);
-                    recaptchaVerifier.render().then(widgetId => grecaptcha.reset(widgetId));
-                });
-        });
-
-        otpForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const code = document.getElementById('otp-code').value;
-            window.confirmationResult.confirm(code).then((result) => {
-                // === ĐÃ SỬA: BỎ ALERT VÀ CHUYỂN TRANG TRỰC TIẾP ===
-                window.location.href = 'bangdieukhien.html';
-            }).catch((error) => {
-                alert("Mã OTP không chính xác.");
-            });
-        });
-    </script>
+    <!-- ============================================================== -->
+    <!-- ĐÃ SỬA: Xóa toàn bộ script cũ và chỉ nạp file JS bên ngoài -->
+    <!-- Thêm "type=module" là bước quan trọng nhất -->
+    <!-- ============================================================== -->
+    <script type="module" src="dangnhap.js"></script>
 </body>
 </html>
