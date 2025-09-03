@@ -19,57 +19,68 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// Lắng nghe sự kiện khi toàn bộ nội dung trang đã được tải
+
 document.addEventListener('DOMContentLoaded', () => {
     const signupForm = document.getElementById('signupForm');
+    const submitButton = signupForm.querySelector('.submit-btn');
 
     if (signupForm) {
         signupForm.addEventListener('submit', async (event) => {
-            event.preventDefault(); // Ngăn form tự gửi đi
+            event.preventDefault();
 
-            // Lấy dữ liệu từ form
             const fullName = document.getElementById('fullName').value;
+            const username = document.getElementById('username').value;
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
+            const age = document.getElementById('age').value;
+            const city = document.getElementById('city').value;
             const role = document.getElementById('role').value;
-            const submitButton = signupForm.querySelector('.submit-btn');
 
-            // Vô hiệu hóa nút bấm để tránh người dùng nhấn nhiều lần
+            // Kiểm tra các trường trống
+            if (!fullName || !username || !email || !password || !age || !city || !role) {
+                alert('Vui lòng điền đầy đủ tất cả các trường.');
+                return;
+            }
+
             submitButton.disabled = true;
             submitButton.textContent = 'Đang xử lý...';
 
             try {
-                // 1. Tạo người dùng mới bằng Firebase Authentication
+                // 1. Tạo người dùng trong Firebase Authentication
                 const userCredential = await createUserWithEmailAndPassword(auth, email, password);
                 const user = userCredential.user;
 
-                // 2. SỬA LỖI QUAN TRỌNG: Sử dụng setDoc để tạo hoặc GHI ĐÈ dữ liệu trong Firestore
-                // Điều này đảm bảo rằng nếu người dùng đăng ký lại, thông tin sẽ được cập nhật.
+                // 2. Lưu thông tin bổ sung vào Firestore
+                // Sử dụng setDoc để tạo mới hoặc ghi đè nếu tài liệu đã tồn tại
                 await setDoc(doc(db, "users", user.uid), {
                     fullName: fullName,
+                    username: username,
                     email: email,
+                    age: age,
+                    city: city,
                     role: role
                 });
-                
-                // 3. Lưu vai trò vào localStorage để trang xác nhận có thể sử dụng
-                localStorage.setItem('userRole', role);
 
-                // 4. Thông báo và chuyển hướng
-                alert('Đăng ký tài khoản thành công!');
-                window.location.href = 'xacnhan-vaitro.html';
+                alert('Đăng ký thành công!');
+
+                // 3. Chuyển hướng trực tiếp đến trang tổng quan phù hợp
+                if (role === 'coach') {
+                    window.location.href = 'coach-dashboard.html';
+                } else {
+                    window.location.href = 'athlete-dashboard.html';
+                }
 
             } catch (error) {
-                // Xử lý các lỗi thường gặp
-                console.error("Lỗi đăng ký:", error.message);
+                console.error("Lỗi đăng ký: ", error);
+                // Cung cấp thông báo lỗi thân thiện hơn
                 if (error.code === 'auth/email-already-in-use') {
-                    alert('Lỗi: Email này đã được sử dụng. Vui lòng chọn email khác.');
+                    alert('Lỗi: Email này đã được sử dụng. Vui lòng chọn một email khác.');
                 } else if (error.code === 'auth/weak-password') {
-                    alert('Lỗi: Mật khẩu quá yếu. Vui lòng chọn mật khẩu mạnh hơn (ít nhất 6 ký tự).');
+                    alert('Lỗi: Mật khẩu phải có ít nhất 6 ký tự.');
                 } else {
-                    alert('Đã xảy ra lỗi trong quá trình đăng ký. Vui lòng thử lại.');
+                    alert('Đã có lỗi xảy ra trong quá trình đăng ký. Vui lòng thử lại.');
                 }
             } finally {
-                // Kích hoạt lại nút bấm sau khi xử lý xong
                 submitButton.disabled = false;
                 submitButton.textContent = 'Đăng Ký';
             }
