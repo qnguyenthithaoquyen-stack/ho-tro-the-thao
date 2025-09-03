@@ -27,6 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             const fullName = document.getElementById('fullName').value;
+            const role = document.getElementById('role').value; // Lấy vai trò người dùng chọn
 
             // Kiểm tra các trường có trống không
             if (!email || !password || !fullName) {
@@ -41,10 +42,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Đăng ký thành công
                 const user = userCredential.user;
                 console.log('Đăng ký thành công:', user);
-                alert('Đăng ký tài khoản thành công! Bạn sẽ được chuyển đến trang đăng nhập.');
+                
+                // Lưu vai trò vào localStorage để trang sau có thể sử dụng
+                localStorage.setItem('userRole', role);
 
-                // Chuyển hướng người dùng đến trang đăng nhập
-                window.location.href = 'dangnhap.html';
+                alert('Đăng ký tài khoản thành công! Bạn sẽ được chuyển đến trang xác nhận vai trò.');
+
+                // Chuyển hướng người dùng đến trang xác nhận vai trò
+                window.location.href = 'xacnhan-vaitro.html';
 
             } catch (error) {
                 // Xử lý lỗi từ Firebase
@@ -64,3 +69,4 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
