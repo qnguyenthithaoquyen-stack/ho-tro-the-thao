@@ -1,6 +1,8 @@
-// Import các hàm cần thiết từ Firebase SDK (sử dụng URL CDN cho ES Modules)
+// Import các hàm cần thiết từ Firebase SDK
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+// THÊM: Import Firestore để lưu dữ liệu người dùng
+import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
 // Cấu hình Firebase của bạn
 const firebaseConfig = {
@@ -16,48 +18,50 @@ const firebaseConfig = {
 // Khởi tạo Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const db = getFirestore(app); // THÊM: Khởi tạo Firestore
 
 document.addEventListener('DOMContentLoaded', () => {
     const signupForm = document.getElementById('signupForm');
 
     if (signupForm) {
         signupForm.addEventListener('submit', async (event) => {
-            event.preventDefault(); // Ngăn form tự gửi đi
+            event.preventDefault(); 
 
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             const fullName = document.getElementById('fullName').value;
-            const role = document.getElementById('role').value; // Lấy vai trò người dùng chọn
+            const role = document.getElementById('role').value; 
 
-            // Kiểm tra các trường có trống không
             if (!email || !password || !fullName) {
                 alert('Vui lòng điền đầy đủ các trường bắt buộc.');
                 return;
             }
             
             try {
-                // Sử dụng Firebase Auth để tạo người dùng mới
+                // Bước 1: Tạo người dùng trong Firebase Authentication
                 const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                
-                // Đăng ký thành công
                 const user = userCredential.user;
-                console.log('Đăng ký thành công:', user);
-                
-                // Lưu vai trò vào localStorage để trang sau có thể sử dụng
-                localStorage.setItem('userRole', role);
+                console.log('Tạo tài khoản Auth thành công:', user);
+
+                // Bước 2: THÊM - Lưu thông tin người dùng (bao gồm vai trò) vào Firestore
+                // Chúng ta sẽ dùng UID (ID người dùng) làm key cho document
+                await setDoc(doc(db, "users", user.uid), {
+                    uid: user.uid,
+                    fullName: fullName,
+                    email: email,
+                    role: role
+                });
+                console.log('Lưu thông tin người dùng vào Firestore thành công');
 
                 alert('Đăng ký tài khoản thành công! Bạn sẽ được chuyển đến trang xác nhận vai trò.');
 
-                // Chuyển hướng người dùng đến trang xác nhận vai trò
                 window.location.href = 'xacnhan-vaitro.html';
 
             } catch (error) {
-                // Xử lý lỗi từ Firebase
                 const errorCode = error.code;
                 const errorMessage = error.message;
                 console.error('Lỗi đăng ký:', errorCode, errorMessage);
                 
-                // Hiển thị thông báo lỗi thân thiện hơn cho người dùng
                 if (errorCode === 'auth/email-already-in-use') {
                     alert('Lỗi: Email này đã được sử dụng.');
                 } else if (errorCode === 'auth/weak-password') {
