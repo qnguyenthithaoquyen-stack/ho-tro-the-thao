@@ -36,7 +36,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const city = document.getElementById('city').value;
             const role = document.getElementById('role').value;
 
-            // Kiểm tra các trường trống
             if (!fullName || !username || !email || !password || !age || !city || !role) {
                 alert('Vui lòng điền đầy đủ tất cả các trường.');
                 return;
@@ -46,12 +45,9 @@ document.addEventListener('DOMContentLoaded', () => {
             submitButton.textContent = 'Đang xử lý...';
 
             try {
-                // 1. Tạo người dùng trong Firebase Authentication
                 const userCredential = await createUserWithEmailAndPassword(auth, email, password);
                 const user = userCredential.user;
 
-                // 2. Lưu thông tin bổ sung vào Firestore
-                // Sử dụng setDoc để tạo mới hoặc ghi đè nếu tài liệu đã tồn tại
                 await setDoc(doc(db, "users", user.uid), {
                     fullName: fullName,
                     username: username,
@@ -63,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 alert('Đăng ký thành công!');
 
-                // 3. Chuyển hướng trực tiếp đến trang tổng quan phù hợp
+                // Logic chuyển hướng dứt điểm
                 if (role === 'coach') {
                     window.location.href = 'coach-dashboard.html';
                 } else {
@@ -72,13 +68,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             } catch (error) {
                 console.error("Lỗi đăng ký: ", error);
-                // Cung cấp thông báo lỗi thân thiện hơn
                 if (error.code === 'auth/email-already-in-use') {
-                    alert('Lỗi: Email này đã được sử dụng. Vui lòng chọn một email khác.');
+                    alert('Lỗi: Email này đã được sử dụng.');
                 } else if (error.code === 'auth/weak-password') {
                     alert('Lỗi: Mật khẩu phải có ít nhất 6 ký tự.');
                 } else {
-                    alert('Đã có lỗi xảy ra trong quá trình đăng ký. Vui lòng thử lại.');
+                    alert('Đã có lỗi xảy ra khi đăng ký.');
                 }
             } finally {
                 submitButton.disabled = false;
