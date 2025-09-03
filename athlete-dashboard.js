@@ -39,6 +39,7 @@ onAuthStateChanged(auth, async (user) => {
             
             // Nếu tìm thấy, cập nhật nội dung của nó bằng tên người dùng
             if (userNameElement) {
+                // SỬA LỖI: Thay đổi "userData.fullname" thành "userData.fullName"
                 userNameElement.textContent = userData.fullName;
             }
         } else {
