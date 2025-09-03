@@ -1,67 +1,66 @@
-document.addEventListener('DOMContentLoaded', () => {
-    // Khởi tạo các dịch vụ Firebase
-    const auth = firebase.auth();
-    const db = firebase.firestore();
+// Import các hàm cần thiết từ Firebase SDK (sử dụng URL CDN cho ES Modules)
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
 
+// Cấu hình Firebase của bạn
+const firebaseConfig = {
+  apiKey: "AIzaSyA2dXWCyjL2xgCSyeW9QQ7RvjI_O7kFHJw",
+  authDomain: "sporthealthdata.firebaseapp.com",
+  projectId: "sporthealthdata",
+  storageBucket: "sporthealthdata.appspot.com",
+  messagingSenderId: "789054240877",
+  appId: "1:789054240877:web:04a400c9ea586523a86764",
+  measurementId: "G-ZWS9C7P359"
+};
+
+// Khởi tạo Firebase
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+document.addEventListener('DOMContentLoaded', () => {
     const signupForm = document.getElementById('signupForm');
 
     if (signupForm) {
-        signupForm.addEventListener('submit', (event) => {
+        signupForm.addEventListener('submit', async (event) => {
             event.preventDefault(); // Ngăn form tự gửi đi
 
-            // Lấy tất cả dữ liệu từ form
-            const fullName = signupForm.fullName.value;
-            const username = signupForm.username.value;
-            const email = signupForm.email.value;
-            const password = signupForm.password.value;
-            const age = signupForm.age.value;
-            const city = signupForm.city.value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const fullName = document.getElementById('fullName').value;
 
-            // Kiểm tra dữ liệu đầu vào
-            if (!fullName || !username || !email || !password || !age || !city) {
-                alert('Vui lòng điền đầy đủ tất cả các trường.');
+            // Kiểm tra các trường có trống không
+            if (!email || !password || !fullName) {
+                alert('Vui lòng điền đầy đủ các trường bắt buộc.');
                 return;
             }
-            if (password.length < 6) {
-                alert('Mật khẩu phải có ít nhất 6 ký tự.');
-                return;
+            
+            try {
+                // Sử dụng Firebase Auth để tạo người dùng mới
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                
+                // Đăng ký thành công
+                const user = userCredential.user;
+                console.log('Đăng ký thành công:', user);
+                alert('Đăng ký tài khoản thành công! Bạn sẽ được chuyển đến trang đăng nhập.');
+
+                // Chuyển hướng người dùng đến trang đăng nhập
+                window.location.href = 'dangnhap.html';
+
+            } catch (error) {
+                // Xử lý lỗi từ Firebase
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                console.error('Lỗi đăng ký:', errorCode, errorMessage);
+                
+                // Hiển thị thông báo lỗi thân thiện hơn cho người dùng
+                if (errorCode === 'auth/email-already-in-use') {
+                    alert('Lỗi: Email này đã được sử dụng.');
+                } else if (errorCode === 'auth/weak-password') {
+                    alert('Lỗi: Mật khẩu quá yếu. Mật khẩu phải có ít nhất 6 ký tự.');
+                } else {
+                    alert(`Đã xảy ra lỗi: ${errorMessage}`);
+                }
             }
-
-            const submitButton = signupForm.querySelector('.submit-btn');
-            submitButton.disabled = true;
-            submitButton.textContent = 'Đang xử lý...';
-
-            // Bước 1: Tạo tài khoản người dùng với email và mật khẩu
-            auth.createUserWithEmailAndPassword(email, password)
-                .then(userCredential => {
-                    const user = userCredential.user;
-                    console.log('Tạo tài khoản thành công:', user.uid);
-
-                    // Bước 2: Lưu các thông tin bổ sung (không bao gồm vai trò) vào Firestore
-                    return db.collection('users').doc(user.uid).set({
-                        fullName: fullName,
-                        username: username,
-                        email: email,
-                        age: age,
-                        city: city,
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-                })
-                .then(() => {
-                    console.log('Đã lưu thông tin ban đầu. Chuyển đến trang xác nhận vai trò.');
-                    
-                    // Bước 3: Chuyển hướng đến trang xác nhận vai trò
-                    alert('Đăng ký thành công! Vui lòng xác nhận vai trò của bạn.');
-                    window.location.href = 'xacnhan-vaitro.html';
-                })
-                .catch(error => {
-                    console.error("Lỗi đăng ký:", error.message);
-                    alert(`Đăng ký thất bại: ${error.message}`);
-                    
-                    submitButton.disabled = false;
-                    submitButton.textContent = 'Đăng Ký';
-                });
         });
     }
 });
-
