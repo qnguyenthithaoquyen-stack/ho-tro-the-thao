@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     // Khởi tạo các dịch vụ Firebase
     const auth = firebase.auth();
-    const db = firebase.firestore(); // Khởi tạo Firestore
+    const db = firebase.firestore();
 
     const signupForm = document.getElementById('signupForm');
 
@@ -16,7 +16,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const password = signupForm.password.value;
             const age = signupForm.age.value;
             const city = signupForm.city.value;
-            // Trường 'role' từ form này sẽ không được sử dụng nữa
 
             // Kiểm tra dữ liệu đầu vào
             if (!fullName || !username || !email || !password || !age || !city) {
@@ -45,7 +44,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         email: email,
                         age: age,
                         city: city,
-                        // Vai trò sẽ được thêm ở trang xác nhận
                         createdAt: firebase.firestore.FieldValue.serverTimestamp()
                     });
                 })
