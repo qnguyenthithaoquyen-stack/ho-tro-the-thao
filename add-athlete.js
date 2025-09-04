@@ -21,7 +21,6 @@ const db = getFirestore(app);
 
 // Bọc toàn bộ mã trong DOMContentLoaded để đảm bảo HTML đã sẵn sàng
 document.addEventListener('DOMContentLoaded', () => {
-
     // Lấy các phần tử HTML
     const emailInput = document.getElementById('athlete-email');
     const searchButton = document.getElementById('search-btn');
@@ -54,78 +53,90 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Xử lý sự kiện cho nút Đăng xuất
-    logoutButton.addEventListener('click', (e) => {
-        e.preventDefault();
-        signOut(auth).catch(error => console.error("Lỗi khi đăng xuất:", error));
-    });
+    if(logoutButton) {
+        logoutButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            signOut(auth).catch(error => console.error("Lỗi khi đăng xuất:", error));
+        });
+    }
 
     // Xử lý sự kiện cho nút Tìm kiếm
-    searchButton.addEventListener('click', async () => {
-        const email = emailInput.value.trim();
-        if (!email) {
-            showMessage('Vui lòng nhập email.', 'error');
-            return;
-        }
-        
-        resultContainer.style.display = 'none';
-        addButton.disabled = true;
-        foundAthleteId = null;
-
-        try {
-            const q = query(collection(db, "users"), where("email", "==", email), where("role", "==", "athlete"));
-            const querySnapshot = await getDocs(q);
-
-            if (querySnapshot.empty) {
-                showMessage('Không tìm thấy VĐV nào với email này hoặc người dùng không phải là VĐV.', 'error');
-            } else {
-                const athleteDoc = querySnapshot.docs[0];
-                const athleteData = athleteDoc.data();
-                foundAthleteId = athleteDoc.id;
-
-                athleteNameSpan.textContent = athleteData.fullName;
-                athleteAgeSpan.textContent = athleteData.age;
-                
-                resultContainer.style.display = 'block';
-                addButton.disabled = false;
-                showMessage('Đã tìm thấy VĐV!', 'success');
+    if(searchButton) {
+        searchButton.addEventListener('click', async () => {
+            const email = emailInput.value.trim();
+            if (!email) {
+                showMessage('Vui lòng nhập email.', 'error');
+                return;
             }
-        } catch (error) {
-            console.error("Lỗi khi tìm kiếm:", error);
-            showMessage('Đã xảy ra lỗi khi tìm kiếm. Vui lòng kiểm tra Console (F12) để xem chi tiết.', 'error');
-        }
-    });
+            
+            resultContainer.style.display = 'none';
+            addButton.disabled = true;
+            foundAthleteId = null;
+
+            try {
+                // Tạo truy vấn phức hợp để tìm user có email và vai trò athlete
+                const q = query(collection(db, "users"), where("email", "==", email), where("role", "==", "athlete"));
+                const querySnapshot = await getDocs(q);
+
+                if (querySnapshot.empty) {
+                    showMessage('Không tìm thấy VĐV nào với email này hoặc người dùng không phải là VĐV.', 'error');
+                } else {
+                    const athleteDoc = querySnapshot.docs[0];
+                    const athleteData = athleteDoc.data();
+                    foundAthleteId = athleteDoc.id;
+
+                    athleteNameSpan.textContent = athleteData.fullName;
+                    
+                    if (athleteData.age) {
+                        athleteAgeSpan.textContent = athleteData.age;
+                    } else {
+                        athleteAgeSpan.textContent = 'Chưa cập nhật';
+                    }
+                    
+                    resultContainer.style.display = 'block';
+                    addButton.disabled = false;
+                    showMessage('Đã tìm thấy VĐV!', 'success');
+                }
+            } catch (error) {
+                console.error("Lỗi khi tìm kiếm:", error);
+                showMessage('Đã xảy ra lỗi khi tìm kiếm. Vui lòng kiểm tra Console (F12) để tạo chỉ mục nếu cần.', 'error');
+            }
+        });
+    }
 
     // Xử lý sự kiện cho nút "Thêm vào danh sách"
-    addButton.addEventListener('click', async () => {
-        if (!foundAthleteId || !currentCoachId) {
-            showMessage('Không có thông tin VĐV hoặc HLV để thực hiện.', 'error');
-            return;
-        }
+    if(addButton) {
+        addButton.addEventListener('click', async () => {
+            if (!foundAthleteId || !currentCoachId) {
+                showMessage('Không có thông tin VĐV hoặc HLV để thực hiện.', 'error');
+                return;
+            }
 
-        try {
-            // Tạo một tham chiếu đến tài liệu VĐV trong bộ sưu tập con của HLV
-            const managedAthleteRef = doc(db, 'users', currentCoachId, 'managed_athletes', foundAthleteId);
-            
-            // Ghi dữ liệu vào tài liệu đó
-            await setDoc(managedAthleteRef, { 
-                name: athleteNameSpan.textContent, 
-                addedAt: new Date() 
-            }); 
+            try {
+                // Tạo một tham chiếu đến tài liệu VĐV trong bộ sưu tập con của HLV
+                const managedAthleteRef = doc(db, 'users', currentCoachId, 'managed_athletes', foundAthleteId);
+                
+                // Ghi dữ liệu của VĐV vào đó
+                await setDoc(managedAthleteRef, { 
+                    name: athleteNameSpan.textContent, 
+                    addedAt: new Date() 
+                }); 
 
-            showMessage(`Đã thêm VĐV ${athleteNameSpan.textContent} vào danh sách quản lý.`, 'success');
-            addButton.disabled = true;
-            addButton.textContent = 'Đã thêm';
-            
-            // Tự động chuyển về trang tổng quan sau 2 giây
-            setTimeout(() => {
-                window.location.href = 'coach-dashboard.html';
-            }, 2000);
+                showMessage(`Đã thêm VĐV ${athleteNameSpan.textContent} vào danh sách quản lý.`, 'success');
+                addButton.disabled = true;
+                addButton.textContent = 'Đã thêm';
+                
+                // Tự động quay về trang tổng quan sau 2 giây
+                setTimeout(() => {
+                    window.location.href = 'coach-dashboard.html';
+                }, 2000);
 
-        } catch (error) {
-            console.error("Lỗi khi thêm VĐV:", error);
-            showMessage('Đã xảy ra lỗi khi thêm VĐV.', 'error');
-        }
-    });
+            } catch (error) {
+                console.error("Lỗi khi thêm VĐV:", error);
+                showMessage('Đã xảy ra lỗi khi thêm VĐV.', 'error');
+            }
+        });
+    }
 
     // Hàm trợ giúp để hiển thị thông báo
     function showMessage(text, type) {
