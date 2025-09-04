@@ -1,7 +1,7 @@
 // Import các hàm cần thiết từ Firebase SDK
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, collection, addDoc, query, where, getDocs, limit } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+import { getFirestore, collection, query, where, getDocs, doc, setDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
 // Cấu hình Firebase của bạn
 const firebaseConfig = {
@@ -19,131 +19,105 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-let currentCoach = null;
-let foundAthlete = null; // Biến để lưu thông tin VĐV tìm thấy
-
-// === Lấy các elements từ HTML ===
-const emailInput = document.getElementById('athlete-email');
+// Lấy các phần tử HTML
 const searchBtn = document.getElementById('search-btn');
-const searchResultDiv = document.getElementById('search-result');
-const resultNameSpan = document.getElementById('result-name');
-const resultAgeSpan = document.getElementById('result-age');
-const addBtn = document.getElementById('add-btn');
-const logoutButton = document.getElementById('logout-btn');
+const addToListBtn = document.getElementById('add-to-list-btn');
+const resultContainer = document.getElementById('result-container');
+const messageContainer = document.getElementById('message-container');
+let foundAthlete = null; // Biến lưu thông tin VĐV tìm được
+let currentCoachId = null;
 
-// === HÀNG RÀO XÁC THỰC: Chỉ HLV mới được vào trang này ===
-onAuthStateChanged(auth, async (user) => {
+// Hàng rào xác thực
+onAuthStateChanged(auth, (user) => {
     if (user) {
-        const docRef = doc(db, "users", user.uid);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists() && docSnap.data().role === 'coach') {
-            currentCoach = user; // Lưu lại thông tin HLV
-        } else {
-            // Nếu không phải HLV, đuổi về trang đăng nhập
-            alert('Bạn không có quyền truy cập trang này.');
-            window.location.href = 'dangnhap.html';
-        }
+        currentCoachId = user.uid;
     } else {
-        // Nếu chưa đăng nhập, đuổi về trang đăng nhập
         window.location.href = 'dangnhap.html';
     }
 });
 
-// === CHỨC NĂNG NÚT TÌM KIẾM ===
+// Chức năng tìm kiếm VĐV
 searchBtn.addEventListener('click', async () => {
-    const emailToSearch = emailInput.value.trim();
-    if (!emailToSearch) {
-        alert("Vui lòng nhập email của VĐV.");
+    const email = document.getElementById('athleteEmail').value.trim();
+    if (!email) {
+        showMessage('Vui lòng nhập email.', 'error');
         return;
     }
 
-    // Reset lại giao diện mỗi khi tìm kiếm
-    searchResultDiv.classList.add('hidden');
-    addBtn.disabled = true;
-    foundAthlete = null;
-    searchBtn.disabled = true;
-    searchBtn.textContent = 'Đang tìm...';
+    resetState();
 
     try {
-        // Tạo câu lệnh truy vấn Firestore
-        const q = query(
-            collection(db, "users"), 
-            where("email", "==", emailToSearch), // Tìm theo email
-            where("role", "==", "athlete"),    // Chỉ tìm người có vai trò là VĐV
-            limit(1)                           // Chỉ cần 1 kết quả là đủ
-        );
-
+        // Tạo truy vấn để tìm người dùng có email và vai trò là 'athlete'
+        const usersRef = collection(db, 'users');
+        const q = query(usersRef, where("email", "==", email), where("role", "==", "athlete"));
         const querySnapshot = await getDocs(q);
 
         if (querySnapshot.empty) {
-            // Nếu không tìm thấy
-            alert("Không tìm thấy VĐV nào có email này hoặc người dùng không phải là VĐV.");
+            showMessage('Không tìm thấy VĐV với email này.', 'error');
         } else {
-            // Nếu tìm thấy
+            // Lấy thông tin VĐV
             const athleteDoc = querySnapshot.docs[0];
-            foundAthlete = {
-                uid: athleteDoc.id,
-                ...athleteDoc.data()
-            };
-            
-            // Hiển thị thông tin tìm được ra màn hình
-            resultNameSpan.textContent = foundAthlete.fullName;
-            resultAgeSpan.textContent = foundAthlete.age;
-            searchResultDiv.classList.remove('hidden');
+            foundAthlete = { id: athleteDoc.id, ...athleteDoc.data() };
 
-            // Kích hoạt nút "Thêm vào danh sách"
-            addBtn.disabled = false;
+            // Hiển thị thông tin và kích hoạt nút "Thêm"
+            document.getElementById('result-name').textContent = foundAthlete.fullName;
+            document.getElementById('result-age').textContent = foundAthlete.age;
+            resultContainer.style.display = 'block';
+            addToListBtn.disabled = false;
+            showMessage('Đã tìm thấy VĐV!', 'success');
         }
     } catch (error) {
         console.error("Lỗi khi tìm kiếm VĐV:", error);
-        alert("Đã có lỗi xảy ra trong quá trình tìm kiếm.");
-    } finally {
-        // Khôi phục lại trạng thái nút tìm kiếm
-        searchBtn.disabled = false;
-        searchBtn.textContent = 'Tìm kiếm';
+        showMessage('Đã xảy ra lỗi khi tìm kiếm.', 'error');
     }
 });
 
-// === CHỨC NĂNG NÚT THÊM VÀO DANH SÁCH ===
-addBtn.addEventListener('click', async () => {
-    if (!currentCoach || !foundAthlete) {
-        alert("Không thể thực hiện. Vui lòng tìm kiếm VĐV trước.");
-        return;
-    }
-
-    addBtn.disabled = true;
-    addBtn.textContent = 'Đang thêm...';
+// Chức năng thêm VĐV vào danh sách của HLV
+addToListBtn.addEventListener('click', async () => {
+    if (!foundAthlete || !currentCoachId) return;
 
     try {
-        const coachId = currentCoach.uid;
-        // Tạo một document mới trong sub-collection "athletes" của HLV
-        const athletesCollectionRef = collection(db, 'users', coachId, 'athletes');
+        // Tạo một document trong subcollection 'managed_athletes' của HLV
+        // ID của document này chính là ID của VĐV
+        const coachAthleteRef = doc(db, 'users', currentCoachId, 'managed_athletes', foundAthlete.id);
+        
+        // setDoc chỉ cần tạo document rỗng để lưu liên kết
+        await setDoc(coachAthleteRef, { addedAt: new Date() });
 
-        // Sao chép thông tin VĐV tìm được vào danh sách của HLV
-        await addDoc(athletesCollectionRef, {
-            fullName: foundAthlete.fullName,
-            age: foundAthlete.age,
-            sport: foundAthlete.sport || "Chưa xác định",
-            athleteUid: foundAthlete.uid 
-        });
+        showMessage('Đã thêm VĐV vào danh sách thành công!', 'success');
+        addToListBtn.disabled = true;
 
-        alert(`Đã thêm thành công VĐV ${foundAthlete.fullName} vào danh sách của bạn!`);
-        window.location.href = 'coach-dashboard.html'; // Chuyển về trang tổng quan
+        // Tự động chuyển về trang tổng quan sau 2 giây
+        setTimeout(() => {
+            window.location.href = 'coach-dashboard.html';
+        }, 2000);
 
     } catch (error) {
-        console.error("Lỗi khi thêm VĐV vào danh sách:", error);
-        alert("Đã xảy ra lỗi. Vui lòng thử lại.");
-        addBtn.disabled = false;
-        addBtn.textContent = 'Thêm vào danh sách';
+        console.error("Lỗi khi thêm VĐV:", error);
+        showMessage('Đã xảy ra lỗi khi thêm VĐV.', 'error');
     }
 });
 
 
-// === CHỨC NĂNG NÚT ĐĂNG XUẤT ===
-if (logoutButton) {
+// Hàm hiển thị thông báo
+function showMessage(msg, type) {
+    messageContainer.innerHTML = `<p class="message ${type}">${msg}</p>`;
+}
+
+// Hàm reset trạng thái giao diện
+function resetState() {
+    foundAthlete = null;
+    resultContainer.style.display = 'none';
+    addToListBtn.disabled = true;
+    messageContainer.innerHTML = '';
+}
+
+// Chức năng đăng xuất chung
+const logoutButton = document.getElementById('logout-btn');
+if(logoutButton) {
     logoutButton.addEventListener('click', (e) => {
         e.preventDefault();
-        signOut(auth).catch((error) => console.error('Lỗi khi đăng xuất:', error));
+        signOut(auth).catch(error => console.error("Lỗi khi đăng xuất:", error));
     });
 }
 
