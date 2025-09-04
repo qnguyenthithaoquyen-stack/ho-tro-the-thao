@@ -21,7 +21,6 @@
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.07);
         }
 
-        /* Header */
         .header {
             display: flex;
             justify-content: space-between;
@@ -31,10 +30,7 @@
             color: #fff;
         }
 
-        .header-left {
-            display: flex;
-            align-items: center;
-        }
+        .header-left { display: flex; align-items: center; }
 
         .logo {
             background-color: #fff;
@@ -45,31 +41,9 @@
             margin-right: 15px;
         }
 
-        .project-info h1 {
-            font-size: 24px;
-            margin: 0;
-            font-weight: 700;
-        }
+        .project-info h1 { font-size: 24px; margin: 0; font-weight: 700; }
+        .project-info p { font-size: 12px; margin: 0; opacity: 0.9; }
 
-        .project-info p {
-            font-size: 12px;
-            margin: 0;
-            opacity: 0.9;
-        }
-
-        .login-btn-header {
-            background-color: #fff;
-            color: #008080;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-weight: 700;
-            text-decoration: none;
-            font-size: 14px;
-        }
-
-        /* Navigation */
         .navbar {
             display: flex;
             background-color: #fff;
@@ -82,34 +56,15 @@
             text-decoration: none;
             color: #333;
             font-weight: 500;
-            position: relative;
-        }
-        .navbar a::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0;
-            height: 3px;
-            background-color: #008080;
-            transition: width 0.3s ease;
-        }
-        .navbar a:hover, .navbar a.active {
-            color: #008080;
-        }
-        .navbar a.active::after {
-            width: 70%;
         }
 
-
-        /* Main Content */
         .main-content {
             padding: 60px 30px;
             display: flex;
             justify-content: center;
             align-items: center;
             background-color: #f0f2f5;
+            min-height: 60vh;
         }
 
         .login-form-container {
@@ -130,9 +85,7 @@
             margin-bottom: 30px;
         }
 
-        .form-group {
-            margin-bottom: 20px;
-        }
+        .form-group { margin-bottom: 20px; }
 
         .form-group label {
             display: block;
@@ -148,15 +101,9 @@
             border: 1px solid #ddd;
             border-radius: 8px;
             font-size: 16px;
-            box-sizing: border-box; /* Important for padding */
+            box-sizing: border-box;
         }
-
-        .form-group input:focus {
-            outline: none;
-            border-color: #008080;
-            box-shadow: 0 0 0 2px rgba(0, 128, 128, 0.2);
-        }
-
+        
         .submit-btn {
             background-color: #008080;
             color: #fff;
@@ -170,9 +117,7 @@
             transition: background-color 0.3s;
         }
         
-        .submit-btn:hover {
-            background-color: #006666;
-        }
+        .submit-btn:hover { background-color: #006666; }
 
         .signup-link {
             text-align: center;
@@ -186,6 +131,16 @@
             font-weight: 700;
             text-decoration: none;
         }
+        
+        .message {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            display: none;
+            text-align: center;
+            border: 1px solid transparent;
+        }
+        .message.error { background-color: #f8d7da; color: #721c24; border-color: #f5c6cb;}
     </style>
 </head>
 <body>
@@ -196,22 +151,21 @@
                 <div class="logo">LOGO</div>
                 <div class="project-info">
                     <h1>HỖ TRỢ HUẤN LUYỆN THỂ THAO</h1>
-                    <p>DỰ ÁN KHOA HỌC KỸ THUẬT - ỨNG DỤNG THEO DÕI CHỈ SỐ VẬN ĐỘNG VIÊN</p>
+                    <p>DỰ ÁN KHOA HỌC KỸ THUẬT</p>
                 </div>
             </div>
-            <a href="dangnhap.html" class="login-btn-header">Đăng nhập</a>
         </header>
 
         <nav class="navbar">
             <a href="index.html">Trang chủ</a>
             <a href="gioithieu.html">Giới thiệu</a>
-            <a href="bangdieukhien.html">Bảng điều khiển</a>
         </nav>
 
         <main class="main-content">
             <div class="login-form-container">
                 <form id="loginForm">
                     <h2>Đăng nhập</h2>
+                    <div id="error-message" class="message error"></div>
                     <div class="form-group">
                         <label for="email">EMAIL</label>
                         <input type="email" id="email" name="email" required>
@@ -229,7 +183,7 @@
         </main>
     </div>
 
-    <!-- Xóa bỏ script inline cũ và thay bằng script module này -->
+    <!-- Liên kết đến tệp JavaScript bên ngoài -->
     <script type="module" src="dangnhap.js"></script>
     
 </body>
