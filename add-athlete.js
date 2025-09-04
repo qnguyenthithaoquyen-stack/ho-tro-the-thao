@@ -129,7 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 addButton.disabled = true;
                 addButton.textContent = 'Đã thêm';
                 
-                // Tự động quay về trang tổng quan sau 2 giây
+                // Tự động quay về trang tổng quan sau 2 giây để người dùng đọc thông báo
                 setTimeout(() => {
                     window.location.href = 'coach-dashboard.html';
                 }, 2000);
