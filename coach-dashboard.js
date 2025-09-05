@@ -138,3 +138,4 @@ function displayAthleteDetails(athlete) {
 
 // --- Chạy hàm khởi tạo khi trang đã tải xong ---
 document.addEventListener('DOMContentLoaded', initializeDashboard);
+
