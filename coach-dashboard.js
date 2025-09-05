@@ -1,7 +1,7 @@
 // Import các hàm cần thiết từ Firebase SDK
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
-import { getFirestore, collection, onSnapshot, query, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+import { getFirestore, collection, onSnapshot, query, doc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
 // --- Cấu hình Firebase ---
 const firebaseConfig = {
@@ -18,108 +18,124 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// --- Lấy các phần tử HTML ---
+// --- DOM Elements ---
 const logoutButton = document.getElementById('logoutButton');
 const athleteListUl = document.getElementById('athleteList');
-const athleteNameH2 = document.getElementById('athleteName');
-const athleteInfoDiv = document.getElementById('athleteInfo');
-const detailsPlaceholder = document.getElementById('detailsPlaceholder');
+const detailsPlaceholder = document.getElementById('athlete-details-placeholder');
+const detailsContent = document.getElementById('athlete-details-content');
+const athleteNameEl = document.getElementById('athleteName');
+const athleteEmailEl = document.getElementById('athleteEmail');
 const athleteDobEl = document.getElementById('athleteDob');
-const athleteSportEl = document.getElementById('athleteSport');
 const heartRateEl = document.getElementById('heartRate');
 const spo2El = document.getElementById('spo2');
+const bloodPressureEl = document.getElementById('bloodPressure');
+const accelerationEl = document.getElementById('acceleration');
 
+// Biến toàn cục để giữ listener của sensor, giúp hủy đăng ký khi không cần
 let unsubscribeSensor;
 
-// --- Hàm chính để khởi tạo bảng điều khiển ---
-function initializeDashboard(coachUser) {
-    // Truy vấn đến bộ sưu tập con chứa các VĐV do HLV này quản lý
-    const managedAthletesQuery = query(collection(db, `users/${coachUser.uid}/managed_athletes`));
-
-    // Lắng nghe sự thay đổi trong danh sách VĐV theo thời gian thực
-    onSnapshot(managedAthletesQuery, (snapshot) => {
-        athleteListUl.innerHTML = ''; // Xóa danh sách cũ
-        if (snapshot.empty) {
-            athleteListUl.innerHTML = '<p style="padding: 12px; text-align: center; color: #888;">Chưa có VĐV nào trong danh sách.</p>';
-            return;
+// --- Hàm chính để khởi chạy trang ---
+function initializeDashboard() {
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            // Người dùng đã đăng nhập, lắng nghe danh sách VĐV của họ
+            listenForManagedAthletes(user.uid);
+        } else {
+            // Nếu chưa đăng nhập, chuyển về trang đăng nhập
+            window.location.href = 'dangnhap.html';
         }
-
-        // Tạo lại danh sách VĐV từ dữ liệu mới
-        snapshot.forEach(docSnapshot => {
-            const athleteData = docSnapshot.data();
-            const athleteId = docSnapshot.id;
-            const li = document.createElement('li');
-            li.className = 'athlete-item';
-            li.dataset.athleteId = athleteId;
-            li.innerHTML = `
-                <div class="athlete-avatar">${athleteData.fullName.charAt(0).toUpperCase()}</div>
-                <span>${athleteData.fullName}</span>
-            `;
-
-            // Gắn sự kiện click cho mỗi VĐV trong danh sách
-            li.addEventListener('click', () => {
-                document.querySelectorAll('.athlete-item').forEach(item => item.classList.remove('selected'));
-                li.classList.add('selected');
-                displayAthleteDetails(athleteData, athleteId);
-            });
-            athleteListUl.appendChild(li);
-        });
     });
 
-    // Gắn sự kiện cho nút đăng xuất
-    logoutButton.addEventListener('click', (e) => {
-        e.preventDefault();
-        signOut(auth).catch(error => console.error('Lỗi khi đăng xuất:', error));
+    // Gán sự kiện cho nút đăng xuất
+    logoutButton.addEventListener('click', () => {
+        signOut(auth).then(() => {
+            window.location.href = 'dangnhap.html';
+        });
     });
 }
 
-// --- Hàm hiển thị chi tiết VĐV ---
-function displayAthleteDetails(athlete, athleteId) {
-    detailsPlaceholder.style.display = 'none'; // Ẩn thông báo chờ
-    athleteInfoDiv.style.display = 'block'; // Hiện khu vực chi tiết
+// --- Lắng nghe và hiển thị danh sách VĐV được quản lý ---
+function listenForManagedAthletes(coachId) {
+    const managedAthletesCol = collection(db, "users", coachId, "managed_athletes");
+    const q = query(managedAthletesCol);
 
-    // Cập nhật tên và các thông tin cơ bản
-    athleteNameH2.textContent = `Chi tiết của ${athlete.fullName}`;
-    athleteDobEl.textContent = athlete.dateOfBirth || 'N/A';
-    athleteSportEl.textContent = athlete.sport || 'Chưa cập nhật';
-    
-    // Hủy lắng nghe cũ (nếu có) trước khi tạo lắng nghe mới để tránh rò rỉ bộ nhớ
+    onSnapshot(q, (snapshot) => {
+        athleteListUl.innerHTML = ''; // Xóa danh sách cũ
+        if (snapshot.empty) {
+            athleteListUl.innerHTML = '<p style="padding: 12px;">Chưa có VĐV nào trong danh sách.</p>';
+            // Ẩn chi tiết và hiện placeholder nếu danh sách trống
+            detailsPlaceholder.style.display = 'flex';
+            detailsContent.style.display = 'none';
+            return;
+        }
+        
+        snapshot.forEach(doc => {
+            const athlete = doc.data();
+            const li = document.createElement('li');
+            li.className = 'athlete-item';
+            li.dataset.athleteId = athlete.uid;
+            
+            li.innerHTML = `
+                <div class="athlete-avatar">${athlete.fullName.charAt(0).toUpperCase()}</div>
+                <span>${athlete.fullName}</span>
+            `;
+
+            li.addEventListener('click', () => {
+                // Đánh dấu mục đã chọn trên giao diện
+                document.querySelectorAll('.athlete-item').forEach(item => item.classList.remove('selected'));
+                li.classList.add('selected');
+                
+                // Hiển thị thông tin chi tiết của VĐV được chọn
+                displayAthleteDetails(athlete);
+            });
+
+            athleteListUl.appendChild(li);
+        });
+    });
+}
+
+// --- Hiển thị thông tin chi tiết và lắng nghe chỉ số của VĐV ---
+function displayAthleteDetails(athlete) {
+    // Ẩn placeholder và hiện khu vực chi tiết
+    detailsPlaceholder.style.display = 'none';
+    detailsContent.style.display = 'block';
+
+    // Hiển thị thông tin cơ bản
+    athleteNameEl.textContent = athlete.fullName;
+    athleteEmailEl.textContent = athlete.email;
+    athleteDobEl.textContent = athlete.dateOfBirth || 'Chưa cập nhật';
+
+    // Hủy listener cũ trước khi tạo listener mới để tránh rò rỉ bộ nhớ
     if (unsubscribeSensor) {
         unsubscribeSensor();
     }
 
-    // Lắng nghe dữ liệu cảm biến của VĐV này theo thời gian thực
-    const sensorDocRef = doc(db, 'sensor_data', athleteId);
+    // Reset giá trị về mặc định trong khi chờ dữ liệu mới
+    heartRateEl.textContent = '--';
+    spo2El.textContent = '--';
+    bloodPressureEl.textContent = '--';
+    accelerationEl.textContent = '--';
+
+    // Tạo tham chiếu đến tài liệu cảm biến của VĐV
+    const sensorDocRef = doc(db, "sensor_data", athlete.uid);
+
+    // Bắt đầu lắng nghe dữ liệu cảm biến thời gian thực
     unsubscribeSensor = onSnapshot(sensorDocRef, (doc) => {
         if (doc.exists()) {
             const data = doc.data();
             heartRateEl.textContent = data.heart_rate || '--';
             spo2El.textContent = data.spo2 || '--';
+            bloodPressureEl.textContent = data.blood_pressure || '--';
+            accelerationEl.textContent = data.acceleration || '--';
         } else {
-            // Reset giá trị nếu không có dữ liệu cảm biến
-            heartRateEl.textContent = '--';
-            spo2El.textContent = '--';
+            // Trường hợp VĐV chưa có dữ liệu cảm biến
+            heartRateEl.textContent = 'N/A';
+            spo2El.textContent = 'N/A';
+            bloodPressureEl.textContent = 'N/A';
+            accelerationEl.textContent = 'N/A';
         }
     });
 }
 
-// --- "Hàng rào" bảo mật: Kiểm tra trạng thái đăng nhập ---
-onAuthStateChanged(auth, async (user) => {
-    if (user) {
-        // Nếu có người dùng đăng nhập, kiểm tra vai trò của họ
-        const userDocRef = doc(db, "users", user.uid);
-        const userDoc = await getDoc(userDocRef);
-
-        if (userDoc.exists() && userDoc.data().role === 'coach') {
-            // Nếu đúng là HLV, khởi tạo trang
-            initializeDashboard(user);
-        } else {
-            // Nếu không phải HLV, báo lỗi và đăng xuất
-            alert("Bạn không có quyền truy cập trang này.");
-            signOut(auth);
-        }
-    } else {
-        // Nếu không có ai đăng nhập, chuyển về trang đăng nhập
-        window.location.href = 'dangnhap.html';
-    }
-});
+// --- Chạy hàm khởi tạo sau khi toàn bộ trang đã tải xong ---
+document.addEventListener('DOMContentLoaded', initializeDashboard);
