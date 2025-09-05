@@ -79,4 +79,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // Kích hoạt lại nút
                 submitButton.disabled = false;
-                submitButton.textContent = '
+                submitButton.textContent = 'Đăng Nhập';
+            }
+        });
+    }
+});
+
