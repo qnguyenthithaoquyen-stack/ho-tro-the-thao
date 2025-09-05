@@ -3,119 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thêm VĐV - Bảng điều khiển HLV</title>
+    <title>Thêm Vận Động Viên - Hỗ Trợ Huấn Luyện</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
-        
-        body{font-family:'Roboto',sans-serif;margin:0;background-color:#f0f2f5;color:#333}
-        .container{max-width:1200px;margin:0 auto;}
-        .header{display:flex;justify-content:space-between;align-items:center;padding:15px 30px;background-color:#008080;color:#fff}
-        .header-left{display:flex;align-items:center}
-        .logo{background-color:#fff;color:#008080;font-weight:700;padding:10px;border-radius:5px;margin-right:15px}
-        .project-info h1{font-size:24px;margin:0;font-weight:700}
-        .project-info p{font-size:12px;margin:0;opacity:.9}
-        .logout-btn{background-color:#fff;color:#008080;border:none;padding:10px 20px;border-radius:20px;cursor:pointer;font-weight:700;text-decoration:none;font-size:14px}
-
-        .navbar{display:flex;background-color:#fff;box-shadow:0 2px 4px rgba(0,0,0,.05);padding:0 30px}
-        .navbar a{padding:15px 25px;text-decoration:none;color:#333;font-weight:500}
-        .navbar a.active{color:#008080;font-weight:700; border-bottom: 3px solid #008080;}
-        
-        .main-content{padding: 50px 30px; display: flex; justify-content: center; align-items: center;}
-        .add-athlete-card {
-            background-color: #fff;
-            padding: 40px;
-            border-radius: 16px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-            width: 100%;
-            max-width: 600px;
-        }
-        .add-athlete-card h2 {
-            font-size: 28px;
-            font-weight: 700;
-            color: #008080;
-            text-align: center;
-            margin-top: 0;
-            margin-bottom: 10px;
-        }
-        .add-athlete-card .subtitle {
-            text-align: center;
-            color: #666;
-            margin-bottom: 30px;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-        }
-        .input-group {
-            display: flex;
-            gap: 10px;
-        }
-        .input-group input {
-            flex-grow: 1;
-            padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            font-size: 16px;
-        }
-        .search-btn {
-            padding: 12px 20px;
-            background-color: #008080;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        .message {
-            margin-top: 15px;
-            padding: 10px;
-            border-radius: 8px;
-            display: none;
-            text-align: center;
-        }
-        .message.error { background-color: #f8d7da; color: #721c24; }
-        .message.success { background-color: #d4edda; color: #155724; }
-        
-        #athlete-result {
-            margin-top: 20px;
-            padding: 20px;
-            border: 1px solid #eee;
-            border-radius: 8px;
-            background-color: #f9f9f9;
-        }
-        #athlete-result h3 { margin-top: 0; }
-        
-        .add-btn {
-            width: 100%;
-            padding: 14px;
-            background-color: #6c757d;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            margin-top: 20px;
-            opacity: 0.6;
-            pointer-events: none;
-            transition: background-color 0.3s, opacity 0.3s;
-        }
-        .add-btn:not(:disabled) {
-            background-color: #007bff;
-            opacity: 1;
-            pointer-events: auto;
-        }
-        .back-link {
-            display: block;
-            text-align: center;
-            margin-top: 20px;
-            color: #008080;
-            text-decoration: none;
-            font-weight: 500;
-        }
+        body { font-family: 'Roboto', sans-serif; margin: 0; background-color: #f0f2f5; color: #333; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 15px 30px; background-color: #008080; color: #fff; }
+        .header-left { display: flex; align-items: center; }
+        .logo { background-color: #fff; color: #008080; font-weight: 700; padding: 10px; border-radius: 5px; margin-right: 15px; }
+        .project-info h1 { font-size: 24px; margin: 0; font-weight: 700; }
+        .project-info p { font-size: 12px; margin: 0; opacity: .9; }
+        .logout-btn { background-color: #fff; color: #008080; border: none; padding: 10px 20px; border-radius: 20px; cursor: pointer; font-weight: 700; text-decoration: none; font-size: 14px; }
+        .navbar { display: flex; background-color: #fff; box-shadow: 0 2px 4px rgba(0,0,0,.05); padding: 0 30px; }
+        .navbar a { padding: 15px 25px; text-decoration: none; color: #333; font-weight: 500; }
+        .navbar a.active { color: #008080; font-weight: 700; }
+        .main-content { padding: 50px 30px; display: flex; justify-content: center; align-items: center; }
+        .add-athlete-container { background-color: #fff; border-radius: 16px; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1); padding: 40px; width: 100%; max-width: 600px; text-align: center; }
+        .add-athlete-container h2 { font-size: 28px; font-weight: 700; color: #008080; margin-top: 0; margin-bottom: 10px; }
+        .add-athlete-container p { color: #555; margin-bottom: 30px; }
+        .input-group { display: flex; gap: 10px; margin-bottom: 20px; }
+        .input-group input { flex-grow: 1; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; }
+        .input-group button { background-color: #008080; color: #fff; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-weight: 500; font-size: 16px; transition: background-color 0.3s; }
+        .input-group button:hover { background-color: #006666; }
+        .message { padding: 10px; margin-bottom: 20px; border-radius: 8px; display: none; }
+        .message.success { background-color: #d1e7dd; color: #0f5132; }
+        .message.error { background-color: #f8d7da; color: #842029; }
+        .athlete-info-card { text-align: left; background-color: #f8f9fa; border: 1px solid #eee; border-radius: 12px; padding: 20px; margin-bottom: 20px; display: none; }
+        .athlete-info-card h3 { margin-top: 0; margin-bottom: 15px; color: #333; }
+        .athlete-info-card p { margin: 5px 0; }
+        .add-btn { background-color: #0d6efd; color: #fff; border: none; padding: 14px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 16px; width: 100%; transition: background-color 0.3s; }
+        .add-btn:disabled { background-color: #ccc; cursor: not-allowed; }
+        .back-link { display: inline-block; margin-top: 20px; color: #008080; text-decoration: none; font-weight: 500; }
     </style>
 </head>
 <body>
@@ -128,36 +46,28 @@
                     <p>DỰ ÁN KHOA HỌC KỸ THUẬT</p>
                 </div>
             </div>
-            <a href="#" id="logout-btn" class="logout-btn">Đăng xuất</a>
+            <a href="#" id="logoutButton" class="logout-btn">Đăng xuất</a>
         </header>
         <nav class="navbar">
-            <a href="#">Trang chủ</a>
-            <a href="#">Giới thiệu</a>
+            <a href="index.html">Trang chủ</a>
+            <a href="gioithieu.html">Giới thiệu</a>
             <a href="coach-dashboard.html" class="active">Bảng điều khiển</a>
         </nav>
         <main class="main-content">
-            <div class="add-athlete-card">
+            <div class="add-athlete-container">
                 <h2>Thêm VĐV từ Hệ thống</h2>
-                <p class="subtitle">Nhập email của vận động viên đã có tài khoản để thêm vào danh sách quản lý của bạn.</p>
-                
-                <div class="form-group">
-                    <label for="athlete-email">Email Vận Động Viên</label>
-                    <div class="input-group">
-                        <input type="email" id="athlete-email" placeholder="Nhập email...">
-                        <button id="search-btn" class="search-btn">Tìm kiếm</button>
-                    </div>
+                <p>Nhập email của vận động viên đã có tài khoản để thêm vào danh sách quản lý của bạn.</p>
+                <div class="input-group">
+                    <input type="email" id="athleteEmail" placeholder="Nhập email của VĐV...">
+                    <button id="search-btn">Tìm kiếm</button>
                 </div>
-
-                <div id="message-container" class="message"></div>
-
-                <div id="athlete-result" style="display: none;">
+                <div id="message" class="message"></div>
+                <div id="athlete-info" class="athlete-info-card">
                     <h3>Thông tin Vận động viên</h3>
-                    <p><strong>Tên:</strong> <span id="athlete-name"></span></p>
-                    <p><strong>Tuổi:</strong> <span id="athlete-age"></span></p>
-                    <button id="add-btn" class="add-btn" disabled>Thêm vào danh sách</button>
+                    <p><strong>Tên:</strong> <span id="found-athlete-name"></span></p>
+                    <p><strong>Ngày sinh:</strong> <span id="found-athlete-dob"></span></p>
                 </div>
-                
-                <!-- Liên kết này sẽ đưa người dùng về trang tổng quan -->
+                <button id="add-btn" class="add-btn" disabled>Thêm vào danh sách</button>
                 <a href="coach-dashboard.html" class="back-link">-- Quay lại Bảng điều khiển --</a>
             </div>
         </main>
@@ -165,6 +75,5 @@
 
     <!-- Liên kết đến tệp JavaScript bên ngoài -->
     <script type="module" src="add-athlete.js"></script>
-
 </body>
 </html>
