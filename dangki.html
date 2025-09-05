@@ -136,8 +136,103 @@
         </main>
     </div>
 
-    <script type="module" src="dangki.js"></script>
+    <script type="module">
+        // Import các hàm cần thiết từ Firebase SDK
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+
+        // --- Cấu hình Firebase ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyA2dXWCyjL2xgCSyeW9QQ7RvjI_O7kFHJw",
+            authDomain: "sporthealthdata.firebaseapp.com",
+            projectId: "sporthealthdata",
+            storageBucket: "sporthealthdata.appspot.com",
+            messagingSenderId: "789054240877",
+            appId: "1:789054240877:web:04a400c9ea586523a86764",
+        };
+
+        // --- Khởi tạo Firebase ---
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // --- Lấy các phần tử HTML ---
+        const signupForm = document.getElementById('signupForm');
+        const fullNameInput = document.getElementById('fullName');
+        const errorMessageDiv = document.getElementById('error-message');
+
+        // --- CHỨC NĂNG MỚI: Tự động viết hoa tên ---
+        fullNameInput.addEventListener('input', () => {
+            // Lấy giá trị hiện tại, chuyển thành chữ thường và tách thành các từ
+            const words = fullNameInput.value.toLowerCase().split(' ');
+            
+            // Lặp qua mỗi từ để viết hoa ký tự đầu
+            for (let i = 0; i < words.length; i++) {
+                if (words[i]) { // Đảm bảo từ không rỗng
+                    words[i] = words[i].charAt(0).toUpperCase() + words[i].slice(1);
+                }
+            }
+            
+            // Nối các từ lại và cập nhật giá trị của ô input
+            fullNameInput.value = words.join(' ');
+        });
+
+        // --- Xử lý sự kiện đăng ký ---
+        signupForm.addEventListener('submit', async (e) => {
+            e.preventDefault(); 
+
+            // Lấy các giá trị từ form
+            const fullName = signupForm.fullName.value;
+            const username = signupForm.username.value;
+            const email = signupForm.email.value;
+            const password = signupForm.password.value;
+            const dateOfBirth = signupForm.dateOfBirth.value;
+            const city = signupForm.city.value;
+            const role = signupForm.role.value;
+            const submitButton = signupForm.querySelector('.submit-btn');
+
+            submitButton.disabled = true;
+            submitButton.textContent = 'Đang xử lý...';
+            errorMessageDiv.style.display = 'none';
+
+            try {
+                // Bước 1: Tạo người dùng trong Firebase Authentication
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+
+                // Bước 2: Lưu thông tin bổ sung vào Firestore
+                await setDoc(doc(db, "users", user.uid), {
+                    uid: user.uid,
+                    fullName: fullName,
+                    username: username,
+                    email: email,
+                    dateOfBirth: dateOfBirth,
+                    city: city,
+                    role: role
+                });
+                
+                // Bước 3: Chuyển hướng sau khi thành công
+                alert('Đăng ký thành công!');
+                if (role === 'coach') {
+                    window.location.href = 'coach-dashboard.html';
+                } else {
+                    window.location.href = 'athlete-dashboard.html';
+                }
+
+            } catch (error) {
+                // Xử lý lỗi
+                if (error.code === 'auth/email-already-in-use') {
+                    errorMessageDiv.textContent = 'Địa chỉ email này đã được sử dụng.';
+                } else {
+                    errorMessageDiv.textContent = 'Đã xảy ra lỗi. Vui lòng thử lại.';
+                }
+                errorMessageDiv.style.display = 'block';
+                submitButton.disabled = false;
+                submitButton.textContent = 'Đăng Ký';
+            }
+        });
+    </script>
 
 </body>
 </html>
-
