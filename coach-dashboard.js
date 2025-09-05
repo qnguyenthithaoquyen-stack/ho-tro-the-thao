@@ -39,9 +39,10 @@ let unsubscribeSensor;
 function initializeDashboard() {
     onAuthStateChanged(auth, (user) => {
         if (user) {
-            // Lắng nghe danh sách VĐV được quản lý
+            console.log("DEBUG: Người dùng đã xác thực. ID của HLV:", user.uid);
             listenForManagedAthletes(user.uid);
         } else {
+            console.log("DEBUG: Người dùng chưa xác thực. Chuyển về trang đăng nhập.");
             window.location.href = 'dangnhap.html';
         }
     });
@@ -55,15 +56,18 @@ function initializeDashboard() {
 
 // --- Lắng nghe và hiển thị danh sách VĐV ---
 function listenForManagedAthletes(coachId) {
-    // Truy vấn vào subcollection "managed_athletes"
     const managedAthletesCol = collection(db, "users", coachId, "managed_athletes");
     const q = query(managedAthletesCol);
+    
+    console.log(`DEBUG: Bắt đầu lắng nghe dữ liệu tại users/${coachId}/managed_athletes`);
 
     onSnapshot(q, (snapshot) => {
+        console.log("DEBUG: Đã nhận được dữ liệu. Số lượng VĐV tìm thấy:", snapshot.size);
+        
         athleteListUl.innerHTML = ''; // Xóa danh sách cũ
         if (snapshot.empty) {
+            console.log("DEBUG: Danh sách trống. Hiển thị thông báo.");
             athleteListUl.innerHTML = '<p style="padding: 12px;">Chưa có VĐV nào trong danh sách.</p>';
-            // Ẩn khu vực chi tiết nếu không có VĐV nào
             detailsPlaceholder.style.display = 'flex';
             detailsContent.style.display = 'none';
             return;
@@ -71,9 +75,10 @@ function listenForManagedAthletes(coachId) {
         
         snapshot.forEach(doc => {
             const athlete = doc.data();
+            console.log("DEBUG: Đã tìm thấy VĐV:", athlete.fullName, "Dữ liệu:", athlete);
             const li = document.createElement('li');
             li.className = 'athlete-item';
-            li.dataset.athleteId = athlete.uid; // Sử dụng uid của VĐV
+            li.dataset.athleteId = athlete.uid;
             
             li.innerHTML = `
                 <div class="athlete-avatar">${athlete.fullName.charAt(0).toUpperCase()}</div>
@@ -81,43 +86,36 @@ function listenForManagedAthletes(coachId) {
             `;
 
             li.addEventListener('click', () => {
-                // Làm nổi bật VĐV được chọn
                 document.querySelectorAll('.athlete-item').forEach(item => item.classList.remove('selected'));
                 li.classList.add('selected');
-                // Hiển thị chi tiết
                 displayAthleteDetails(athlete);
             });
 
             athleteListUl.appendChild(li);
         });
+    }, (error) => {
+        console.error("DEBUG: ĐÃ XẢY RA LỖI KHI LẮNG NGHE DỮ LIỆU:", error);
     });
 }
 
 // --- Hiển thị thông tin chi tiết của VĐV ---
 function displayAthleteDetails(athlete) {
-    // Hiển thị khu vực chi tiết và ẩn placeholder
     detailsPlaceholder.style.display = 'none';
     detailsContent.style.display = 'block';
-
-    // Hiển thị thông tin cơ bản
     athleteNameEl.textContent = athlete.fullName;
     athleteEmailEl.textContent = athlete.email;
     athleteDobEl.textContent = athlete.dateOfBirth || 'Chưa cập nhật';
     athleteCityEl.textContent = athlete.city || 'Chưa cập nhật';
 
-    // Hủy listener cũ để tránh rò rỉ bộ nhớ
     if (unsubscribeSensor) {
         unsubscribeSensor();
     }
 
-    // Reset giá trị cảm biến về mặc định
     heartRateEl.textContent = '--';
     spo2El.textContent = '--';
     bloodPressureEl.textContent = '--';
     accelerationEl.textContent = '--';
 
-    // Lắng nghe dữ liệu cảm biến thời gian thực cho VĐV được chọn
-    // Chú ý: Cần có một collection 'sensor_data' và document có ID là UID của VĐV
     const sensorDocRef = doc(db, "sensor_data", athlete.uid);
     unsubscribeSensor = onSnapshot(sensorDocRef, (doc) => {
         if (doc.exists()) {
@@ -127,7 +125,6 @@ function displayAthleteDetails(athlete) {
             bloodPressureEl.textContent = data.blood_pressure || '--';
             accelerationEl.textContent = data.acceleration || '--';
         } else {
-            // Hiển thị 'N/A' nếu không có dữ liệu cảm biến
             heartRateEl.textContent = 'N/A';
             spo2El.textContent = 'N/A';
             bloodPressureEl.textContent = 'N/A';
@@ -138,4 +135,3 @@ function displayAthleteDetails(athlete) {
 
 // --- Chạy hàm khởi tạo khi trang đã tải xong ---
 document.addEventListener('DOMContentLoaded', initializeDashboard);
-
