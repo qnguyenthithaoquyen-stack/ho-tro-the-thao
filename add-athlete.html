@@ -12,162 +12,39 @@
             --card-bg-color: #ffffff;
             --text-color: #333;
             --text-light-color: #6c757d;
-            --success-bg: #d1e7dd;
-            --success-text: #0f5132;
-            --error-bg: #f8d7da;
-            --error-text: #842029;
+            --border-color: #e9ecef;
             --shadow: 0 8px 25px rgba(0, 0, 0, 0.07);
+            --success-bg: #e6f7f2;
+            --success-text: #0d6efd;
+            --error-bg: #f8d7da;
+            --error-text: #dc3545;
         }
-        body {
-            font-family: 'Roboto', sans-serif;
-            margin: 0;
-            background-color: var(--background-color);
-            color: var(--text-color);
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background-color: var(--card-bg-color);
-        }
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 30px;
-            background-color: var(--primary-color);
-            color: #fff;
-        }
+        body { font-family: 'Roboto', sans-serif; margin: 0; background-color: var(--background-color); }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 15px 30px; background-color: var(--primary-color); color: #fff; }
         .header-left { display: flex; align-items: center; }
         .logo { background-color: #fff; color: var(--primary-color); font-weight: 700; padding: 10px; border-radius: 8px; margin-right: 15px; }
-        .project-info h1 { font-size: 24px; margin: 0; font-weight: 700; }
+        .project-info h1 { font-size: 24px; margin: 0; }
         .project-info p { font-size: 12px; margin: 0; opacity: 0.9; }
-        .logout-btn { background-color: #fff; color: var(--primary-color); border: none; padding: 10px 20px; border-radius: 20px; cursor: pointer; font-weight: 700; text-decoration: none; font-size: 14px; }
+        .logout-btn { background-color: #fff; color: var(--primary-color); border: none; padding: 10px 20px; border-radius: 20px; cursor: pointer; font-weight: 700; text-decoration: none; }
         .navbar { display: flex; background-color: var(--card-bg-color); box-shadow: 0 2px 4px rgba(0,0,0,.05); padding: 0 30px; }
         .navbar a { padding: 15px 25px; text-decoration: none; color: var(--text-light-color); font-weight: 500; border-bottom: 3px solid transparent; }
         .navbar a.active { color: var(--primary-color); border-bottom-color: var(--primary-color); }
-        .main-content {
-            padding: 60px 20px;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            background-color: var(--background-color);
-            min-height: calc(100vh - 150px);
-        }
-        .add-athlete-container {
-            background-color: var(--card-bg-color);
-            border-radius: 16px;
-            box-shadow: var(--shadow);
-            padding: 30px 40px;
-            width: 100%;
-            max-width: 600px;
-        }
-        .add-athlete-container h2 {
-            font-size: 28px;
-            color: var(--primary-color);
-            margin-top: 0;
-            margin-bottom: 10px;
-            text-align: center;
-        }
-        .add-athlete-container .description {
-            text-align: center;
-            color: var(--text-light-color);
-            margin-bottom: 30px;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        .form-group label {
-            display: block;
-            font-weight: 500;
-            margin-bottom: 8px;
-        }
-        .input-group {
-            display: flex;
-            gap: 10px;
-        }
-        .input-group input {
-            flex-grow: 1;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-        }
-        .input-group button {
-            padding: 12px 20px;
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 500;
-            transition: background-color 0.3s;
-        }
-        .input-group button:hover {
-            background-color: #006666;
-        }
-        .message {
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            display: none; /* Ẩn mặc định */
-        }
-        .message.success {
-            background-color: var(--success-bg);
-            color: var(--success-text);
-        }
-        .message.error {
-            background-color: var(--error-bg);
-            color: var(--error-text);
-        }
-        .results-container {
-            border-top: 1px solid #eee;
-            margin-top: 30px;
-            padding-top: 30px;
-        }
-        .results-container h3 {
-            margin-top: 0;
-            font-size: 20px;
-            font-weight: 500;
-        }
-        .info-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            font-size: 16px;
-        }
-        .info-item .label {
-            color: var(--text-light-color);
-        }
-        .info-item .value {
-            font-weight: 500;
-        }
-        .add-btn {
-            width: 100%;
-            padding: 14px;
-            margin-top: 20px;
-            background-color: #0d6efd;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 500;
-            transition: background-color 0.3s, opacity 0.3s;
-        }
-        .add-btn:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-            opacity: 0.7;
-        }
-        .back-link {
-            display: block;
-            text-align: center;
-            margin-top: 20px;
-            color: var(--primary-color);
-            text-decoration: none;
-            font-weight: 500;
-        }
+        .main-content { padding: 50px 30px; display: flex; justify-content: center; align-items: center; }
+        .add-athlete-container { background-color: var(--card-bg-color); border-radius: 16px; box-shadow: var(--shadow); padding: 40px; width: 100%; max-width: 500px; text-align: center; }
+        .add-athlete-container h2 { font-size: 26px; color: var(--text-color); margin-top: 0; margin-bottom: 10px; }
+        .add-athlete-container p { color: var(--text-light-color); margin-bottom: 30px; }
+        .search-form { display: flex; gap: 10px; margin-bottom: 20px; }
+        #search-email { flex-grow: 1; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 16px; }
+        #search-btn { background-color: var(--primary-color); color: white; border: none; padding: 0 25px; border-radius: 8px; cursor: pointer; font-weight: 500; }
+        .message { padding: 12px; margin-bottom: 20px; border-radius: 8px; text-align: left; }
+        .message.success { background-color: var(--success-bg); color: var(--success-text); }
+        .message.error { background-color: var(--error-bg); color: var(--error-text); }
+        #athlete-info { border: 1px solid var(--border-color); border-radius: 8px; padding: 20px; text-align: left; }
+        #athlete-info p { margin: 0 0 10px 0; }
+        #add-btn { background-color: #0d6efd; color: white; border: none; padding: 14px; width: 100%; border-radius: 8px; font-size: 16px; font-weight: 500; cursor: pointer; margin-top: 15px; }
+        #add-btn:disabled { background-color: #6c757d; cursor: not-allowed; }
+        .back-link { display: inline-block; margin-top: 20px; color: var(--text-light-color); text-decoration: none; font-size: 14px; }
     </style>
 </head>
 <body>
@@ -190,186 +67,27 @@
         <main class="main-content">
             <div class="add-athlete-container">
                 <h2>Thêm VĐV từ Hệ thống</h2>
-                <p class="description">Nhập email của vận động viên đã có tài khoản để thêm vào danh sách quản lý của bạn.</p>
+                <p>Nhập email của vận động viên đã có tài khoản để thêm vào danh sách quản lý của bạn.</p>
                 
-                <div class="form-group">
-                    <label for="search-email">Email Vận Động Viên</label>
-                    <div class="input-group">
-                        <input type="email" id="search-email" placeholder="Nhập email...">
-                        <button id="search-btn">Tìm kiếm</button>
-                    </div>
+                <div class="search-form">
+                    <input type="email" id="search-email" placeholder="Nhập email vận động viên...">
+                    <button id="search-btn">Tìm kiếm</button>
                 </div>
+                
+                <div id="message-area" style="display: none;"></div>
 
-                <div id="message-container" class="message"></div>
-
-                <div id="results-container" class="results-container" style="display: none;">
-                    <h3>Thông tin Vận động viên</h3>
-                    <div class="info-item">
-                        <span class="label">Tên:</span>
-                        <span id="found-athlete-name" class="value"></span>
-                    </div>
-                    <div class="info-item">
-                        <span class="label">Ngày sinh:</span>
-                        <span id="found-athlete-dob" class="value"></span>
-                    </div>
-                    <div class="info-item">
-                        <span class="label">Tỉnh thành:</span>
-                        <span id="found-athlete-city" class="value"></span>
-                    </div>
-                    <button id="add-athlete-btn" class="add-btn" disabled>Thêm vào danh sách</button>
+                <div id="athlete-info" style="display: none;">
+                    <h4>Thông tin Vận động viên</h4>
+                    <p><strong>Tên:</strong> <span id="found-athlete-name"></span></p>
+                    <p><strong>Ngày sinh:</strong> <span id="found-athlete-dob"></span></p>
+                    <p><strong>Tỉnh thành:</strong> <span id="found-athlete-city"></span></p>
+                    <button id="add-btn" disabled>Thêm vào danh sách</button>
                 </div>
                 
                 <a href="coach-dashboard.html" class="back-link">-- Quay lại Bảng điều khiển --</a>
             </div>
         </main>
     </div>
-
-    <script type="module">
-        // Import các hàm cần thiết từ Firebase SDK
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
-        import { getFirestore, collection, query, where, getDocs, doc, setDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
-
-        // --- Cấu hình Firebase ---
-        const firebaseConfig = {
-            apiKey: "AIzaSyA2dXWCyjL2xgCSyeW9QQ7RvjI_O7kFHJw",
-            authDomain: "sporthealthdata.firebaseapp.com",
-            projectId: "sporthealthdata",
-            storageBucket: "sporthealthdata.appspot.com",
-            messagingSenderId: "789054240877",
-            appId: "1:789054240877:web:04a400c9ea586523a86764",
-        };
-
-        // --- Khởi tạo Firebase ---
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-        // --- DOM Elements ---
-        const logoutButton = document.getElementById('logoutButton');
-        const searchEmailInput = document.getElementById('search-email');
-        const searchBtn = document.getElementById('search-btn');
-        const messageContainer = document.getElementById('message-container');
-        const resultsContainer = document.getElementById('results-container');
-        const foundAthleteNameEl = document.getElementById('found-athlete-name');
-        const foundAthleteDobEl = document.getElementById('found-athlete-dob');
-        const foundAthleteCityEl = document.getElementById('found-athlete-city');
-        const addAthleteBtn = document.getElementById('add-athlete-btn');
-
-        let currentCoach = null;
-        let foundAthleteData = null;
-
-        // --- Hàm chính để khởi chạy trang ---
-        function initializePage() {
-            onAuthStateChanged(auth, (user) => {
-                if (user) {
-                    currentCoach = user;
-                } else {
-                    window.location.href = 'dangnhap.html';
-                }
-            });
-
-            logoutButton.addEventListener('click', () => {
-                signOut(auth).then(() => {
-                    window.location.href = 'dangnhap.html';
-                });
-            });
-
-            searchBtn.addEventListener('click', handleSearch);
-            addAthleteBtn.addEventListener('click', handleAddAthlete);
-        }
-
-        // --- Hàm xử lý tìm kiếm VĐV ---
-        async function handleSearch() {
-            const emailToSearch = searchEmailInput.value.trim();
-            if (!emailToSearch) {
-                showMessage('Vui lòng nhập email.', 'error');
-                return;
-            }
-
-            resetState();
-            searchBtn.disabled = true;
-            searchBtn.textContent = 'Đang tìm...';
-
-            try {
-                const q = query(
-                    collection(db, "users"),
-                    where("email", "==", emailToSearch),
-                    where("role", "==", "athlete")
-                );
-
-                const querySnapshot = await getDocs(q);
-
-                if (querySnapshot.empty) {
-                    showMessage('Không tìm thấy VĐV với email này hoặc người dùng không phải là VĐV.', 'error');
-                } else {
-                    const doc = querySnapshot.docs[0];
-                    foundAthleteData = doc.data();
-                    
-                    foundAthleteNameEl.textContent = foundAthleteData.fullName;
-                    foundAthleteDobEl.textContent = foundAthleteData.dateOfBirth || 'Chưa cập nhật';
-                    foundAthleteCityEl.textContent = foundAthleteData.city || 'Chưa cập nhật';
-
-                    showMessage('Đã tìm thấy VĐV!', 'success');
-                    resultsContainer.style.display = 'block';
-                    addAthleteBtn.disabled = false;
-                }
-            } catch (error) {
-                console.error("Lỗi khi tìm kiếm: ", error);
-                showMessage('Đã xảy ra lỗi khi tìm kiếm. Vui lòng kiểm tra lại Quy tắc Bảo mật trên Firebase.', 'error');
-            } finally {
-                searchBtn.disabled = false;
-                searchBtn.textContent = 'Tìm kiếm';
-            }
-        }
-        
-        // --- Hàm xử lý thêm VĐV vào danh sách của HLV ---
-        async function handleAddAthlete() {
-            if (!currentCoach || !foundAthleteData) {
-                showMessage('Không có thông tin HLV hoặc VĐV.', 'error');
-                return;
-            }
-
-            addAthleteBtn.disabled = true;
-            addAthleteBtn.textContent = 'Đang thêm...';
-
-            try {
-                // Tạo một tham chiếu đến "thư mục con" chứa VĐV của HLV
-                const managedAthleteRef = doc(db, "users", currentCoach.uid, "managed_athletes", foundAthleteData.uid);
-                
-                // Lưu thông tin của VĐV vào đó
-                await setDoc(managedAthleteRef, foundAthleteData);
-                
-                showMessage('Đã thêm VĐV vào danh sách thành công!', 'success');
-                setTimeout(() => {
-                    window.location.href = 'coach-dashboard.html';
-                }, 1500); // Chờ 1.5 giây rồi chuyển hướng
-
-            } catch (error) {
-                console.error("Lỗi khi thêm VĐV: ", error);
-                showMessage('Đã xảy ra lỗi khi thêm VĐV.', 'error');
-                addAthleteBtn.disabled = false;
-                addAthleteBtn.textContent = 'Thêm vào danh sách';
-            }
-        }
-
-        // --- Hàm tiện ích ---
-        function showMessage(msg, type = 'success') {
-            messageContainer.textContent = msg;
-            messageContainer.className = `message ${type}`;
-            messageContainer.style.display = 'block';
-        }
-
-        function resetState() {
-            messageContainer.style.display = 'none';
-            resultsContainer.style.display = 'none';
-            addAthleteBtn.disabled = true;
-            foundAthleteData = null;
-        }
-
-        // --- Chạy hàm khởi tạo ---
-        document.addEventListener('DOMContentLoaded', initializePage);
-    </script>
+    <script type="module" src="add-athlete.js"></script>
 </body>
 </html>
-
