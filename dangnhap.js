@@ -32,17 +32,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const password = loginForm.password.value;
             const submitButton = loginForm.querySelector('.submit-btn');
 
-            // Vô hiệu hóa nút và xóa thông báo lỗi cũ
             submitButton.disabled = true;
             submitButton.textContent = 'Đang xử lý...';
             errorMessageDiv.style.display = 'none';
 
             try {
-                // 1. Đăng nhập người dùng bằng Firebase Auth
                 const userCredential = await signInWithEmailAndPassword(auth, email, password);
                 const user = userCredential.user;
 
-                // 2. Lấy thông tin vai trò từ Firestore
                 const userDocRef = doc(db, 'users', user.uid);
                 const userDocSnap = await getDoc(userDocRef);
 
@@ -50,24 +47,24 @@ document.addEventListener('DOMContentLoaded', () => {
                     const userData = userDocSnap.data();
                     const role = userData.role;
 
-                    // 3. Chuyển hướng dựa trên vai trò
+                    // Xây dựng URL đầy đủ để chuyển hướng
+                    const currentPath = window.location.pathname;
+                    const newPath = currentPath.substring(0, currentPath.lastIndexOf('/'));
+
                     if (role === 'coach') {
-                        window.location.href = 'coach-dashboard.html';
+                        window.location.href = newPath + '/coach-dashboard.html';
                     } else if (role === 'athlete') {
-                        window.location.href = 'athlete-dashboard.html';
+                        window.location.href = newPath + '/athlete-dashboard.html';
                     } else {
-                        // Trường hợp vai trò không xác định
                         throw new Error('Không thể xác định vai trò người dùng.');
                     }
                 } else {
-                    // Trường hợp không tìm thấy dữ liệu người dùng trong Firestore
                     throw new Error('Không tìm thấy dữ liệu người dùng.');
                 }
 
             } catch (error) {
                 console.error("Lỗi đăng nhập:", error);
                 
-                // Hiển thị thông báo lỗi thân thiện
                 let friendlyMessage = 'Email hoặc mật khẩu không chính xác.';
                 if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
                     friendlyMessage = 'Email hoặc mật khẩu không chính xác.';
@@ -77,11 +74,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 errorMessageDiv.textContent = friendlyMessage;
                 errorMessageDiv.style.display = 'block';
 
-                // Kích hoạt lại nút
                 submitButton.disabled = false;
                 submitButton.textContent = 'Đăng Nhập';
             }
         });
     }
 });
-
