@@ -54,7 +54,7 @@
         .athlete-avatar { width: 40px; height: 40px; border-radius: 50%; background-color: var(--primary-color); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 500; flex-shrink: 0; }
         .athlete-details-placeholder { text-align: center; color: var(--text-light-color); padding: 80px 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; box-sizing: border-box; }
         .placeholder-icon { width: 64px; height: 64px; margin-bottom: 20px; color: #ced4da; }
-        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
         .stat-item { background-color: #f8f9fa; padding: 20px; border-radius: 12px; }
         .stat-item .label { font-size: 14px; color: var(--text-light-color); margin-bottom: 5px; }
         .stat-item .value { font-size: 24px; font-weight: 700; color: var(--text-color); }
@@ -111,6 +111,10 @@
                             <div class="label">Ngày sinh</div>
                             <div class="value" id="athleteDob">--</div>
                         </div>
+                         <div class="stat-item">
+                            <div class="label">Tỉnh thành</div>
+                            <div class="value" id="athleteCity">--</div>
+                        </div>
                         <div class="stat-item">
                             <div class="label">Nhịp tim (bpm)</div>
                             <div class="value" id="heartRate">--</div>
@@ -135,4 +139,3 @@
     <script type="module" src="coach-dashboard.js"></script>
 </body>
 </html>
-
