@@ -33,15 +33,18 @@ let unsubscribeSensor;
 
 // --- Hàm chính để khởi tạo bảng điều khiển ---
 function initializeDashboard(coachUser) {
+    // Truy vấn đến bộ sưu tập con chứa các VĐV do HLV này quản lý
     const managedAthletesQuery = query(collection(db, `users/${coachUser.uid}/managed_athletes`));
 
+    // Lắng nghe sự thay đổi trong danh sách VĐV theo thời gian thực
     onSnapshot(managedAthletesQuery, (snapshot) => {
-        athleteListUl.innerHTML = '';
+        athleteListUl.innerHTML = ''; // Xóa danh sách cũ
         if (snapshot.empty) {
             athleteListUl.innerHTML = '<p style="padding: 12px; text-align: center; color: #888;">Chưa có VĐV nào trong danh sách.</p>';
             return;
         }
 
+        // Tạo lại danh sách VĐV từ dữ liệu mới
         snapshot.forEach(docSnapshot => {
             const athleteData = docSnapshot.data();
             const athleteId = docSnapshot.id;
@@ -53,6 +56,7 @@ function initializeDashboard(coachUser) {
                 <span>${athleteData.fullName}</span>
             `;
 
+            // Gắn sự kiện click cho mỗi VĐV trong danh sách
             li.addEventListener('click', () => {
                 document.querySelectorAll('.athlete-item').forEach(item => item.classList.remove('selected'));
                 li.classList.add('selected');
@@ -62,6 +66,7 @@ function initializeDashboard(coachUser) {
         });
     });
 
+    // Gắn sự kiện cho nút đăng xuất
     logoutButton.addEventListener('click', (e) => {
         e.preventDefault();
         signOut(auth).catch(error => console.error('Lỗi khi đăng xuất:', error));
@@ -70,19 +75,20 @@ function initializeDashboard(coachUser) {
 
 // --- Hàm hiển thị chi tiết VĐV ---
 function displayAthleteDetails(athlete, athleteId) {
-    detailsPlaceholder.style.display = 'none';
-    athleteInfoDiv.style.display = 'block';
+    detailsPlaceholder.style.display = 'none'; // Ẩn thông báo chờ
+    athleteInfoDiv.style.display = 'block'; // Hiện khu vực chi tiết
 
+    // Cập nhật tên và các thông tin cơ bản
     athleteNameH2.textContent = `Chi tiết của ${athlete.fullName}`;
-    athleteDobEl.textContent = athlete.dateOfBirth || 'N/A'; // Hiển thị ngày sinh
+    athleteDobEl.textContent = athlete.dateOfBirth || 'N/A';
     athleteSportEl.textContent = athlete.sport || 'Chưa cập nhật';
     
-    // Hủy lắng nghe cũ trước khi tạo lắng nghe mới
+    // Hủy lắng nghe cũ (nếu có) trước khi tạo lắng nghe mới để tránh rò rỉ bộ nhớ
     if (unsubscribeSensor) {
         unsubscribeSensor();
     }
 
-    // Lắng nghe dữ liệu cảm biến thời gian thực
+    // Lắng nghe dữ liệu cảm biến của VĐV này theo thời gian thực
     const sensorDocRef = doc(db, 'sensor_data', athleteId);
     unsubscribeSensor = onSnapshot(sensorDocRef, (doc) => {
         if (doc.exists()) {
@@ -90,7 +96,7 @@ function displayAthleteDetails(athlete, athleteId) {
             heartRateEl.textContent = data.heart_rate || '--';
             spo2El.textContent = data.spo2 || '--';
         } else {
-            // Reset giá trị nếu không có dữ liệu
+            // Reset giá trị nếu không có dữ liệu cảm biến
             heartRateEl.textContent = '--';
             spo2El.textContent = '--';
         }
@@ -117,4 +123,3 @@ onAuthStateChanged(auth, async (user) => {
         window.location.href = 'dangnhap.html';
     }
 });
-
