@@ -65,7 +65,7 @@
         #athlete-details-placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--text-light-color); text-align: center; }
         #athlete-details-placeholder svg { width: 60px; height: 60px; margin-bottom: 20px; }
 
-        #athleteName { font-size: 28px; font-weight: 700; color: var(--primary-color); margin-bottom: 25px; }
+        #athleteName { font-size: 28px; font-weight: 700; color: var(--text-color); margin-bottom: 25px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px;}
         .details-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; }
         .detail-card { background-color: #f8f9fa; border-radius: 12px; padding: 15px; border: 1px solid var(--border-color); }
         .detail-label { font-size: 13px; color: var(--text-light-color); margin-bottom: 5px; display: block; }
@@ -111,7 +111,7 @@
                 </div>
 
                 <div id="athlete-details-content" style="display: none;">
-                    <h2 id="athleteName" class="card-header"></h2>
+                    <h2 id="athleteName"></h2>
                     <div class="details-grid">
                         <div class="detail-card"><span class="detail-label">Email</span><p id="athleteEmail" class="detail-value"></p></div>
                         <div class="detail-card"><span class="detail-label">Ngày sinh</span><p id="athleteDob" class="detail-value"></p></div>
