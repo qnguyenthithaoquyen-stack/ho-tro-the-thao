@@ -1,7 +1,7 @@
 // Import các hàm cần thiết từ Firebase SDK
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
-import { getFirestore, collection, onSnapshot, doc, query } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+import { getFirestore, collection, onSnapshot, query, doc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
 // --- Cấu hình Firebase ---
 const firebaseConfig = {
@@ -24,148 +24,153 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Lấy các phần tử HTML ---
     const logoutButton = document.getElementById('logoutButton');
     const athleteListUl = document.getElementById('athleteList');
-    const detailsPlaceholder = document.getElementById('athlete-details-placeholder');
+    const placeholder = document.getElementById('athlete-details-placeholder');
     const detailsContent = document.getElementById('athlete-details-content');
-    const athleteNameEl = document.getElementById('athleteName');
-    const athleteEmailEl = document.getElementById('athleteEmail');
-    const athleteDobEl = document.getElementById('athleteDob');
-    const athleteCityEl = document.getElementById('athleteCity');
-    const heartRateEl = document.getElementById('heartRate');
-    const spo2El = document.getElementById('spo2');
-    const bloodPressureEl = document.getElementById('bloodPressure');
-    const accelerationEl = document.getElementById('acceleration');
-
-    // Kiểm tra để đảm bảo tất cả các phần tử đều tồn tại
-    if (!logoutButton || !athleteListUl || !detailsPlaceholder || !detailsContent || !athleteNameEl) {
-        console.error("Lỗi nghiêm trọng: Một hoặc nhiều phần tử HTML cần thiết không được tìm thấy. Vui lòng kiểm tra lại ID trong tệp HTML.");
-        return; // Dừng thực thi nếu giao diện bị lỗi
-    }
-
-    let unsubscribeSensor; // Biến để lưu hàm hủy đăng ký listener của sensor
+    const sendExerciseBtn = document.getElementById('send-exercise-btn');
+    
+    let currentCoach = null;
+    let selectedAthleteId = null; // Biến lưu ID của VĐV đang được chọn
+    let unsubscribeSensor; // Biến để hủy lắng nghe sensor cũ
 
     // --- Giám sát trạng thái đăng nhập ---
     onAuthStateChanged(auth, (user) => {
         if (user) {
+            currentCoach = user;
             initializeDashboard(user);
         } else {
-            // Chuyển hướng về trang đăng nhập nếu chưa đăng nhập
+            // Chuyển hướng nếu chưa đăng nhập
             window.location.href = 'dangnhap.html';
         }
     });
 
-    // --- Khởi tạo các chức năng cho trang ---
     function initializeDashboard(user) {
-        // 1. Cài đặt chức năng Đăng xuất
-        logoutButton.addEventListener('click', () => {
-            signOut(auth).then(() => {
-                window.location.href = 'dangnhap.html';
-            }).catch((error) => {
-                console.error("Lỗi khi đăng xuất:", error);
+        // Chức năng Đăng xuất
+        if(logoutButton) {
+            logoutButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                signOut(auth).catch(error => console.error("Lỗi khi đăng xuất:", error));
             });
-        });
+        }
         
-        // 2. Lắng nghe và hiển thị danh sách VĐV
+        // Bắt đầu lắng nghe danh sách VĐV
         listenForAthletes(user.uid);
+
+        // Chức năng nút "Gửi bài tập"
+        if(sendExerciseBtn) {
+            sendExerciseBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (selectedAthleteId) {
+                    // Truyền ID của VĐV qua URL
+                    window.location.href = `send-exercise.html?athleteId=${selectedAthleteId}`;
+                } else {
+                    alert("Vui lòng chọn một vận động viên từ danh sách trước.");
+                }
+            });
+        }
     }
 
-    // --- Hàm lắng nghe danh sách VĐV ---
+    // --- Hàm lắng nghe và hiển thị danh sách VĐV ---
     function listenForAthletes(coachId) {
+        if (!athleteListUl) return;
         const managedAthletesColRef = collection(db, "users", coachId, "managed_athletes");
         const q = query(managedAthletesColRef);
 
         onSnapshot(q, (snapshot) => {
             athleteListUl.innerHTML = ''; // Xóa danh sách cũ
+
             if (snapshot.empty) {
-                athleteListUl.innerHTML = '<p style="padding: 12px; color: #6c757d;">Chưa có VĐV nào.</p>';
+                athleteListUl.innerHTML = '<li style="padding: 12px; color: #6c757d; list-style-type: none;">Chưa có VĐV nào.</li>';
                 return;
             }
+
             snapshot.forEach(doc => {
-                try { // Bọc trong try...catch để tránh lỗi làm sập toàn bộ trang
-                    const athlete = doc.data();
-                    const athleteId = doc.id;
-
-                    // Xử lý an toàn hơn nếu VĐV không có dữ liệu
-                    if (!athlete) {
-                        console.warn(`Tài liệu VĐV với ID ${athleteId} không có dữ liệu.`);
-                        return; // Bỏ qua và xử lý VĐV tiếp theo
-                    }
-                    
-                    const li = document.createElement('li');
-                    li.className = 'athlete-item';
-                    li.dataset.athleteId = athleteId;
-                    
-                    const athleteName = athlete.fullName || 'Chưa có tên';
-                    // Chuyển đổi an toàn sang chuỗi trước khi lấy ký tự đầu
-                    const initial = String(athleteName).charAt(0).toUpperCase();
-
-                    li.innerHTML = `
-                        <div class="athlete-avatar">${initial}</div>
-                        <span>${athleteName}</span>
-                    `;
-                    
-                    li.addEventListener('click', () => {
-                        document.querySelectorAll('.athlete-item').forEach(item => item.classList.remove('selected'));
-                        li.classList.add('selected');
-                        displayAthleteDetails(athleteId, athlete);
-                    });
-                    
-                    athleteListUl.appendChild(li);
-                } catch (error) {
-                    console.error(`Đã xảy ra lỗi khi xử lý VĐV với ID: ${doc.id}`, error);
+                const athlete = doc.data();
+                const athleteId = doc.id;
+                
+                // Kiểm tra an toàn để tránh lỗi
+                if (!athlete || typeof athlete.fullName !== 'string') {
+                    console.warn("Phát hiện hồ sơ VĐV không hợp lệ, đang bỏ qua:", athlete);
+                    return; 
                 }
+
+                const li = document.createElement('li');
+                li.className = 'athlete-item';
+                li.dataset.athleteId = athleteId;
+
+                const initial = athlete.fullName ? athlete.fullName.charAt(0).toUpperCase() : '?';
+
+                li.innerHTML = `
+                    <div class="athlete-avatar">${initial}</div>
+                    <span>${athlete.fullName}</span>
+                `;
+
+                li.addEventListener('click', () => {
+                    document.querySelectorAll('.athlete-item').forEach(item => item.classList.remove('selected'));
+                    li.classList.add('selected');
+                    selectedAthleteId = athleteId;
+                    displayAthleteDetails(athleteId, athlete);
+                });
+                athleteListUl.appendChild(li);
             });
         });
     }
 
-    // --- Hàm hiển thị chi tiết VĐV ---
-    function displayAthleteDetails(athleteId, athleteData) {
-        if (!detailsContent || !detailsPlaceholder || !athleteNameEl) return;
-
-        detailsPlaceholder.style.display = 'none';
+    // --- Hàm hiển thị thông tin chi tiết của VĐV ---
+    function displayAthleteDetails(athleteId, athlete) {
+        if (!detailsContent || !placeholder) return;
+        
+        placeholder.style.display = 'none';
         detailsContent.style.display = 'block';
 
-        // Điền thông tin cá nhân
-        athleteNameEl.textContent = athleteData.fullName || 'Chưa có tên';
-        athleteEmailEl.textContent = athleteData.email || 'Chưa cập nhật';
-        athleteDobEl.textContent = athleteData.dateOfBirth || 'Chưa cập nhật';
-        athleteCityEl.textContent = athleteData.city || 'Chưa cập nhật';
+        // Lấy các phần tử hiển thị thông tin
+        const nameEl = document.getElementById('athleteName');
+        const emailEl = document.getElementById('athleteEmail');
+        const dobEl = document.getElementById('athleteDob');
+        const cityEl = document.getElementById('athleteCity');
+        
+        // Điền thông tin cá nhân một cách an toàn
+        if (nameEl) nameEl.textContent = athlete.fullName || 'Chưa có tên';
+        if (emailEl) emailEl.textContent = athlete.email || 'Chưa cập nhật';
+        if (dobEl) dobEl.textContent = athlete.dateOfBirth || 'Chưa cập nhật';
+        if (cityEl) cityEl.textContent = athlete.city || 'Chưa cập nhật';
 
-        // Hủy listener cũ (nếu có) trước khi tạo listener mới
+        // Hủy lắng nghe sensor cũ (nếu có)
         if (unsubscribeSensor) {
             unsubscribeSensor();
         }
 
-        // Reset giá trị chỉ số về mặc định
-        heartRateEl.textContent = '--';
-        spo2El.textContent = '--';
-        bloodPressureEl.textContent = '--';
-        accelerationEl.textContent = '--';
+        // Lắng nghe dữ liệu sensor mới
+        listenForSensorData(athleteId);
+    }
+    
+    // --- Hàm lắng nghe dữ liệu sensor ---
+    function listenForSensorData(athleteId) {
+        const sensorDocRef = doc(db, 'sensor_data', athleteId);
+        
+        unsubscribeSensor = onSnapshot(sensorDocRef, (doc) => {
+            // Lấy các phần tử hiển thị chỉ số
+            const heartRateEl = document.getElementById('heartRate');
+            const spo2El = document.getElementById('spo2');
+            const bloodPressureEl = document.getElementById('bloodPressure');
+            const accelerationEl = document.getElementById('acceleration');
 
-        // Tạo listener mới cho dữ liệu sensor của VĐV này
-        // Kiểm tra xem athleteId có tồn tại không trước khi tạo tham chiếu
-        if (athleteId) {
-            const sensorDocRef = doc(db, 'sensor_data', athleteId);
-            unsubscribeSensor = onSnapshot(sensorDocRef, (doc) => {
-                if (doc.exists()) {
-                    const data = doc.data();
-                    heartRateEl.textContent = data.heart_rate || '--';
-                    spo2El.textContent = data.spo2 || '--';
-                    bloodPressureEl.textContent = data.blood_pressure || '--';
-                    accelerationEl.textContent = data.acceleration || '--';
-                } else {
-                    console.log(`Không có dữ liệu sensor cho VĐV: ${athleteId}`);
-                }
-            });
-        } else {
-            console.error("Không thể lắng nghe dữ liệu sensor vì thiếu ID của VĐV.");
-        }
+            const elements = [heartRateEl, spo2El, bloodPressureEl, accelerationEl];
+            if (elements.some(el => el === null)) return; // Dừng nếu thiếu phần tử
 
-
-        // Cập nhật chức năng cho các nút hành động
-        const sendExerciseBtn = detailsContent.querySelector('.btn-send-exercise');
-        if(sendExerciseBtn && athleteId) {
-            sendExerciseBtn.href = `send-exercise.html?athleteId=${athleteId}`;
-        }
+            if (doc.exists()) {
+                const data = doc.data();
+                heartRateEl.textContent = data.heart_rate || '--';
+                spo2El.textContent = data.spo2 || '--';
+                bloodPressureEl.textContent = data.blood_pressure || '--';
+                accelerationEl.textContent = data.acceleration || '--';
+            } else {
+                // Reset về giá trị mặc định nếu không có dữ liệu
+                heartRateEl.textContent = '--';
+                spo2El.textContent = '--';
+                bloodPressureEl.textContent = '--';
+                accelerationEl.textContent = '--';
+            }
+        });
     }
 });
 
