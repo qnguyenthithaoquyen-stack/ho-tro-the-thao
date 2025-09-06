@@ -9,25 +9,20 @@
         
         :root {
             --primary-color: #008080;
-            --secondary-color: #00a9a9; /* A lighter teal for gradients */
+            --secondary-color: #006666;
             --background-color: #f0f4f8;
             --card-bg-color: #ffffff;
             --text-color: #333;
             --text-light-color: #6c757d;
-            --border-color: #e0e6ed; /* Slightly darker border */
-            --shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-            --input-focus-color: #00a9a9;
-            --cancel-btn-bg: #f1f3f5;
-            --cancel-btn-hover-bg: #e9ecef;
+            --border-color: #e9ecef;
+            --shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
         }
 
         body {
             font-family: 'Roboto', sans-serif;
             margin: 0;
-            /* Added a subtle gradient to the background */
-            background-image: linear-gradient(to bottom right, #ffffff, #f0f4f8);
+            background-color: var(--background-color);
             color: var(--text-color);
-            line-height: 1.6;
         }
 
         .container {
@@ -60,104 +55,80 @@
         }
         .form-container {
             width: 100%;
-            max-width: 650px;
+            max-width: 600px;
             background-color: var(--card-bg-color);
             border-radius: 16px;
             box-shadow: var(--shadow);
-            padding: 35px 40px;
-            /* Added a decorative top border */
-            border-top: 4px solid var(--primary-color);
+            padding: 30px;
         }
 
         .form-header {
             text-align: center;
-            margin-bottom: 30px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 25px;
         }
         .form-header h2 {
-            font-size: 28px;
-            font-weight: 700;
-            margin-top: 0;
-            margin-bottom: 8px;
-            /* Added a gradient to the main title */
-            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-fill-color: transparent;
+            font-size: 24px;
+            color: var(--text-color);
+            margin: 0;
         }
         .form-header p {
             font-size: 16px;
             color: var(--text-light-color);
-            margin-bottom: 0;
+            margin-top: 5px;
         }
-        .form-header #athleteNameTarget {
+        #athleteNameTarget {
             font-weight: 700;
             color: var(--primary-color);
         }
 
         .form-group {
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
         .form-group label {
             display: block;
             font-weight: 500;
             margin-bottom: 8px;
-            font-size: 14px;
         }
         .form-group input, .form-group textarea {
             width: 100%;
-            padding: 14px;
+            padding: 12px;
             border: 1px solid var(--border-color);
             border-radius: 8px;
             font-size: 16px;
             box-sizing: border-box;
-            transition: border-color 0.3s, box-shadow 0.3s;
-        }
-        .form-group input:focus, .form-group textarea:focus {
-            outline: none;
-            border-color: var(--input-focus-color);
-            box-shadow: 0 0 0 4px rgba(0, 169, 169, 0.15);
         }
          .form-group textarea {
-            min-height: 140px;
+            min-height: 120px;
             resize: vertical;
         }
 
         .form-actions {
             display: flex;
             gap: 15px;
-            margin-top: 30px;
+            margin-top: 25px;
         }
         .submit-btn, .back-btn {
             flex: 1;
-            padding: 14px;
-            border-radius: 25px;
+            padding: 12px;
+            border-radius: 8px;
             font-size: 16px;
             font-weight: 700;
             cursor: pointer;
             text-align: center;
             text-decoration: none;
-            border: none; /* Removed border to rely on background */
-            transition: all 0.3s ease;
+            border: 1px solid transparent;
         }
         .submit-btn {
-            /* Changed to a vibrant gradient */
-            background-image: linear-gradient(to right, #008080 0%, #00a9a9 51%, #008080 100%);
-            background-size: 200% auto;
+            background-color: var(--primary-color);
             color: #fff;
-        }
-        .submit-btn:hover {
-            background-position: right center; /* change the direction of the change here */
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 128, 128, 0.2);
+            border-color: var(--primary-color);
         }
          .back-btn {
-            background-color: var(--cancel-btn-bg);
-            color: var(--text-light-color);
-        }
-        .back-btn:hover {
-            background-color: var(--cancel-btn-hover-bg);
+            background-color: #f8f9fa;
             color: var(--text-color);
+            border-color: var(--border-color);
         }
     </style>
 </head>
@@ -186,11 +157,11 @@
                 <form id="exerciseForm">
                     <div class="form-group">
                         <label for="exerciseTitle">Tiêu đề bài tập</label>
-                        <input type="text" id="exerciseTitle" required placeholder="Ví dụ: Chạy bền 5km">
+                        <input type="text" id="exerciseTitle" required>
                     </div>
                     <div class="form-group">
                         <label for="exerciseDescription">Mô tả chi tiết</label>
-                        <textarea id="exerciseDescription" required placeholder="Mô tả các yêu cầu, tốc độ, thời gian nghỉ..."></textarea>
+                        <textarea id="exerciseDescription" required></textarea>
                     </div>
                     <div class="form-group">
                         <label for="exerciseDate">Ngày thực hiện</label>
