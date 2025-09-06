@@ -66,14 +66,11 @@
         #athlete-details-placeholder svg { width: 60px; height: 60px; margin-bottom: 20px; }
 
         /* --- CHỈNH SỬA BỐ CỤC --- */
-        .details-header {
-            margin-bottom: 20px; /* Giảm khoảng cách dưới tên */
-        }
         #athleteName { 
             font-size: 28px; 
             font-weight: 700; 
             color: var(--text-color); 
-            margin: 0;
+            margin: 0 0 25px 0; /* Thêm khoảng cách dưới tên */
         }
         .details-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; }
         .detail-card { background-color: #f8f9fa; border-radius: 12px; padding: 15px; border: 1px solid var(--border-color); }
@@ -156,9 +153,7 @@
                 </div>
 
                 <div id="athlete-details-content" style="display: none;">
-                    <div class="details-header">
-                         <h2 id="athleteName"></h2>
-                    </div>
+                    <h2 id="athleteName"></h2>
                     <div class="details-grid">
                         <div class="detail-card"><span class="detail-label">Email</span><p id="athleteEmail" class="detail-value"></p></div>
                         <div class="detail-card"><span class="detail-label">Ngày sinh</span><p id="athleteDob" class="detail-value"></p></div>
