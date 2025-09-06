@@ -108,6 +108,7 @@ function displayAthleteDetails(athlete) {
     bloodPressureEl.textContent = '--';
     accelerationEl.textContent = '--';
 
+    // Giả sử có collection 'sensor_data' với document ID là UID của VĐV
     const sensorDocRef = doc(db, "sensor_data", athlete.uid);
     unsubscribeSensor = onSnapshot(sensorDocRef, (doc) => {
         if (doc.exists()) {
