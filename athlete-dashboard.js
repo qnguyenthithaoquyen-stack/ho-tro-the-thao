@@ -127,6 +127,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- CÁC HÀM CŨ ĐƯỢC GIỮ NGUYÊN ---
     function setupExistingUIInteractions() {
+        // Lưu ý: Phần này sẽ chỉ hoạt động với các mục tiêu tĩnh có sẵn trong HTML ban đầu.
+        // Các bài tập động được thêm từ HLV sẽ cần logic xử lý sự kiện riêng nếu cần.
         const selectButtons = document.querySelectorAll('.task-action button');
 
         const suggestions = {
@@ -219,4 +221,3 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 });
-
