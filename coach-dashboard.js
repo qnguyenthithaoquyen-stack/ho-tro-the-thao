@@ -1,7 +1,7 @@
 // Import các hàm cần thiết từ Firebase SDK
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
-import { getFirestore, collection, onSnapshot, doc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+import { getFirestore, collection, onSnapshot, doc, query } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
 // --- Cấu hình Firebase ---
 const firebaseConfig = {
@@ -26,17 +26,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const athleteListUl = document.getElementById('athleteList');
     const detailsPlaceholder = document.getElementById('athlete-details-placeholder');
     const detailsContent = document.getElementById('athlete-details-content');
-    const athleteNameH2 = document.getElementById('athleteName');
-    const athleteEmailSpan = document.getElementById('athleteEmailInfo');
-    const athleteDobSpan = document.getElementById('athleteDobInfo');
-    const athleteCitySpan = document.getElementById('athleteCityInfo');
+    const athleteNameEl = document.getElementById('athleteName');
+    const athleteEmailEl = document.getElementById('athleteEmail');
+    const athleteDobEl = document.getElementById('athleteDob');
+    const athleteCityEl = document.getElementById('athleteCity');
     const heartRateEl = document.getElementById('heartRate');
     const spo2El = document.getElementById('spo2');
     const bloodPressureEl = document.getElementById('bloodPressure');
     const accelerationEl = document.getElementById('acceleration');
 
     // Kiểm tra để đảm bảo tất cả các phần tử đều tồn tại
-    if (!logoutButton || !athleteListUl || !detailsPlaceholder || !detailsContent) {
+    if (!logoutButton || !athleteListUl || !detailsPlaceholder || !detailsContent || !athleteNameEl) {
         console.error("Lỗi nghiêm trọng: Một hoặc nhiều phần tử HTML cần thiết không được tìm thấy. Vui lòng kiểm tra lại ID trong tệp HTML.");
         return; // Dừng thực thi nếu giao diện bị lỗi
     }
@@ -71,8 +71,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Hàm lắng nghe danh sách VĐV ---
     function listenForAthletes(coachId) {
         const managedAthletesColRef = collection(db, "users", coachId, "managed_athletes");
+        const q = query(managedAthletesColRef);
 
-        onSnapshot(managedAthletesColRef, (snapshot) => {
+        onSnapshot(q, (snapshot) => {
             athleteListUl.innerHTML = ''; // Xóa danh sách cũ
             if (snapshot.empty) {
                 athleteListUl.innerHTML = '<p style="padding: 12px; color: #6c757d;">Chưa có VĐV nào.</p>';
@@ -83,8 +84,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     const athlete = doc.data();
                     const athleteId = doc.id;
 
+                    // Xử lý an toàn hơn nếu VĐV không có dữ liệu
                     if (!athlete) {
-                        console.warn(`Tài liệu VĐV với ID ${doc.id} không có dữ liệu.`);
+                        console.warn(`Tài liệu VĐV với ID ${athleteId} không có dữ liệu.`);
                         return; // Bỏ qua và xử lý VĐV tiếp theo
                     }
                     
@@ -93,8 +95,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     li.dataset.athleteId = athleteId;
                     
                     const athleteName = athlete.fullName || 'Chưa có tên';
-                    // Kiểm tra kỹ hơn trước khi lấy ký tự đầu
-                    const initial = (typeof athleteName === 'string' && athleteName.length > 0) ? athleteName.charAt(0).toUpperCase() : '?';
+                    // Chuyển đổi an toàn sang chuỗi trước khi lấy ký tự đầu
+                    const initial = String(athleteName).charAt(0).toUpperCase();
 
                     li.innerHTML = `
                         <div class="athlete-avatar">${initial}</div>
@@ -117,14 +119,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Hàm hiển thị chi tiết VĐV ---
     function displayAthleteDetails(athleteId, athleteData) {
+        if (!detailsContent || !detailsPlaceholder || !athleteNameEl) return;
+
         detailsPlaceholder.style.display = 'none';
         detailsContent.style.display = 'block';
 
         // Điền thông tin cá nhân
-        athleteNameH2.textContent = athleteData.fullName || 'Chưa có tên';
-        athleteEmailSpan.textContent = athleteData.email || 'Chưa cập nhật';
-        athleteDobSpan.textContent = athleteData.dateOfBirth || 'Chưa cập nhật';
-        athleteCitySpan.textContent = athleteData.city || 'Chưa cập nhật';
+        athleteNameEl.textContent = athleteData.fullName || 'Chưa có tên';
+        athleteEmailEl.textContent = athleteData.email || 'Chưa cập nhật';
+        athleteDobEl.textContent = athleteData.dateOfBirth || 'Chưa cập nhật';
+        athleteCityEl.textContent = athleteData.city || 'Chưa cập nhật';
 
         // Hủy listener cũ (nếu có) trước khi tạo listener mới
         if (unsubscribeSensor) {
@@ -138,23 +142,30 @@ document.addEventListener('DOMContentLoaded', () => {
         accelerationEl.textContent = '--';
 
         // Tạo listener mới cho dữ liệu sensor của VĐV này
-        const sensorDocRef = doc(db, 'sensor_data', athleteId);
-        unsubscribeSensor = onSnapshot(sensorDocRef, (doc) => {
-            if (doc.exists()) {
-                const data = doc.data();
-                heartRateEl.textContent = data.heart_rate || '--';
-                spo2El.textContent = data.spo2 || '--';
-                bloodPressureEl.textContent = data.blood_pressure || '--';
-                accelerationEl.textContent = data.acceleration || '--';
-            } else {
-                console.log(`Không có dữ liệu sensor cho VĐV: ${athleteId}`);
-            }
-        });
+        // Kiểm tra xem athleteId có tồn tại không trước khi tạo tham chiếu
+        if (athleteId) {
+            const sensorDocRef = doc(db, 'sensor_data', athleteId);
+            unsubscribeSensor = onSnapshot(sensorDocRef, (doc) => {
+                if (doc.exists()) {
+                    const data = doc.data();
+                    heartRateEl.textContent = data.heart_rate || '--';
+                    spo2El.textContent = data.spo2 || '--';
+                    bloodPressureEl.textContent = data.blood_pressure || '--';
+                    accelerationEl.textContent = data.acceleration || '--';
+                } else {
+                    console.log(`Không có dữ liệu sensor cho VĐV: ${athleteId}`);
+                }
+            });
+        } else {
+            console.error("Không thể lắng nghe dữ liệu sensor vì thiếu ID của VĐV.");
+        }
+
 
         // Cập nhật chức năng cho các nút hành động
         const sendExerciseBtn = detailsContent.querySelector('.btn-send-exercise');
-        if(sendExerciseBtn) {
+        if(sendExerciseBtn && athleteId) {
             sendExerciseBtn.href = `send-exercise.html?athleteId=${athleteId}`;
         }
     }
 });
+
