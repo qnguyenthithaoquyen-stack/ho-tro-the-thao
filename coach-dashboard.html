@@ -70,21 +70,12 @@
         .personal-info { display: flex; flex-direction: column; gap: 10px; text-align: right; font-size: 14px; color: var(--text-light-color); flex-shrink: 0; }
         .personal-info span { font-weight: 500; }
         
-        /* Cập nhật Grid cho cả thông tin cá nhân và chỉ số */
-        .info-grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); 
-            gap: 20px; 
-        }
-
-        /* Đảm bảo 4 ô chỉ số luôn nằm trên 1 hàng */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 15px;
         }
 
-        /* Trang trí lại các ô chỉ số */
         .detail-card {
             background-color: #f8f9fa;
             border-radius: 12px;
@@ -187,11 +178,7 @@
                         </div>
                     </div>
                     <div class="details-body">
-                        <div class="info-grid">
-                            <div class="detail-card"><span class="detail-label">Email</span><p id="athleteEmailInfo" class="detail-value"></p></div>
-                             <div class="detail-card"><span class="detail-label">Ngày sinh</span><p id="athleteDobInfo" class="detail-value"></p></div>
-                            <div class="detail-card"><span class="detail-label">Tỉnh thành</span><p id="athleteCityInfo" class="detail-value"></p></div>
-                        </div>
+                        <!-- HÀNG ĐÃ BỊ XOÁ -->
                         <div class="stats-grid">
                             <div class="detail-card stat-card">
                                 <div class="detail-icon-wrapper icon-heart">
