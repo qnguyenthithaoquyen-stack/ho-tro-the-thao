@@ -19,99 +19,88 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 // --- Lấy các phần tử HTML ---
-const athleteNameTarget = document.getElementById('athleteNameTarget');
+const athleteInfoP = document.getElementById('athlete-info');
 const exerciseForm = document.getElementById('exerciseForm');
-const exerciseTitleInput = document.getElementById('exerciseTitle');
-const exerciseDescriptionInput = document.getElementById('exerciseDescription');
-const exerciseDateInput = document.getElementById('exerciseDate');
-const submitButton = document.querySelector('.submit-btn');
+const cancelBtn = document.getElementById('cancel-btn');
 
-let targetAthleteId = null;
-let currentCoachId = null;
+let athleteId = null;
+let coachId = null;
 
-// --- Hàm chính ---
+// --- Hàm Chính ---
 document.addEventListener('DOMContentLoaded', () => {
-    // Lấy ID của VĐV từ URL
+    // Lấy athleteId từ URL
     const urlParams = new URLSearchParams(window.location.search);
-    targetAthleteId = urlParams.get('athleteId');
+    athleteId = urlParams.get('athleteId');
 
-    if (!targetAthleteId) {
-        alert("Không tìm thấy ID của vận động viên. Đang quay lại bảng điều khiển.");
+    if (!athleteId) {
+        alert('Không tìm thấy ID của Vận động viên. Vui lòng quay lại.');
         window.location.href = 'coach-dashboard.html';
         return;
     }
 
     onAuthStateChanged(auth, (user) => {
         if (user) {
-            // Người dùng đã đăng nhập
-            currentCoachId = user.uid;
+            coachId = user.uid;
             loadAthleteInfo();
         } else {
-            // Nếu chưa đăng nhập, chuyển về trang đăng nhập
             window.location.href = 'dangnhap.html';
         }
     });
 
-    exerciseForm.addEventListener('submit', handleFormSubmit);
+    // --- Xử lý sự kiện ---
+    exerciseForm.addEventListener('submit', sendExercise);
+    cancelBtn.addEventListener('click', () => {
+        window.location.href = 'coach-dashboard.html';
+    });
 });
 
-
-// --- Hàm tải thông tin VĐV ---
+// --- Tải thông tin VĐV ---
 async function loadAthleteInfo() {
     try {
-        const athleteDocRef = doc(db, "users", targetAthleteId);
-        const athleteDocSnap = await getDoc(athleteDocRef);
+        const athleteDocRef = doc(db, "users", coachId, "managed_athletes", athleteId);
+        const docSnap = await getDoc(athleteDocRef);
 
-        if (athleteDocSnap.exists()) {
-            const athleteData = athleteDocSnap.data();
-            athleteNameTarget.textContent = athleteData.fullName || 'Không có tên';
+        if (docSnap.exists()) {
+            const athleteData = docSnap.data();
+            athleteInfoP.querySelector('strong').textContent = athleteData.fullName || 'Không có tên';
         } else {
-            athleteNameTarget.textContent = 'Không tìm thấy VĐV';
-            submitButton.disabled = true; // Vô hiệu hóa nút gửi nếu không có VĐV
+            console.error("Không tìm thấy thông tin VĐV");
+            athleteInfoP.querySelector('strong').textContent = "Không xác định";
         }
     } catch (error) {
         console.error("Lỗi khi tải thông tin VĐV:", error);
-        athleteNameTarget.textContent = 'Lỗi tải dữ liệu';
-        submitButton.disabled = true;
+        alert("Đã xảy ra lỗi khi tải thông tin VĐV.");
     }
 }
 
-
-// --- Hàm xử lý gửi bài tập ---
-async function handleFormSubmit(e) {
+// --- Gửi bài tập ---
+async function sendExercise(e) {
     e.preventDefault();
-
-    const title = exerciseTitleInput.value;
-    const description = exerciseDescriptionInput.value;
-    const date = exerciseDateInput.value;
-
-    if (!title || !description || !date) {
-        alert("Vui lòng điền đầy đủ thông tin.");
-        return;
-    }
-
+    const submitButton = exerciseForm.querySelector('.btn-submit');
     submitButton.disabled = true;
     submitButton.textContent = 'Đang gửi...';
 
+    const exerciseData = {
+        title: exerciseForm.title.value,
+        description: exerciseForm.description.value,
+        dueDate: exerciseForm.dueDate.value,
+        coachId: coachId,
+        athleteId: athleteId,
+        status: 'pending', // Trạng thái: pending, completed
+        createdAt: serverTimestamp() // Thêm dấu thời gian của máy chủ
+    };
+
     try {
-        // Tạo một bộ sưu tập con 'exercises' bên trong tài liệu của VĐV
-        const exercisesColRef = collection(db, "users", targetAthleteId, "exercises");
-
-        await addDoc(exercisesColRef, {
-            title: title,
-            description: description,
-            date: date,
-            assignedBy: currentCoachId, // Lưu ID của HLV đã giao bài
-            createdAt: serverTimestamp(), // Lưu thời gian tạo
-            status: 'pending' // Trạng thái ban đầu
-        });
-
-        alert("Gửi bài tập thành công!");
-        window.location.href = 'coach-dashboard.html'; // Quay lại bảng điều khiển sau khi gửi
+        // Lưu bài tập vào bộ sưu tập con của VĐV
+        const exercisesColRef = collection(db, "users", athleteId, "exercises");
+        await addDoc(exercisesColRef, exerciseData);
+        
+        alert('Gửi bài tập thành công!');
+        window.location.href = 'coach-dashboard.html';
 
     } catch (error) {
         console.error("Lỗi khi gửi bài tập:", error);
-        alert("Đã xảy ra lỗi khi gửi bài tập. Vui lòng thử lại.");
+        alert('Đã xảy ra lỗi khi gửi bài tập. Vui lòng thử lại.');
         submitButton.disabled = false;
         submitButton.textContent = 'Gửi bài tập';
     }
