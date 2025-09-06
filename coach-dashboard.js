@@ -32,17 +32,13 @@ const spo2El = document.getElementById('spo2');
 const bloodPressureEl = document.getElementById('bloodPressure');
 const accelerationEl = document.getElementById('acceleration');
 
-// Biến toàn cục để giữ listener của sensor
 let unsubscribeSensor;
 
-// --- Hàm chính để khởi chạy trang ---
 function initializeDashboard() {
     onAuthStateChanged(auth, (user) => {
         if (user) {
-            console.log("DEBUG: Người dùng đã xác thực. ID của HLV:", user.uid);
             listenForManagedAthletes(user.uid);
         } else {
-            console.log("DEBUG: Người dùng chưa xác thực. Chuyển về trang đăng nhập.");
             window.location.href = 'dangnhap.html';
         }
     });
@@ -54,19 +50,13 @@ function initializeDashboard() {
     });
 }
 
-// --- Lắng nghe và hiển thị danh sách VĐV ---
 function listenForManagedAthletes(coachId) {
     const managedAthletesCol = collection(db, "users", coachId, "managed_athletes");
     const q = query(managedAthletesCol);
-    
-    console.log(`DEBUG: Bắt đầu lắng nghe dữ liệu tại users/${coachId}/managed_athletes`);
 
     onSnapshot(q, (snapshot) => {
-        console.log("DEBUG: Đã nhận được dữ liệu. Số lượng VĐV tìm thấy:", snapshot.size);
-        
-        athleteListUl.innerHTML = ''; // Xóa danh sách cũ
+        athleteListUl.innerHTML = '';
         if (snapshot.empty) {
-            console.log("DEBUG: Danh sách trống. Hiển thị thông báo.");
             athleteListUl.innerHTML = '<p style="padding: 12px;">Chưa có VĐV nào trong danh sách.</p>';
             detailsPlaceholder.style.display = 'flex';
             detailsContent.style.display = 'none';
@@ -75,14 +65,18 @@ function listenForManagedAthletes(coachId) {
         
         snapshot.forEach(doc => {
             const athlete = doc.data();
-            console.log("DEBUG: Đã tìm thấy VĐV:", athlete.fullName, "Dữ liệu:", athlete);
+            
+            // SỬA LỖI: Kiểm tra xem fullName có tồn tại không
+            const fullName = athlete.fullName || 'Chưa có tên';
+            const initial = fullName.charAt(0).toUpperCase();
+
             const li = document.createElement('li');
             li.className = 'athlete-item';
             li.dataset.athleteId = athlete.uid;
             
             li.innerHTML = `
-                <div class="athlete-avatar">${athlete.fullName.charAt(0).toUpperCase()}</div>
-                <span>${athlete.fullName}</span>
+                <div class="athlete-avatar">${initial}</div>
+                <span>${fullName}</span>
             `;
 
             li.addEventListener('click', () => {
@@ -94,16 +88,17 @@ function listenForManagedAthletes(coachId) {
             athleteListUl.appendChild(li);
         });
     }, (error) => {
-        console.error("DEBUG: ĐÃ XẢY RA LỖI KHI LẮNG NGHE DỮ LIỆU:", error);
+        console.error("ĐÃ XẢY RA LỖI KHI LẮNG NGHE DỮ LIỆU:", error);
     });
 }
 
-// --- Hiển thị thông tin chi tiết của VĐV ---
 function displayAthleteDetails(athlete) {
     detailsPlaceholder.style.display = 'none';
     detailsContent.style.display = 'block';
-    athleteNameEl.textContent = athlete.fullName;
-    athleteEmailEl.textContent = athlete.email;
+    
+    // SỬA LỖI: Hiển thị tên một cách an toàn
+    athleteNameEl.textContent = athlete.fullName || 'Chưa có tên';
+    athleteEmailEl.textContent = athlete.email || 'Chưa cập nhật';
     athleteDobEl.textContent = athlete.dateOfBirth || 'Chưa cập nhật';
     athleteCityEl.textContent = athlete.city || 'Chưa cập nhật';
 
@@ -133,5 +128,5 @@ function displayAthleteDetails(athlete) {
     });
 }
 
-// --- Chạy hàm khởi tạo khi trang đã tải xong ---
 document.addEventListener('DOMContentLoaded', initializeDashboard);
+
