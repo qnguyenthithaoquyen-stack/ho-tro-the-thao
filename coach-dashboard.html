@@ -6,6 +6,7 @@
     <title>Bảng điều khiển - Huấn Luyện Viên</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+        
         :root {
             --primary-color: #008080;
             --background-color: #f0f4f8;
@@ -13,19 +14,22 @@
             --text-color: #333;
             --text-light-color: #6c757d;
             --border-color: #e9ecef;
-            --shadow: 0 8px 25px rgba(0, 0, 0, 0.07);
+            --shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+            --list-hover-bg: #e6f2f2;
         }
+
         body {
             font-family: 'Roboto', sans-serif;
             margin: 0;
             background-color: var(--background-color);
             color: var(--text-color);
         }
+
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            background-color: var(--card-bg-color);
         }
+
         .header {
             display: flex;
             justify-content: space-between;
@@ -34,36 +38,44 @@
             background-color: var(--primary-color);
             color: #fff;
         }
-        .header-left { display: flex; align-items: center; }
-        .logo { background-color: #fff; color: var(--primary-color); font-weight: 700; padding: 10px; border-radius: 8px; margin-right: 15px; }
-        .project-info h1 { font-size: 24px; margin: 0; font-weight: 700; }
+
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        .logo { background-color: #fff; color: var(--primary-color); font-weight: 700; padding: 10px; border-radius: 8px; }
+        .project-info h1 { font-size: 24px; margin: 0; }
         .project-info p { font-size: 12px; margin: 0; opacity: 0.9; }
         .logout-btn { background-color: #fff; color: var(--primary-color); border: none; padding: 10px 20px; border-radius: 20px; cursor: pointer; font-weight: 700; text-decoration: none; font-size: 14px; }
+        
         .navbar { display: flex; background-color: var(--card-bg-color); box-shadow: 0 2px 4px rgba(0,0,0,.05); padding: 0 30px; }
-        .navbar a { padding: 15px 25px; text-decoration: none; color: var(--text-light-color); font-weight: 500; border-bottom: 3px solid transparent; }
-        .navbar a.active { color: var(--primary-color); border-bottom-color: var(--primary-color); }
-        .main-content { padding: 40px; display: grid; grid-template-columns: 320px 1fr; gap: 30px; align-items: flex-start; background-color: var(--background-color); }
+        .navbar a { padding: 15px 25px; text-decoration: none; color: var(--text-light-color); font-weight: 500; border-bottom: 3px solid transparent; transition: all 0.3s; }
+        .navbar a.active, .navbar a:hover { color: var(--primary-color); border-bottom-color: var(--primary-color); }
+
+        .main-content { padding: 30px; display: grid; grid-template-columns: 320px 1fr; gap: 30px; align-items: flex-start; }
         .dashboard-card { background-color: var(--card-bg-color); border-radius: 16px; box-shadow: var(--shadow); padding: 25px; }
+        
         .card-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 15px; margin-bottom: 20px; }
         .card-header h2 { font-size: 22px; color: var(--text-color); margin: 0; }
-        .add-athlete-btn { background-color: #e6f2f2; color: var(--primary-color); border: none; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 14px; font-weight: 500; text-decoration: none; transition: background-color .3s; }
-        .add-athlete-btn:hover { background-color: #d1e7e7; }
-        .athlete-list { list-style: none; padding: 0; max-height: 450px; overflow-y: auto; }
-        .athlete-item { display: flex; align-items: center; gap: 15px; padding: 12px; border-radius: 10px; margin-bottom: 10px; cursor: pointer; transition: background-color .3s; }
-        .athlete-item.selected { background-color: #e6f2f2; }
-        .athlete-avatar { width: 40px; height: 40px; border-radius: 50%; background-color: var(--primary-color); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 500; flex-shrink: 0; }
-        .athlete-details-placeholder { text-align: center; color: var(--text-light-color); padding: 80px 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; box-sizing: border-box; }
-        .placeholder-icon { width: 64px; height: 64px; margin-bottom: 20px; color: #ced4da; }
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
-        .stat-item { background-color: #f8f9fa; padding: 20px; border-radius: 12px; }
-        .stat-item .label { font-size: 14px; color: var(--text-light-color); margin-bottom: 5px; }
-        .stat-item .value { font-size: 24px; font-weight: 700; color: var(--text-color); }
+        .add-athlete-btn { background-color: var(--primary-color); color: #fff; border: none; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 14px; text-decoration: none; transition: background-color .3s; }
+        .add-athlete-btn:hover { background-color: #006666; }
+
+        .athlete-list { list-style: none; padding: 0; margin: 0; max-height: 500px; overflow-y: auto; }
+        .athlete-item { display: flex; align-items: center; gap: 15px; padding: 12px; border-radius: 10px; margin-bottom: 10px; cursor: pointer; transition: all .2s ease-in-out; border: 1px solid var(--border-color); }
+        .athlete-item:hover, .athlete-item.selected { background-color: var(--list-hover-bg); transform: translateX(4px); border-left: 4px solid var(--primary-color); }
+        .athlete-avatar { width: 40px; height: 40px; border-radius: 50%; background-color: var(--primary-color); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0; }
+        
+        #athlete-details-placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--text-light-color); text-align: center; }
+        #athlete-details-placeholder svg { width: 60px; height: 60px; margin-bottom: 20px; }
+
+        #athleteName { font-size: 28px; font-weight: 700; color: var(--primary-color); margin-bottom: 25px; }
+        .details-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; }
+        .detail-card { background-color: #f8f9fa; border-radius: 12px; padding: 15px; border: 1px solid var(--border-color); }
+        .detail-label { font-size: 13px; color: var(--text-light-color); margin-bottom: 5px; display: block; }
+        .detail-value { font-size: 18px; font-weight: 500; margin: 0; word-wrap: break-word; }
     </style>
 </head>
 <body>
     <div class="container">
         <header class="header">
-             <div class="header-left">
+            <div class="header-left">
                 <div class="logo">LOGO</div>
                 <div class="project-info">
                     <h1>HỖ TRỢ HUẤN LUYỆN THỂ THAO</h1>
@@ -72,11 +84,13 @@
             </div>
             <a href="#" id="logoutButton" class="logout-btn">Đăng xuất</a>
         </header>
+
         <nav class="navbar">
             <a href="#">Trang chủ</a>
             <a href="#">Giới thiệu</a>
-            <a href="coach-dashboard.html" class="active">Bảng điều khiển</a>
+            <a href="#" class="active">Bảng điều khiển</a>
         </nav>
+
         <main class="main-content">
             <section class="athlete-list-section dashboard-card">
                 <div class="card-header">
@@ -88,49 +102,24 @@
                 </ul>
             </section>
 
-            <section id="detailsSection" class="athlete-details-section dashboard-card">
-                <div id="athlete-details-placeholder" class="athlete-details-placeholder">
-                    <svg class="placeholder-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                        <circle cx="8.5" cy="7" r="4"></circle>
-                        <line x1="20" y1="8" x2="20" y2="14"></line>
-                        <line x1="23" y1="11" x2="17" y2="11"></line>
-                    </svg>
-                    <p>Chọn một vận động viên từ danh sách để xem chi tiết</p>
+            <section class="athlete-details-section dashboard-card">
+                <div id="athlete-details-placeholder">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width: 60px; height: 60px; color: #ccc;">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-2.278 1.125 1.125 0 0 0 0-1.585 13.464 13.464 0 0 1-1.15-1.04 1.125 1.125 0 0 0-1.585 0 13.464 13.464 0 0 1-1.04 1.15 1.125 1.125 0 0 0 0 1.585 9.337 9.337 0 0 0-2.278 4.121 9.38 9.38 0 0 0 .372 2.625M16.5 12.062A4.5 4.5 0 0 1 12 16.5a4.5 4.5 0 0 1-4.5-4.5 4.5 4.5 0 0 1 4.5-4.5 4.5 4.5 0 0 1 4.5 4.5M12 6.75a5.25 5.25 0 1 0 0 10.5 5.25 5.25 0 0 0 0-10.5" />
+                      </svg>
+                      <p>Chọn một vận động viên từ danh sách để xem chi tiết.</p>
                 </div>
+
                 <div id="athlete-details-content" style="display: none;">
-                    <div class="card-header">
-                        <h2 id="athleteName"></h2>
-                    </div>
-                    <div class="stats-grid">
-                        <div class="stat-item">
-                            <div class="label">Email</div>
-                            <div class="value" id="athleteEmail" style="font-size: 16px; word-break: break-all;">--</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="label">Ngày sinh</div>
-                            <div class="value" id="athleteDob">--</div>
-                        </div>
-                         <div class="stat-item">
-                            <div class="label">Tỉnh thành</div>
-                            <div class="value" id="athleteCity">--</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="label">Nhịp tim (bpm)</div>
-                            <div class="value" id="heartRate">--</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="label">Oxi trong máu (%)</div>
-                            <div class="value" id="spo2">--</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="label">Huyết áp</div>
-                            <div class="value" id="bloodPressure">--</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="label">Gia tốc (m/s²)</div>
-                            <div class="value" id="acceleration">--</div>
-                        </div>
+                    <h2 id="athleteName" class="card-header"></h2>
+                    <div class="details-grid">
+                        <div class="detail-card"><span class="detail-label">Email</span><p id="athleteEmail" class="detail-value"></p></div>
+                        <div class="detail-card"><span class="detail-label">Ngày sinh</span><p id="athleteDob" class="detail-value"></p></div>
+                        <div class="detail-card"><span class="detail-label">Tỉnh thành</span><p id="athleteCity" class="detail-value"></p></div>
+                        <div class="detail-card"><span class="detail-label">Nhịp tim (bpm)</span><p id="heartRate" class="detail-value">--</p></div>
+                        <div class="detail-card"><span class="detail-label">Oxi trong máu (%)</span><p id="spo2" class="detail-value">--</p></div>
+                        <div class="detail-card"><span class="detail-label">Huyết áp</span><p id="bloodPressure" class="detail-value">--</p></div>
+                        <div class="detail-card"><span class="detail-label">Gia tốc (m/s²)</span><p id="acceleration" class="detail-value">--</p></div>
                     </div>
                 </div>
             </section>
