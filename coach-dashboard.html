@@ -65,7 +65,17 @@
         #athlete-details-placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--text-light-color); text-align: center; }
         #athlete-details-placeholder svg { width: 60px; height: 60px; margin-bottom: 20px; }
 
-        #athleteName { font-size: 28px; font-weight: 700; color: var(--text-color); margin-bottom: 25px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px;}
+        .details-header {
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+        }
+        #athleteName { 
+            font-size: 28px; 
+            font-weight: 700; 
+            color: var(--text-color); 
+            margin: 0;
+        }
         .details-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; }
         .detail-card { background-color: #f8f9fa; border-radius: 12px; padding: 15px; border: 1px solid var(--border-color); }
         .detail-label { font-size: 13px; color: var(--text-light-color); margin-bottom: 5px; display: block; }
@@ -104,14 +114,16 @@
 
             <section class="athlete-details-section dashboard-card">
                 <div id="athlete-details-placeholder">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width: 60px; height: 60px; color: #ccc;">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-2.278 1.125 1.125 0 0 0 0-1.585 13.464 13.464 0 0 1-1.15-1.04 1.125 1.125 0 0 0-1.585 0 13.464 13.464 0 0 1-1.04 1.15 1.125 1.125 0 0 0 0 1.585 9.337 9.337 0 0 0-2.278 4.121 9.38 9.38 0 0 0 .372 2.625M16.5 12.062A4.5 4.5 0 0 1 12 16.5a4.5 4.5 0 0 1-4.5-4.5 4.5 4.5 0 0 1 4.5-4.5 4.5 4.5 0 0 1 4.5 4.5M12 6.75a5.25 5.25 0 1 0 0 10.5 5.25 5.25 0 0 0 0-10.5" />
                       </svg>
                       <p>Chọn một vận động viên từ danh sách để xem chi tiết.</p>
                 </div>
 
                 <div id="athlete-details-content" style="display: none;">
-                    <h2 id="athleteName"></h2>
+                    <div class="details-header">
+                         <h2 id="athleteName"></h2>
+                    </div>
                     <div class="details-grid">
                         <div class="detail-card"><span class="detail-label">Email</span><p id="athleteEmail" class="detail-value"></p></div>
                         <div class="detail-card"><span class="detail-label">Ngày sinh</span><p id="athleteDob" class="detail-value"></p></div>
