@@ -1,7 +1,7 @@
 // Import các hàm cần thiết từ Firebase SDK
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
-import { getFirestore, collection, onSnapshot, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+import { getFirestore, collection, onSnapshot, doc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
 // --- Cấu hình Firebase ---
 const firebaseConfig = {
@@ -23,60 +23,53 @@ const logoutButton = document.getElementById('logoutButton');
 const athleteListUl = document.getElementById('athleteList');
 const detailsPlaceholder = document.getElementById('athlete-details-placeholder');
 const detailsContent = document.getElementById('athlete-details-content');
-
-// Chi tiết VĐV
 const athleteNameH2 = document.getElementById('athleteName');
 const athleteEmailSpan = document.getElementById('athleteEmail');
 const athleteDobSpan = document.getElementById('athleteDob');
 const athleteCitySpan = document.getElementById('athleteCity');
 
-// Chỉ số cảm biến
-const heartRateP = document.getElementById('heartRate');
-const spo2P = document.getElementById('spo2');
-const bloodPressureP = document.getElementById('bloodPressure');
-const accelerationP = document.getElementById('acceleration');
+// Các ô chỉ số
+const heartRateEl = document.getElementById('heartRate');
+const spo2El = document.getElementById('spo2');
+const bloodPressureEl = document.getElementById('bloodPressure');
+const accelerationEl = document.getElementById('acceleration');
 
-// Nút chức năng
+// Nút gửi bài tập
 const sendExerciseBtn = document.querySelector('.btn-send-exercise');
 
-let currentCoach = null;
-let unsubscribeSensor;
+let currentCoachId = null;
+let unsubscribeSensor; // Biến để hủy lắng nghe sensor của VĐV cũ
 
-// --- Hàm chính ---
-onAuthStateChanged(auth, async (user) => {
-    if (user) {
-        const userDocRef = doc(db, "users", user.uid);
-        const userDocSnap = await getDoc(userDocRef);
-
-        if (userDocSnap.exists() && userDocSnap.data().role === 'coach') {
-            currentCoach = user;
+// --- Hàm Chính ---
+document.addEventListener('DOMContentLoaded', () => {
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            currentCoachId = user.uid;
             initializeDashboard(user);
         } else {
-            // Nếu người dùng không phải HLV, đăng xuất và chuyển về trang đăng nhập
-            signOut(auth);
+            // Nếu chưa đăng nhập, chuyển về trang đăng nhập
             window.location.href = 'dangnhap.html';
         }
-    } else {
-        // Nếu chưa đăng nhập, chuyển về trang đăng nhập
-        window.location.href = 'dangnhap.html';
-    }
+    });
 });
 
-function initializeDashboard(coach) {
+// --- Khởi tạo Bảng điều khiển ---
+function initializeDashboard(user) {
     logoutButton.addEventListener('click', () => {
         signOut(auth).catch(error => console.error("Lỗi khi đăng xuất:", error));
     });
 
-    listenForManagedAthletes(coach.uid);
+    listenForManagedAthletes(user.uid);
 }
 
+// --- Lắng nghe danh sách VĐV mà HLV quản lý ---
 function listenForManagedAthletes(coachId) {
     const managedAthletesColRef = collection(db, "users", coachId, "managed_athletes");
-    
+
     onSnapshot(managedAthletesColRef, (snapshot) => {
-        athleteListUl.innerHTML = '';
+        athleteListUl.innerHTML = ''; // Xóa danh sách cũ để tải lại
         if (snapshot.empty) {
-            athleteListUl.innerHTML = '<p style="padding: 12px; color: var(--text-light-color);">Chưa có VĐV nào.</p>';
+            athleteListUl.innerHTML = '<p style="padding: 12px; color: #6c757d;">Chưa có VĐV nào.</p>';
             return;
         }
 
@@ -84,59 +77,65 @@ function listenForManagedAthletes(coachId) {
             const athleteData = doc.data();
             const li = document.createElement('li');
             li.className = 'athlete-item';
-            li.dataset.athleteId = athleteData.uid;
-
-            const athleteName = athleteData.fullName || 'Chưa có tên';
-            const avatarChar = athleteName.charAt(0).toUpperCase();
+            li.dataset.athleteId = doc.id; // ID của VĐV
+            
+            // Xử lý an toàn trường hợp VĐV chưa có tên
+            const athleteName = athleteData.fullName || "Chưa có tên";
+            const initial = athleteName.charAt(0).toUpperCase();
 
             li.innerHTML = `
-                <div class="athlete-avatar">${avatarChar}</div>
+                <div class="athlete-avatar">${initial}</div>
                 <span>${athleteName}</span>
             `;
-            
+
             li.addEventListener('click', () => {
+                // Đánh dấu mục được chọn
                 document.querySelectorAll('.athlete-item').forEach(item => item.classList.remove('selected'));
                 li.classList.add('selected');
-                displayAthleteDetails(athleteData);
+                // Hiển thị chi tiết
+                displayAthleteDetails(doc.id, athleteData);
             });
+
             athleteListUl.appendChild(li);
         });
     });
 }
 
-function displayAthleteDetails(athleteData) {
+// --- Hiển thị chi tiết VĐV được chọn ---
+function displayAthleteDetails(athleteId, athleteData) {
+    // Ẩn placeholder và hiện nội dung chi tiết
     detailsPlaceholder.style.display = 'none';
     detailsContent.style.display = 'block';
 
-    // Hiển thị thông tin cá nhân
+    // Điền thông tin cá nhân
     athleteNameH2.textContent = athleteData.fullName || 'Chưa có tên';
     athleteEmailSpan.textContent = athleteData.email || 'Chưa cập nhật';
     athleteDobSpan.textContent = athleteData.dateOfBirth || 'Chưa cập nhật';
     athleteCitySpan.textContent = athleteData.city || 'Chưa cập nhật';
     
-    // Kích hoạt nút "Gửi bài tập" và gán link
-    sendExerciseBtn.href = `send-exercise.html?athleteId=${athleteData.uid}`;
-    
-    // Hủy lắng nghe cũ (nếu có) trước khi tạo lắng nghe mới
+    // Gán link cho nút "Gửi bài tập" với ID của VĐV được chọn
+    sendExerciseBtn.href = `send-exercise.html?athleteId=${athleteId}`;
+
+    // Hủy lắng nghe sensor của VĐV cũ để tránh rò rỉ bộ nhớ
     if (unsubscribeSensor) {
         unsubscribeSensor();
     }
 
-    // Reset giá trị chỉ số
-    heartRateP.textContent = '--';
-    spo2P.textContent = '--';
-    bloodPressureP.textContent = '--';
-    accelerationP.textContent = '--';
-
-    // Lắng nghe dữ liệu cảm biến thời gian thực
-    const sensorDocRef = doc(db, 'sensor_data', athleteData.uid);
+    // Bắt đầu lắng nghe dữ liệu sensor thời gian thực cho VĐV mới
+    const sensorDocRef = doc(db, 'sensor_data', athleteId);
     unsubscribeSensor = onSnapshot(sensorDocRef, (doc) => {
         if (doc.exists()) {
             const data = doc.data();
-            heartRateP.textContent = data.heart_rate !== undefined ? data.heart_rate : '--';
-            spo2P.textContent = data.spo2 !== undefined ? data.spo2 : '--';
-            bloodPressureP.textContent = data.blood_pressure !== undefined ? data.blood_pressure : '--';
-            accelerationP.textContent = data.acceleration !== undefined ? data.acceleration : '--';
+            heartRateEl.textContent = data.heart_rate || '--';
+            spo2El.textContent = data.spo2 || '--';
+            bloodPressureEl.textContent = data.blood_pressure || '--';
+            accelerationEl.textContent = data.acceleration || '--';
+        } else {
+            // Nếu không có dữ liệu, hiển thị giá trị mặc định
+            heartRateEl.textContent = '--';
+            spo2El.textContent = '--';
+            bloodPressureEl.textContent = '--';
+            accelerationEl.textContent = '--';
         }
     });
 }
