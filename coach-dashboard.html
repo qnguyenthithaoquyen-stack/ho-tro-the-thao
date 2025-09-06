@@ -66,23 +66,41 @@
         #athlete-details-placeholder svg { width: 60px; height: 60px; margin-bottom: 20px; }
 
         /* --- BỐ CỤC MỚI CHO PHẦN CHI TIẾT --- */
+        .details-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 20px;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
         #athleteName { 
             font-size: 28px; 
             font-weight: 700; 
             color: var(--text-color); 
-            margin: 0 0 20px 0; /* Khoảng cách dưới tên */
+            margin: 0;
+            line-height: 1.2;
+        }
+
+        .personal-info {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            text-align: right;
+            font-size: 14px;
+            color: var(--text-light-color); /* Chữ hơi mờ */
+            flex-shrink: 0;
+        }
+        .personal-info span {
+            font-weight: 500;
         }
         
         .info-grid { 
             display: grid; 
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); 
             gap: 20px; 
-        }
-
-        .details-body {
-            border-top: 1px solid var(--border-color);
-            padding-top: 25px;
-            margin-top: 25px;
         }
 
         .detail-card { background-color: #f8f9fa; border-radius: 12px; padding: 15px; border: 1px solid var(--border-color); }
@@ -165,11 +183,13 @@
                 </div>
 
                 <div id="athlete-details-content" style="display: none;">
-                    <h2 id="athleteName"></h2>
-                    <div class="info-grid">
-                        <div class="detail-card"><span class="detail-label">Email</span><p id="athleteEmail" class="detail-value"></p></div>
-                        <div class="detail-card"><span class="detail-label">Ngày sinh</span><p id="athleteDob" class="detail-value"></p></div>
-                        <div class="detail-card"><span class="detail-label">Tỉnh thành</span><p id="athleteCity" class="detail-value"></p></div>
+                    <div class="details-header">
+                        <h2 id="athleteName"></h2>
+                        <div class="personal-info">
+                            <span id="athleteEmail"></span>
+                            <span id="athleteDob"></span>
+                            <span id="athleteCity"></span>
+                        </div>
                     </div>
                     <div class="details-body">
                         <div class="info-grid">
