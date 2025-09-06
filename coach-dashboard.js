@@ -65,8 +65,6 @@ function listenForManagedAthletes(coachId) {
         
         snapshot.forEach(doc => {
             const athlete = doc.data();
-            
-            // SỬA LỖI: Kiểm tra xem fullName có tồn tại không
             const fullName = athlete.fullName || 'Chưa có tên';
             const initial = fullName.charAt(0).toUpperCase();
 
@@ -96,7 +94,6 @@ function displayAthleteDetails(athlete) {
     detailsPlaceholder.style.display = 'none';
     detailsContent.style.display = 'block';
     
-    // SỬA LỖI: Hiển thị tên một cách an toàn
     athleteNameEl.textContent = athlete.fullName || 'Chưa có tên';
     athleteEmailEl.textContent = athlete.email || 'Chưa cập nhật';
     athleteDobEl.textContent = athlete.dateOfBirth || 'Chưa cập nhật';
