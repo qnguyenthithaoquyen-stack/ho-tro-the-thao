@@ -207,19 +207,6 @@
         document.addEventListener('DOMContentLoaded', () => {
             const logoutLink = document.getElementById('logout-link');
             const athleteListUl = document.getElementById('athleteList');
-            const detailsPlaceholder = document.getElementById('athlete-details-placeholder');
-            const detailsContent = document.getElementById('athlete-details-content');
-            const athleteNameEl = document.getElementById('athleteName');
-            const athleteEmailEl = document.getElementById('athleteEmail');
-            const athleteDobEl = document.getElementById('athleteDob');
-            const athleteCityEl = document.getElementById('athleteCity');
-            const heartRateEl = document.getElementById('heartRate');
-            const spo2El = document.getElementById('spo2');
-            const bloodPressureEl = document.getElementById('bloodPressure');
-            const accelerationEl = document.getElementById('acceleration');
-            const sendExerciseBtn = document.getElementById('send-exercise-btn');
-            const chatBtn = document.getElementById('chat-with-athlete-btn');
-
             let unsubscribeSensorListener = null;
 
             onAuthStateChanged(auth, async (user) => {
@@ -245,7 +232,6 @@
                     e.preventDefault();
                     signOut(auth).catch(error => console.error("Lỗi khi đăng xuất:", error));
                 });
-
                 listenForManagedAthletes(coachId);
             }
 
@@ -280,19 +266,23 @@
                 if (unsubscribeSensorListener) {
                     unsubscribeSensorListener();
                 }
+                const detailsPlaceholder = document.getElementById('athlete-details-placeholder');
+                const detailsContent = document.getElementById('athlete-details-content');
+
                 try {
                     const athleteDocRef = doc(db, "users", athleteId);
                     const athleteDocSnap = await getDoc(athleteDocRef);
 
                     if (athleteDocSnap.exists()) {
                         const data = athleteDocSnap.data();
-                        athleteNameEl.textContent = data.fullName || 'Chưa có tên';
-                        athleteEmailEl.textContent = data.email || 'Chưa có email';
-                        athleteDobEl.textContent = `Ngày sinh: ${data.dateOfBirth || 'N/A'}`;
-                        athleteCityEl.textContent = `Thành phố: ${data.city || 'N/A'}`;
-                        sendExerciseBtn.href = `send-exercise.html?athleteId=${athleteId}`;
+                        document.getElementById('athleteName').textContent = data.fullName || 'Chưa có tên';
+                        document.getElementById('athleteEmail').textContent = data.email || 'Chưa có email';
+                        document.getElementById('athleteDob').textContent = `Ngày sinh: ${data.dateOfBirth || 'N/A'}`;
+                        document.getElementById('athleteCity').textContent = `Thành phố: ${data.city || 'N/A'}`;
                         
-                        // Cập nhật liên kết cho nút chat trỏ đến file chat-coach.html
+                        document.getElementById('send-exercise-btn').href = `send-exercise.html?athleteId=${athleteId}`;
+                        
+                        const chatBtn = document.getElementById('chat-with-athlete-btn');
                         if(chatBtn) {
                            chatBtn.href = `chat-coach.html?with=${athleteId}`;
                         }
@@ -313,15 +303,15 @@
                 unsubscribeSensorListener = onSnapshot(sensorDocRef, (docSnap) => {
                     if (docSnap.exists()) {
                         const data = docSnap.data();
-                        heartRateEl.textContent = data.heart_rate || '--';
-                        spo2El.textContent = data.spo2 || '--';
-                        bloodPressureEl.textContent = data.blood_pressure || '--';
-                        accelerationEl.textContent = data.acceleration || '--';
+                        document.getElementById('heartRate').textContent = data.heart_rate || '--';
+                        document.getElementById('spo2').textContent = data.spo2 || '--';
+                        document.getElementById('bloodPressure').textContent = data.blood_pressure || '--';
+                        document.getElementById('acceleration').textContent = data.acceleration || '--';
                     } else {
-                        heartRateEl.textContent = '--';
-                        spo2El.textContent = '--';
-                        bloodPressureEl.textContent = '--';
-                        accelerationEl.textContent = '--';
+                        document.getElementById('heartRate').textContent = '--';
+                        document.getElementById('spo2').textContent = '--';
+                        document.getElementById('bloodPressure').textContent = '--';
+                        document.getElementById('acceleration').textContent = '--';
                     }
                 });
             }
