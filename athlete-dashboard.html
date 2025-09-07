@@ -86,34 +86,35 @@
         .btn-red::before { background-color: rgba(220, 53, 69, 0.7); }
         
         /* Thống kê nhanh */
-        /* === CSS MỚI ĐƯỢC THÊM === */
         .stats-card-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 15px;
         }
 
-        /* === CSS ĐÃ THAY ĐỔI === */
+        /* === CSS ĐÃ THAY ĐỔI: Thu nhỏ padding để các ô gọn hơn === */
         .stat-card { 
             display: flex; 
             align-items: center; 
             gap: 15px; 
-            padding: 20px; 
-            /* margin-bottom: 15px; -- Đã xóa bỏ dòng này */
+            padding: 18px; /* Giảm padding từ 20px xuống 18px */
             border-radius: 12px; 
             color: white; 
             transition: transform 0.2s, box-shadow 0.3s; 
         }
 
         .stat-card-info h3 { margin: 0 0 5px 0; font-size: 14px; font-weight: 500; opacity: 0.9; }
-        .stat-card-info .value { font-size: 28px; font-weight: 700; }
+        .stat-card-info .value { font-size: 26px; /* Giảm kích thước font từ 28px xuống 26px */ font-weight: 700; }
         .stat-distance { background: linear-gradient(45deg, #0d6efd, #0a58ca); }
         .stat-time { background: linear-gradient(45deg, #198754, #146c43); }
         .stat-calories { background: linear-gradient(45deg, #ffc107, #d39e00); }
         .stat-today-distance { background: linear-gradient(45deg, #fd7e14, #c8630c); }
 
         /* Chỉ số sức khỏe */
-        .health-metrics { margin-top: 30px; }
+        .health-metrics { 
+            margin-top: 30px; 
+            /* margin-top này có thể được loại bỏ hoặc giữ nguyên tùy theo khoảng cách bạn muốn sau khi hoán đổi */
+        }
         
         .stats-grid { 
             display: grid; 
@@ -134,14 +135,9 @@
         .access-denied { text-align: center; padding: 50px; }
         .access-denied h2 { color: var(--primary-color); }
 
-        /* === CSS TỐI ƯU GIAO DIỆN ĐÃ CẬP NHẬT === */
         @media (max-width: 992px) { 
-            .dashboard-grid, .main-functions, .stats-grid { 
+            .dashboard-grid, .main-functions, .stats-grid, .stats-card-grid { 
                 grid-template-columns: 1fr; 
-            }
-            /* Thêm quy tắc mới cho lưới thống kê nhanh */
-            .stats-card-grid {
-                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -204,15 +200,6 @@
                     </div>
 
                     <div class="stats-container">
-                        <div class="quick-stats">
-                            <h2>Thống kê nhanh</h2>
-                            <div class="stats-card-grid">
-                                <div class="stat-card stat-distance"><div class="stat-card-info"><h3>Tổng quãng đường (tuần)</h3><p class="value" id="stat-weekly-distance">-- km</p></div></div>
-                                <div class="stat-card stat-today-distance"><div class="stat-card-info"><h3>Tổng quãng đường (hôm nay)</h3><p class="value" id="stat-today-distance">-- km</p></div></div>
-                                <div class="stat-card stat-time"><div class="stat-card-info"><h3>Thời gian tập (tuần)</h3><p class="value" id="stat-weekly-duration">--h --m</p></div></div>
-                                <div class="stat-card stat-calories"><div class="stat-card-info"><h3>Calo tiêu thụ (hôm nay)</h3><p class="value" id="stat-today-calories">-- kcal</p></div></div>
-                            </div>
-                        </div>
                         <div class="health-metrics">
                             <h2>Chỉ số sức khỏe</h2>
                             <div class="stats-grid">
@@ -220,6 +207,16 @@
                                 <div class="health-stat-card"><div class="detail-icon-wrapper icon-spo2"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" /></svg></div><div><span class="detail-label">Oxi trong máu (%)</span><p id="spo2" class="detail-value">--</p></div></div>
                                 <div class="health-stat-card"><div class="detail-icon-wrapper icon-bp"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z" /></svg></div><div><span class="detail-label">Huyết áp</span><p id="bloodPressure" class="detail-value">--</p></div></div>
                                 <div class="health-stat-card"><div class="detail-icon-wrapper icon-accel"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.28m5.94 2.28-2.28 5.941" /></svg></div><div><span class="detail-label">Tốc độ (m/s)</span><p id="acceleration" class="detail-value">--</p></div></div>
+                            </div>
+                        </div>
+
+                        <div class="quick-stats">
+                            <h2>Thống kê nhanh</h2>
+                            <div class="stats-card-grid">
+                                <div class="stat-card stat-distance"><div class="stat-card-info"><h3>Tổng quãng đường (tuần)</h3><p class="value" id="stat-weekly-distance">-- km</p></div></div>
+                                <div class="stat-card stat-today-distance"><div class="stat-card-info"><h3>Tổng quãng đường (hôm nay)</h3><p class="value" id="stat-today-distance">-- km</p></div></div>
+                                <div class="stat-card stat-time"><div class="stat-card-info"><h3>Thời gian tập (tuần)</h3><p class="value" id="stat-weekly-duration">--h --m</p></div></div>
+                                <div class="stat-card stat-calories"><div class="stat-card-info"><h3>Calo tiêu thụ (hôm nay)</h3><p class="value" id="stat-today-calories">-- kcal</p></div></div>
                             </div>
                         </div>
                     </div>
