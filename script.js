@@ -1,73 +1,99 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const slidesContainer = document.getElementById('slides');
-    const slides = document.querySelectorAll('.slide');
-    const dotsContainer = document.getElementById('dots');
+document.addEventListener('DOMContentLoaded', function () {
+    const slides = document.getElementById('slides');
     const prevBtn = document.getElementById('prevBtn');
     const nextBtn = document.getElementById('nextBtn');
-    const carouselContainer = document.querySelector('.carousel-container');
+    const dotsContainer = document.getElementById('dots');
 
-    let currentSlide = 0;
-    let autoPlayInterval;
+    if (!slides) {
+        console.error("Không tìm thấy phần tử carousel-slides.");
+        return;
+    }
+
+    const slideCount = slides.children.length;
+    let currentIndex = 0;
+    let autoSlideInterval; // Biến để lưu trữ interval tự động trượt
+
+    // --- Bắt đầu phần CÀI ĐẶT ---
+    const AUTO_SLIDE_ENABLED = true; // Bật/tắt tự động trượt
+    const SLIDE_INTERVAL = 5000; // Thời gian tự động trượt (5000ms = 5 giây)
+    // --- Kết thúc phần CÀI ĐẶT ---
+
 
     // Tạo các dấu chấm điều hướng
-    slides.forEach((_, index) => {
-        const dot = document.createElement('span');
+    for (let i = 0; i < slideCount; i++) {
+        const dot = document.createElement('div');
         dot.classList.add('dot');
-        if (index === 0) {
-            dot.classList.add('active');
-        }
         dot.addEventListener('click', () => {
-            goToSlide(index);
+            goToSlide(i);
+            resetAutoSlide(); // Reset interval khi người dùng tương tác
         });
         dotsContainer.appendChild(dot);
-    });
+    }
+    const dots = dotsContainer.children;
 
-    const dots = document.querySelectorAll('.dot');
-
-    // Hàm chuyển đến slide cụ thể
-    const goToSlide = (slideIndex) => {
-        slidesContainer.style.transform = `translateX(-${slideIndex * 100}%)`;
-        dots.forEach(dot => dot.classList.remove('active'));
-        dots[slideIndex].classList.add('active');
-        currentSlide = slideIndex;
-    };
-
-    // Hàm chuyển slide tiếp theo
-    const nextSlide = () => {
-        let newIndex = currentSlide + 1;
-        if (newIndex >= slides.length) {
-            newIndex = 0;
+    function updateCarousel() {
+        slides.style.transform = `translateX(-${currentIndex * 100}%)`;
+        
+        // Cập nhật trạng thái active cho dấu chấm
+        for (let i = 0; i < dots.length; i++) {
+            dots[i].classList.toggle('active', i === currentIndex);
         }
-        goToSlide(newIndex);
-    };
+    }
 
-    // Hàm chuyển slide trước đó
-    const prevSlide = () => {
-        let newIndex = currentSlide - 1;
-        if (newIndex < 0) {
-            newIndex = slides.length - 1;
-        }
-        goToSlide(newIndex);
-    };
+    function goToSlide(index) {
+        currentIndex = (index + slideCount) % slideCount;
+        updateCarousel();
+    }
 
-    // Hàm bắt đầu tự động trượt
-    const startAutoPlay = () => {
-        autoPlayInterval = setInterval(nextSlide, 5000); // Trượt mỗi 5 giây
-    };
+    function nextSlide() {
+        goToSlide(currentIndex + 1);
+    }
 
-    // Hàm dừng tự động trượt
-    const stopAutoPlay = () => {
-        clearInterval(autoPlayInterval);
-    };
+    function prevSlide() {
+        goToSlide(currentIndex - 1);
+    }
+    
+    // === HÀM MỚI: TỰ ĐỘNG TRƯỢT ===
+    function startAutoSlide() {
+        if (!AUTO_SLIDE_ENABLED) return;
+        stopAutoSlide(); // Đảm bảo không có interval nào đang chạy
+        autoSlideInterval = setInterval(nextSlide, SLIDE_INTERVAL);
+    }
+
+    function stopAutoSlide() {
+        clearInterval(autoSlideInterval);
+    }
+
+    function resetAutoSlide() {
+        stopAutoSlide();
+        startAutoSlide();
+    }
+    // =============================
 
     // Gán sự kiện cho các nút
-    nextBtn.addEventListener('click', nextSlide);
-    prevBtn.addEventListener('click', prevSlide);
+    if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+            nextSlide();
+            resetAutoSlide();
+        });
+    }
 
-    // Dừng tự động trượt khi di chuột vào và bắt đầu lại khi di ra
-    carouselContainer.addEventListener('mouseenter', stopAutoPlay);
-    carouselContainer.addEventListener('mouseleave', startAutoPlay);
+    if (prevBtn) {
+        prevBtn.addEventListener('click', () => {
+            prevSlide();
+            resetAutoSlide();
+        });
+    }
+    
+    // Dừng tự động trượt khi di chuột vào và chạy lại khi di ra
+    const carouselContainer = document.querySelector('.carousel-container');
+    if(carouselContainer) {
+        carouselContainer.addEventListener('mouseenter', stopAutoSlide);
+        carouselContainer.addEventListener('mouseleave', startAutoSlide);
+    }
 
-    // Bắt đầu tự động trượt
-    startAutoPlay();
+
+    // Khởi tạo carousel
+    updateCarousel();
+    startAutoSlide(); // Bắt đầu tự động trượt khi tải trang
 });
