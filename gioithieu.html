@@ -3,15 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Về dự án - Hỗ Trợ Huấn Luyện Thể Thao</title>
+    <title>Giới thiệu - Hỗ Trợ Huấn Luyện Thể Thao</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+        :root {
+            --primary-color: #008080;
+        }
 
         body {
             font-family: 'Roboto', sans-serif;
             margin: 0;
             background-color: #f0f2f5;
-            color: #333;
         }
 
         .container {
@@ -27,22 +30,22 @@
             justify-content: space-between;
             align-items: center;
             padding: 15px 30px;
-            background-color: #008080;
+            background-color: var(--primary-color);
             color: #fff;
         }
 
         .header-left {
             display: flex;
             align-items: center;
+            gap: 15px;
         }
 
         .logo {
             background-color: #fff;
-            color: #008080;
+            color: var(--primary-color);
             font-weight: 700;
             padding: 10px;
             border-radius: 5px;
-            margin-right: 15px;
         }
 
         .project-info h1 {
@@ -57,21 +60,52 @@
             opacity: 0.9;
         }
 
-        .login-btn {
-            background-color: #fff;
-            color: #008080;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-weight: 700;
-            text-decoration: none;
+        /* === BẮT ĐẦU CSS MỚI CHO CÁC NÚT === */
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-actions a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px; /* Khoảng cách giữa icon và chữ */
+            padding: 9px 22px;
             font-size: 14px;
-            transition: all 0.3s ease;
+            font-weight: 500;
+            border-radius: 50px; /* Bo tròn dạng viên thuốc */
+            text-decoration: none;
+            border: 1.5px solid #fff;
+            transition: background-color 0.3s, color 0.3s;
         }
-        .login-btn:hover {
-            background-color: #f0f2f5;
+        
+        .user-actions a svg {
+            width: 16px;
+            height: 16px;
         }
+
+        /* Nút Đăng nhập (viền trắng) */
+        #login-link {
+            background-color: transparent;
+            color: #fff;
+        }
+        #login-link:hover {
+            background-color: #fff;
+            color: var(--primary-color);
+        }
+
+        /* Nút Đăng ký và Đăng xuất (nền trắng) */
+        #register-link, #logout-link {
+            background-color: #fff;
+            color: var(--primary-color);
+        }
+        #register-link:hover, #logout-link:hover {
+            background-color: rgba(255, 255, 255, 0.9);
+        }
+        /* === KẾT THÚC CSS MỚI CHO CÁC NÚT === */
+
 
         /* Navigation */
         .navbar {
@@ -97,96 +131,32 @@
             transform: translateX(-50%);
             width: 0;
             height: 3px;
-            background-color: #008080;
+            background-color: var(--primary-color);
             transition: width 0.3s ease;
         }
         .navbar a:hover, .navbar a.active {
-            color: #008080;
+            color: var(--primary-color);
         }
         .navbar a.active::after {
             width: 70%;
         }
 
-        /* Main Content */
-        .main-content {
-            padding: 50px 30px;
-            background-color: #f0f2f5;
+        /* Main Content Styling */
+        main {
+            padding: 40px 30px;
+            line-height: 1.6;
         }
-
-        .about-card {
-            background-color: #fff;
-            border-radius: 16px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-            padding: 50px;
-            display: flex;
-            gap: 50px;
-            align-items: center;
-        }
-
-        .text-content {
-            flex: 1.2; /* Cho phần text nhiều không gian hơn một chút */
-        }
-
-        .text-content h2 {
+        main h2 {
             font-size: 36px;
-            font-weight: 700;
-            margin-top: 0;
-            margin-bottom: 25px;
-            color: #008080;
-        }
-
-        .text-content p {
-            font-size: 16px;
-            line-height: 1.7;
-            color: #555;
+            color: #2c3e50;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
             margin-bottom: 20px;
         }
-
-        .image-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .image-placeholder {
-            width: 100%;
-            height: 320px;
-            background-color: #e6f2f2;
-            border-radius: 12px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: #008080;
-            font-size: 20px;
-            font-weight: 500;
-            margin-bottom: 20px;
-            background-size: cover;
-            background-position: center;
-            border: 2px dashed #008080;
-            transition: all 0.3s ease;
-        }
-        .image-placeholder:hover {
-            border-color: #005959;
-            background-color: #d9e9e9;
-        }
-
-        .change-image-btn {
-            background-color: #008080;
-            color: #fff;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-weight: 700;
+        main p {
             font-size: 16px;
-            transition: all 0.3s;
-        }
-        
-        .change-image-btn:hover {
-            background-color: #006666;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            color: #34495e;
+            margin-bottom: 15px;
         }
     </style>
 </head>
@@ -201,35 +171,98 @@
                     <p>DỰ ÁN KHOA HỌC KỸ THUẬT - ỨNG DỤNG THEO DÕI CHỈ SỐ VẬN ĐỘNG VIÊN</p>
                 </div>
             </div>
-            <a href="dangnhap.html" class="login-btn">Đăng nhập</a>
+            <!-- === HTML MỚI CHO CÁC NÚT === -->
+            <div class="user-actions">
+                <a href="dangnhap.html" id="login-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+                    <span>Đăng nhập</span>
+                </a>
+                <a href="dangky.html" id="register-link">
+                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="17" y1="11" x2="23" y2="11"/></svg>
+                    <span>Đăng ký</span>
+                </a>
+                <a href="#" id="logout-link" style="display: none;">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                    <span>Đăng xuất</span>
+                </a>
+            </div>
         </header>
 
         <nav class="navbar">
             <a href="index.html">Trang chủ</a>
             <a href="gioithieu.html" class="active">Giới thiệu</a>
-            <a href="bangdieukhien.html">Bảng điều khiển</a>
+            <a href="bangdieukhien.html" id="dashboard-link" style="display: none;">Bảng điều khiển</a>
         </nav>
 
-        <main class="main-content">
-            <div class="about-card">
-                <div class="text-content">
-                    <h2>Về dự án của chúng tôi</h2>
-                    <p>Đây là dự án khoa học kỹ thuật được xây dựng với mục tiêu ứng dụng công nghệ vào việc theo dõi và cải thiện thành tích cho vận động viên.</p>
-                    <p>Chúng tôi áp dụng trí tuệ nhân tạo (AI) để phân tích tư thế tập luyện qua hình ảnh, từ đó đưa ra những cảnh báo sớm về nguy cơ chấn thương, giúp vận động viên an toàn hơn trong quá trình khổ luyện.</p>
-                </div>
-                <div class="image-content">
-                    <div class="image-placeholder" id="imagePlaceholder">
-                        <span>Ảnh Minh Họa Dự Án</span>
-                    </div>
-                    <button class="change-image-btn" id="changeImageBtn">Thay đổi ảnh</button>
-                    <input type="file" id="fileInput" accept="image/*" style="display: none;">
-                </div>
-            </div>
+        <main>
+            <h2>Giới thiệu về Dự án</h2>
+            <p>
+                Chào mừng bạn đến với dự án "Hỗ trợ Huấn luyện Thể thao" - một sản phẩm Khoa học Kỹ thuật được xây dựng với mục tiêu ứng dụng công nghệ hiện đại vào việc nâng cao thành tích và đảm bảo an toàn cho vận động viên.
+            </p>
+            <p>
+                Hệ thống của chúng tôi sử dụng các thuật toán Trí tuệ Nhân tạo (AI) và Thị giác Máy tính (Computer Vision) tiên tiến để phân tích video thi đấu và tập luyện. Từ đó, chúng tôi có thể cung cấp những phân tích chi tiết về tư thế, kỹ thuật, và các chỉ số vận động quan trọng.
+            </p>
+            <p>
+                Các tính năng chính bao gồm:
+                <ul>
+                    <li><strong>Phân tích tư thế:</strong> Phát hiện các lỗi kỹ thuật trong quá trình vận động và đưa ra gợi ý cải thiện.</li>
+                    <li><strong>Theo dõi thành tích:</strong> Lưu trữ và biểu đồ hóa lịch sử tập luyện, giúp vận động viên và huấn luyện viên thấy rõ sự tiến bộ.</li>
+                    <li><strong>Cảnh báo chấn thương:</strong> Dựa trên dữ liệu phân tích, hệ thống có thể nhận diện các tư thế hoặc chuyển động có nguy cơ gây chấn thương.</li>
+                    <li><strong>Giao tiếp HLV-VĐV:</strong> Nền tảng cho phép huấn luyện viên giao bài tập và theo dõi tiến độ của vận động viên một cách trực quan.</li>
+                </ul>
+            </p>
+            <p>
+                Chúng tôi tin rằng việc áp dụng công nghệ sẽ là một bước đột phá, giúp các vận động viên khai phá tối đa tiềm năng của bản thân và đạt được những thành tích vượt trội.
+            </p>
         </main>
     </div>
-    
-    <!-- Bạn cần tạo một file JS riêng cho trang này, ví dụ: gioithieu.js -->
-    <script src="gioithieu.js"></script>
 
+    <!-- Script cho Firebase Authentication (QUAN TRỌNG NHẤT) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyA2dXWCyjL2xgCSyeW9QQ7RvjI_O7kFHJw",
+            authDomain: "sporthealthdata.firebaseapp.com",
+            projectId: "sporthealthdata",
+            storageBucket: "sporthealthdata.appspot.com",
+            messagingSenderId: "789054240877",
+            appId: "1:789054240877:web:04a400c9ea586523a86764",
+            measurementId: "G-ZWS9C7P359"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        const loginLink = document.getElementById('login-link');
+        const registerLink = document.getElementById('register-link');
+        const logoutLink = document.getElementById('logout-link');
+        const dashboardLink = document.getElementById('dashboard-link');
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // Người dùng ĐÃ đăng nhập
+                if(dashboardLink) dashboardLink.style.display = 'block';
+                if(logoutLink) logoutLink.style.display = 'block';
+                if(loginLink) loginLink.style.display = 'none';
+                if(registerLink) registerLink.style.display = 'none';
+            } else {
+                // Người dùng CHƯA đăng nhập
+                if(dashboardLink) dashboardLink.style.display = 'none';
+                if(logoutLink) logoutLink.style.display = 'none';
+                if(loginLink) loginLink.style.display = 'block';
+                if(registerLink) registerLink.style.display = 'block';
+            }
+        });
+
+        if(logoutLink) {
+            logoutLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                signOut(auth).catch((error) => console.error('Lỗi khi đăng xuất:', error));
+            });
+        }
+    </script>
 </body>
 </html>
+
