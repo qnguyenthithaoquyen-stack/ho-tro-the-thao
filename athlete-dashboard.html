@@ -9,7 +9,6 @@
         
         :root {
             --primary-color: #008080;
-            --secondary-color: #00a9a9;
             --background-color: #f0f4f8;
             --card-bg-color: #ffffff;
             --text-color: #333;
@@ -49,8 +48,9 @@
         .main-content { padding: 30px; }
         .loader-container { display: flex; justify-content: center; align-items: center; min-height: 50vh; color: var(--text-light-color); }
         .dashboard-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 30px; }
-        .daily-goals { background-color: var(--card-bg-color); border-radius: 16px; padding: 30px; box-shadow: var(--shadow); }
-        .daily-goals h2 { margin-top: 0; font-size: 24px; color: var(--text-color); border-bottom: 1px solid var(--border-color); padding-bottom: 15px; margin-bottom: 20px; }
+        .daily-goals, .quick-stats, .health-metrics { background-color: var(--card-bg-color); border-radius: 16px; padding: 30px; box-shadow: var(--shadow); }
+        .daily-goals h2, .quick-stats h2, .health-metrics h2 { margin-top: 0; font-size: 24px; color: var(--text-color); border-bottom: 1px solid var(--border-color); padding-bottom: 15px; margin-bottom: 20px; }
+        
         .task-item { display: flex; align-items: center; justify-content: space-between; padding: 20px; border-radius: 12px; margin-bottom: 15px; transition: all 0.3s; border: 1px solid transparent; }
         .task-item.run { background-color: #e6f7ff; border-color: #91d5ff; }
         .task-item:hover { transform: translateY(-4px); box-shadow: 0 8px 20px -5px rgba(0,0,0,0.12); }
@@ -79,8 +79,7 @@
         .btn-red { background-image: url('https://images.pexels.com/photos/7991379/pexels-photo-7991379.jpeg?auto=compress&cs=tinysrgb&w=600'); }
         .btn-red::before { background-color: rgba(220, 53, 69, 0.7); }
         
-        .quick-stats { background-color: var(--card-bg-color); border-radius: 16px; padding: 30px; box-shadow: var(--shadow); }
-        .quick-stats h2 { margin-top: 0; font-size: 24px; color: var(--text-color); border-bottom: 1px solid var(--border-color); padding-bottom: 15px; margin-bottom: 20px; }
+        /* Thống kê nhanh */
         .stat-card { display: flex; align-items: center; gap: 15px; padding: 20px; margin-bottom: 15px; border-radius: 12px; color: white; transition: transform 0.2s, box-shadow 0.3s; }
         .stat-card-info h3 { margin: 0 0 5px 0; font-size: 14px; font-weight: 500; opacity: 0.9; }
         .stat-card-info .value { font-size: 28px; font-weight: 700; }
@@ -88,6 +87,20 @@
         .stat-time { background: linear-gradient(45deg, #198754, #146c43); }
         .stat-calories { background: linear-gradient(45deg, #ffc107, #d39e00); }
         .stat-today-distance { background: linear-gradient(45deg, #fd7e14, #c8630c); }
+
+        /* Chỉ số sức khỏe */
+        .health-metrics { margin-top: 30px; }
+        .stats-grid { display: grid; grid-template-columns: 1fr; gap: 15px; }
+        .health-stat-card { display: flex; align-items: center; gap: 15px; background-color: #f8f9fa; border-radius: 12px; padding: 15px; border: 1px solid var(--border-color); }
+        .detail-label { font-size: 13px; color: var(--text-light-color); margin-bottom: 2px; display: block; }
+        .detail-value { font-size: 22px; font-weight: 700; margin: 0; word-wrap: break-word; color: var(--text-color); }
+        .detail-icon-wrapper { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .detail-icon-wrapper svg { width: 24px; height: 24px; stroke-width: 1.5; }
+        .icon-heart { background-color: #ffebee; color: #e53935; }
+        .icon-spo2 { background-color: #e3f2fd; color: #1e88e5; }
+        .icon-bp { background-color: #f3e5f5; color: #8e24aa; }
+        .icon-accel { background-color: #e8f5e9; color: #43a047; }
+        
         .access-denied { text-align: center; padding: 50px; }
         .access-denied h2 { color: var(--primary-color); }
         @media (max-width: 992px) { .dashboard-grid { grid-template-columns: 1fr; } }
@@ -177,6 +190,15 @@
                             <div class="stat-card stat-time"><div class="stat-card-info"><h3>Thời gian tập (tuần)</h3><p class="value" id="stat-weekly-duration">--h --m</p></div></div>
                             <div class="stat-card stat-calories"><div class="stat-card-info"><h3>Calo tiêu thụ (hôm nay)</h3><p class="value" id="stat-today-calories">-- kcal</p></div></div>
                         </div>
+                        <div class="health-metrics">
+                            <h2>Chỉ số sức khỏe</h2>
+                            <div class="stats-grid">
+                                <div class="health-stat-card"><div class="detail-icon-wrapper icon-heart"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" /></svg></div><div><span class="detail-label">Nhịp tim (bpm)</span><p id="heartRate" class="detail-value">--</p></div></div>
+                                <div class="health-stat-card"><div class="detail-icon-wrapper icon-spo2"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" /></svg></div><div><span class="detail-label">Oxi trong máu (%)</span><p id="spo2" class="detail-value">--</p></div></div>
+                                <div class="health-stat-card"><div class="detail-icon-wrapper icon-bp"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z" /></svg></div><div><span class="detail-label">Huyết áp</span><p id="bloodPressure" class="detail-value">--</p></div></div>
+                                <div class="health-stat-card"><div class="detail-icon-wrapper icon-accel"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.28m5.94 2.28-2.28 5.941" /></svg></div><div><span class="detail-label">Tốc độ (m/s)</span><p id="acceleration" class="detail-value">--</p></div></div>
+                            </div>
+                        </div>
                     </div>
                 </div>`;
         }
@@ -190,11 +212,9 @@
             if (!goalsListContainer) return;
             const exercisesColRef = collection(db, "users", athleteId, "exercises");
             const q = query(exercisesColRef, orderBy("createdAt", "desc"));
-
             onSnapshot(q, (snapshot) => {
                 const existingTasks = goalsListContainer.querySelectorAll('.task-item, .no-exercise-msg');
                 existingTasks.forEach(task => task.remove());
-
                 if (snapshot.empty) {
                     const noExerciseItem = document.createElement('p');
                     noExerciseItem.textContent = 'Bạn chưa có bài tập nào được giao.';
@@ -207,17 +227,11 @@
                         const exerciseId = doc.id;
                         const exerciseDiv = document.createElement('div');
                         exerciseDiv.className = 'task-item run';
-                        exerciseDiv.innerHTML = `
-                            <div class="task-info">
-                                <div class="task-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
-                                <div class="task-details"><h3>${exercise.title || 'Bài tập mới'}</h3><p>Hạn chót: ${exercise.dueDate || 'Chưa có'}</p></div>
-                            </div>
-                            <div class="task-action"><button>Thực hiện</button></div>`;
+                        exerciseDiv.innerHTML = `<div class="task-info"><div class="task-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><div class="task-details"><h3>${exercise.title || 'Bài tập mới'}</h3><p>Hạn chót: ${exercise.dueDate || 'Chưa có'}</p></div></div><div class="task-action"><button>Thực hiện</button></div>`;
                         
                         goalsListContainer.appendChild(exerciseDiv);
 
                         const executeButton = exerciseDiv.querySelector('.task-action button');
-
                         if (exercise.status === 'completed') {
                             exerciseDiv.style.opacity = '0.6';
                             if(executeButton) {
@@ -229,7 +243,6 @@
                                 executeButton.addEventListener('click', async () => {
                                     executeButton.disabled = true;
                                     executeButton.textContent = 'Đang cập nhật...';
-                                    
                                     const exerciseDocRef = doc(db, "users", athleteId, "exercises", exerciseId);
                                     try {
                                         await updateDoc(exerciseDocRef, {
@@ -277,6 +290,28 @@
                 }
             });
         }
+        
+        function listenForSensorData(athleteId) {
+            const heartRateEl = document.getElementById('heartRate');
+            const spo2El = document.getElementById('spo2');
+            const bloodPressureEl = document.getElementById('bloodPressure');
+            const accelerationEl = document.getElementById('acceleration');
+            const sensorDocRef = doc(db, "sensor_data", athleteId);
+            onSnapshot(sensorDocRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    heartRateEl.textContent = data.heart_rate || '--';
+                    spo2El.textContent = data.spo2 || '--';
+                    bloodPressureEl.textContent = data.blood_pressure || '--';
+                    accelerationEl.textContent = data.acceleration || '--';
+                } else {
+                    heartRateEl.textContent = '--';
+                    spo2El.textContent = '--';
+                    bloodPressureEl.textContent = '--';
+                    accelerationEl.textContent = '--';
+                }
+            });
+        }
 
         onAuthStateChanged(auth, async (user) => {
             document.body.classList.add('loaded');
@@ -288,6 +323,7 @@
                     renderDashboard(userDoc.data());
                     listenForExercises(user.uid);
                     listenForAthleteStats(user.uid);
+                    listenForSensorData(user.uid); // **GỌI HÀM MỚI**
                     
                     const coachId = userDoc.data().managedBy;
                     const chatBtn = document.getElementById('chat-with-coach-btn');
@@ -319,4 +355,3 @@
     </script>
 </body>
 </html>
-
