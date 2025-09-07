@@ -86,7 +86,25 @@
         .btn-red::before { background-color: rgba(220, 53, 69, 0.7); }
         
         /* Thống kê nhanh */
-        .stat-card { display: flex; align-items: center; gap: 15px; padding: 20px; margin-bottom: 15px; border-radius: 12px; color: white; transition: transform 0.2s, box-shadow 0.3s; }
+        /* === CSS MỚI ĐƯỢC THÊM === */
+        .stats-card-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        /* === CSS ĐÃ THAY ĐỔI === */
+        .stat-card { 
+            display: flex; 
+            align-items: center; 
+            gap: 15px; 
+            padding: 20px; 
+            /* margin-bottom: 15px; -- Đã xóa bỏ dòng này */
+            border-radius: 12px; 
+            color: white; 
+            transition: transform 0.2s, box-shadow 0.3s; 
+        }
+
         .stat-card-info h3 { margin: 0 0 5px 0; font-size: 14px; font-weight: 500; opacity: 0.9; }
         .stat-card-info .value { font-size: 28px; font-weight: 700; }
         .stat-distance { background: linear-gradient(45deg, #0d6efd, #0a58ca); }
@@ -97,10 +115,9 @@
         /* Chỉ số sức khỏe */
         .health-metrics { margin-top: 30px; }
         
-        /* === CSS ĐÃ THAY ĐỔI === */
         .stats-grid { 
             display: grid; 
-            grid-template-columns: repeat(2, 1fr); /* Bố cục 2 cột nhỏ gọn hơn */
+            grid-template-columns: repeat(2, 1fr);
             gap: 15px; 
         }
 
@@ -117,11 +134,15 @@
         .access-denied { text-align: center; padding: 50px; }
         .access-denied h2 { color: var(--primary-color); }
 
-        /* === CSS TỐI ƯU GIAO DIỆN ĐÃ THÊM === */
+        /* === CSS TỐI ƯU GIAO DIỆN ĐÃ CẬP NHẬT === */
         @media (max-width: 992px) { 
-            .dashboard-grid { grid-template-columns: 1fr; } 
-            .main-functions { grid-template-columns: 1fr; }
-            .stats-grid { grid-template-columns: 1fr; } /* Đưa về 1 cột trên màn hình nhỏ */
+            .dashboard-grid, .main-functions, .stats-grid { 
+                grid-template-columns: 1fr; 
+            }
+            /* Thêm quy tắc mới cho lưới thống kê nhanh */
+            .stats-card-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -185,10 +206,12 @@
                     <div class="stats-container">
                         <div class="quick-stats">
                             <h2>Thống kê nhanh</h2>
-                            <div class="stat-card stat-distance"><div class="stat-card-info"><h3>Tổng quãng đường (tuần)</h3><p class="value" id="stat-weekly-distance">-- km</p></div></div>
-                            <div class="stat-card stat-today-distance"><div class="stat-card-info"><h3>Tổng quãng đường (hôm nay)</h3><p class="value" id="stat-today-distance">-- km</p></div></div>
-                            <div class="stat-card stat-time"><div class="stat-card-info"><h3>Thời gian tập (tuần)</h3><p class="value" id="stat-weekly-duration">--h --m</p></div></div>
-                            <div class="stat-card stat-calories"><div class="stat-card-info"><h3>Calo tiêu thụ (hôm nay)</h3><p class="value" id="stat-today-calories">-- kcal</p></div></div>
+                            <div class="stats-card-grid">
+                                <div class="stat-card stat-distance"><div class="stat-card-info"><h3>Tổng quãng đường (tuần)</h3><p class="value" id="stat-weekly-distance">-- km</p></div></div>
+                                <div class="stat-card stat-today-distance"><div class="stat-card-info"><h3>Tổng quãng đường (hôm nay)</h3><p class="value" id="stat-today-distance">-- km</p></div></div>
+                                <div class="stat-card stat-time"><div class="stat-card-info"><h3>Thời gian tập (tuần)</h3><p class="value" id="stat-weekly-duration">--h --m</p></div></div>
+                                <div class="stat-card stat-calories"><div class="stat-card-info"><h3>Calo tiêu thụ (hôm nay)</h3><p class="value" id="stat-today-calories">-- kcal</p></div></div>
+                            </div>
                         </div>
                         <div class="health-metrics">
                             <h2>Chỉ số sức khỏe</h2>
