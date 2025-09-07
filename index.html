@@ -15,6 +15,13 @@
             font-family: 'Roboto', sans-serif;
             margin: 0;
             background-color: #f0f2f5;
+            /* Thêm hiệu ứng chuyển đổi mượt mà cho body */
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        body.loaded {
+            opacity: 1;
         }
 
         .container {
@@ -309,7 +316,6 @@
         </div>
     </div>
     
-    <!-- Script cho carousel (trượt ảnh) -->
     <script src="script.js"></script>
 
     <!-- Script cho Firebase (sửa lỗi đăng xuất) -->
@@ -335,7 +341,8 @@
         const logoutLink = document.getElementById('logout-link');
         const dashboardLink = document.getElementById('dashboard-link');
 
-        onAuthStateChanged(auth, (user) => {
+        // Hàm cập nhật giao diện
+        const updateUI = (user) => {
             if (user) {
                 // Người dùng ĐÃ đăng nhập: Hiện Bảng điều khiển/Đăng xuất, Ẩn Đăng nhập/Đăng ký
                 if(dashboardLink) dashboardLink.style.display = 'block';
@@ -349,8 +356,16 @@
                 if(loginLink) loginLink.style.display = 'block';
                 if(registerLink) registerLink.style.display = 'block';
             }
+             // Thêm class 'loaded' để hiển thị trang một cách mượt mà
+            document.body.classList.add('loaded');
+        };
+
+        // Lắng nghe sự thay đổi trạng thái đăng nhập
+        onAuthStateChanged(auth, (user) => {
+            updateUI(user);
         });
 
+        // Xử lý sự kiện cho nút đăng xuất
         if(logoutLink) {
             logoutLink.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -360,3 +375,4 @@
     </script>
 </body>
 </html>
+
