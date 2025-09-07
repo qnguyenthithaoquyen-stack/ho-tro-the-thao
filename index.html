@@ -3,9 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hỗ Trợ Huấn Luyện Thể Thao</title>
+    <title>Trang chủ - Hỗ Trợ Huấn Luyện Thể Thao</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+        :root {
+            --primary-color: #008080;
+        }
 
         body {
             font-family: 'Roboto', sans-serif;
@@ -26,22 +30,22 @@
             justify-content: space-between;
             align-items: center;
             padding: 15px 30px;
-            background-color: #008080;
+            background-color: var(--primary-color);
             color: #fff;
         }
 
         .header-left {
             display: flex;
             align-items: center;
+            gap: 15px;
         }
 
         .logo {
             background-color: #fff;
-            color: #008080;
+            color: var(--primary-color);
             font-weight: 700;
             padding: 10px;
             border-radius: 5px;
-            margin-right: 15px;
         }
 
         .project-info h1 {
@@ -56,20 +60,47 @@
             opacity: 0.9;
         }
 
-        .login-btn {
-            background-color: #fff;
-            color: #008080;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-weight: 700;
-            text-decoration: none;
-            font-size: 14px;
-            transition: all 0.3s ease;
+        /* CSS cho các nút chức năng */
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
-        .login-btn:hover {
-            background-color: #f0f2f5;
+
+        .user-actions a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 9px 22px;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 50px;
+            text-decoration: none;
+            border: 1.5px solid #fff;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        .user-actions a svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        #login-link {
+            background-color: transparent;
+            color: #fff;
+        }
+        #login-link:hover {
+            background-color: #fff;
+            color: var(--primary-color);
+        }
+
+        #register-link, #logout-link {
+            background-color: #fff;
+            color: var(--primary-color);
+        }
+        #register-link:hover, #logout-link:hover {
+            background-color: rgba(255, 255, 255, 0.9);
         }
 
         /* Navigation */
@@ -96,11 +127,11 @@
             transform: translateX(-50%);
             width: 0;
             height: 3px;
-            background-color: #008080;
+            background-color: var(--primary-color);
             transition: width 0.3s ease;
         }
         .navbar a:hover, .navbar a.active {
-            color: #008080;
+            color: var(--primary-color);
         }
         .navbar a.active::after {
             width: 70%;
@@ -132,8 +163,8 @@
         /* Carousel */
         .carousel-container {
             position: relative;
-            max-width: 1200px; /* Full width */
-            margin: 0 auto; /* No vertical margin */
+            max-width: 1200px;
+            margin: 0 auto;
             overflow: hidden;
         }
 
@@ -162,7 +193,7 @@
             position: absolute;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            background: rgba(0,0,0,0.4); /* Lớp phủ tối */
+            background: rgba(0,0,0,0.4);
         }
         .slide-content {
             position: relative;
@@ -231,15 +262,26 @@
                     <p>DỰ ÁN KHOA HỌC KỸ THUẬT - ỨNG DỤNG THEO DÕI CHỈ SỐ VẬN ĐỘNG VIÊN</p>
                 </div>
             </div>
-            <!-- SỬA LỖI Ở ĐÂY -->
-            <a href="dangnhap.html" class="login-btn">Đăng nhập</a>
+            <div class="user-actions">
+                <a href="dangnhap.html" id="login-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+                    <span>Đăng nhập</span>
+                </a>
+                <a href="dangky.html" id="register-link">
+                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="17" y1="11" x2="23" y2="11"/></svg>
+                    <span>Đăng ký</span>
+                </a>
+                <a href="#" id="logout-link" style="display: none;">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                    <span>Đăng xuất</span>
+                </a>
+            </div>
         </header>
 
-        <!-- SỬA LỖI Ở ĐÂY -->
         <nav class="navbar">
             <a href="index.html" class="active">Trang chủ</a>
             <a href="gioithieu.html">Giới thiệu</a>
-            <a href="bangdieukhien.html">Bảng điều khiển</a>
+            <a href="bangdieukhien.html" id="dashboard-link" style="display: none;">Bảng điều khiển</a>
         </nav>
 
         <section class="welcome-section">
@@ -249,13 +291,13 @@
 
         <div class="carousel-container">
             <div class="carousel-slides" id="slides">
-                <div class="slide" style="background-image: url('https://placehold.co/1200x450/008080/FFFFFF?text=Hinh+Anh+1');">
+                <div class="slide" style="background-image: url('https://images.pexels.com/photos/163403/boxer-male-ring-fight-163403.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');">
                     <div class="slide-content">Phân Tích Tư Thế</div>
                 </div>
-                <div class="slide" style="background-image: url('https://placehold.co/1200x450/28a745/FFFFFF?text=Hinh+Anh+2');">
+                <div class="slide" style="background-image: url('https://images.pexels.com/photos/3764014/pexels-photo-3764014.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');">
                     <div class="slide-content">Theo Dõi Thành Tích</div>
                 </div>
-                <div class="slide" style="background-image: url('https://placehold.co/1200x450/17a2b8/FFFFFF?text=Hinh+Anh+3');">
+                <div class="slide" style="background-image: url('https://images.pexels.com/photos/2247179/pexels-photo-2247179.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');">
                     <div class="slide-content">Cảnh Báo Chấn Thương</div>
                 </div>
             </div>
@@ -266,8 +308,55 @@
             <div class="carousel-dots" id="dots"></div>
         </div>
     </div>
-
+    
+    <!-- Script cho carousel (trượt ảnh) -->
     <script src="script.js"></script>
 
+    <!-- Script cho Firebase (sửa lỗi đăng xuất) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyA2dXWCyjL2xgCSyeW9QQ7RvjI_O7kFHJw",
+            authDomain: "sporthealthdata.firebaseapp.com",
+            projectId: "sporthealthdata",
+            storageBucket: "sporthealthdata.appspot.com",
+            messagingSenderId: "789054240877",
+            appId: "1:789054240877:web:04a400c9ea586523a86764",
+            measurementId: "G-ZWS9C7P359"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        const loginLink = document.getElementById('login-link');
+        const registerLink = document.getElementById('register-link');
+        const logoutLink = document.getElementById('logout-link');
+        const dashboardLink = document.getElementById('dashboard-link');
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // Người dùng ĐÃ đăng nhập: Hiện Bảng điều khiển/Đăng xuất, Ẩn Đăng nhập/Đăng ký
+                if(dashboardLink) dashboardLink.style.display = 'block';
+                if(logoutLink) logoutLink.style.display = 'block';
+                if(loginLink) loginLink.style.display = 'none';
+                if(registerLink) registerLink.style.display = 'none';
+            } else {
+                // Người dùng CHƯA đăng nhập: Ẩn Bảng điều khiển/Đăng xuất, Hiện Đăng nhập/Đăng ký
+                if(dashboardLink) dashboardLink.style.display = 'none';
+                if(logoutLink) logoutLink.style.display = 'none';
+                if(loginLink) loginLink.style.display = 'block';
+                if(registerLink) registerLink.style.display = 'block';
+            }
+        });
+
+        if(logoutLink) {
+            logoutLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                signOut(auth).catch((error) => console.error('Lỗi khi đăng xuất:', error));
+            });
+        }
+    </script>
 </body>
 </html>
