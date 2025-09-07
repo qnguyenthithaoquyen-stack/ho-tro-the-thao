@@ -15,7 +15,6 @@
             font-family: 'Roboto', sans-serif;
             margin: 0;
             background-color: #f0f2f5;
-            /* Thêm hiệu ứng chuyển đổi mượt mà cho body */
             opacity: 0;
             transition: opacity 0.5s ease-in-out;
         }
@@ -31,7 +30,6 @@
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.07);
         }
 
-        /* Header */
         .header {
             display: flex;
             justify-content: space-between;
@@ -67,7 +65,6 @@
             opacity: 0.9;
         }
 
-        /* CSS cho các nút chức năng */
         .user-actions {
             display: flex;
             align-items: center;
@@ -110,7 +107,6 @@
             background-color: rgba(255, 255, 255, 0.9);
         }
 
-        /* Navigation */
         .navbar {
             display: flex;
             background-color: #fff;
@@ -144,7 +140,6 @@
             width: 70%;
         }
 
-        /* Main Content */
         .welcome-section {
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             text-align: center;
@@ -167,7 +162,6 @@
             margin-right: auto;
         }
 
-        /* Carousel */
         .carousel-container {
             position: relative;
             max-width: 1200px;
@@ -316,9 +310,77 @@
         </div>
     </div>
     
-    <script src="script.js"></script>
+    <script>
+        // Script for carousel (nếu bạn có script riêng, hãy giữ nó ở đây)
+        document.addEventListener('DOMContentLoaded', function () {
+            const slides = document.getElementById('slides');
+            const dotsContainer = document.getElementById('dots');
+            const slideElements = document.querySelectorAll('.slide');
+            const totalSlides = slideElements.length;
+            let currentIndex = 0;
+            let slideInterval;
 
-    <!-- Script cho Firebase (sửa lỗi đăng xuất) -->
+            // Create dots
+            for (let i = 0; i < totalSlides; i++) {
+                const dot = document.createElement('div');
+                dot.classList.add('dot');
+                dot.addEventListener('click', () => {
+                    goToSlide(i);
+                    resetInterval();
+                });
+                dotsContainer.appendChild(dot);
+            }
+            const dots = document.querySelectorAll('.dot');
+
+            function updateCarousel() {
+                slides.style.transform = `translateX(-${currentIndex * 100}%)`;
+                dots.forEach((dot, index) => {
+                    dot.classList.toggle('active', index === currentIndex);
+                });
+            }
+
+            function goToSlide(index) {
+                currentIndex = index;
+                if (currentIndex < 0) {
+                    currentIndex = totalSlides - 1;
+                } else if (currentIndex >= totalSlides) {
+                    currentIndex = 0;
+                }
+                updateCarousel();
+            }
+
+            function nextSlide() {
+                goToSlide(currentIndex + 1);
+            }
+
+            function prevSlide() {
+                goToSlide(currentIndex - 1);
+            }
+            
+            function startInterval() {
+                slideInterval = setInterval(nextSlide, 5000); // Change slide every 5 seconds
+            }
+
+            function resetInterval() {
+                clearInterval(slideInterval);
+                startInterval();
+            }
+
+            document.getElementById('nextBtn').addEventListener('click', () => {
+                nextSlide();
+                resetInterval();
+            });
+            document.getElementById('prevBtn').addEventListener('click', () => {
+                prevSlide();
+                resetInterval();
+            });
+
+            // Initial setup
+            goToSlide(0);
+            startInterval();
+        });
+    </script>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
@@ -341,31 +403,25 @@
         const logoutLink = document.getElementById('logout-link');
         const dashboardLink = document.getElementById('dashboard-link');
 
-        // Hàm cập nhật giao diện
         const updateUI = (user) => {
             if (user) {
-                // Người dùng ĐÃ đăng nhập: Hiện Bảng điều khiển/Đăng xuất, Ẩn Đăng nhập/Đăng ký
                 if(dashboardLink) dashboardLink.style.display = 'block';
-                if(logoutLink) logoutLink.style.display = 'block';
+                if(logoutLink) logoutLink.style.display = 'inline-flex';
                 if(loginLink) loginLink.style.display = 'none';
                 if(registerLink) registerLink.style.display = 'none';
             } else {
-                // Người dùng CHƯA đăng nhập: Ẩn Bảng điều khiển/Đăng xuất, Hiện Đăng nhập/Đăng ký
                 if(dashboardLink) dashboardLink.style.display = 'none';
                 if(logoutLink) logoutLink.style.display = 'none';
-                if(loginLink) loginLink.style.display = 'block';
-                if(registerLink) registerLink.style.display = 'block';
+                if(loginLink) loginLink.style.display = 'inline-flex';
+                if(registerLink) registerLink.style.display = 'inline-flex';
             }
-             // Thêm class 'loaded' để hiển thị trang một cách mượt mà
             document.body.classList.add('loaded');
         };
 
-        // Lắng nghe sự thay đổi trạng thái đăng nhập
         onAuthStateChanged(auth, (user) => {
             updateUI(user);
         });
 
-        // Xử lý sự kiện cho nút đăng xuất
         if(logoutLink) {
             logoutLink.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -375,4 +431,3 @@
     </script>
 </body>
 </html>
-
