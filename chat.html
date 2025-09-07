@@ -15,7 +15,7 @@
             --border-color: #e9ecef;
             --sender-bg: #e6f2f2;
             --receiver-bg: var(--primary-color);
-            --ai-receiver-bg: #4A5568; /* Màu tin nhắn của AI */
+            --ai-receiver-bg: #4A5568;
         }
         body {
             font-family: 'Roboto', sans-serif;
@@ -226,12 +226,10 @@
             }
             
             const currentUserDoc = await getDoc(doc(db, "users", currentUser.uid));
-            const backUrl = currentUserDoc.data().role === 'coach' ? 'coach-dashboard.html' : 'athlete-dashboard.html';
+            const backUrl = currentUserDoc.data().role === 'coach' ? './coach-dashboard.html' : './athlete-dashboard.html';
             backButton.href = backUrl;
 
             listenForMessages();
-
-            // SỬA LỖI: Di chuyển event listener vào trong onAuthStateChanged
             messageForm.addEventListener('submit', handleMessageSubmit);
         });
 
@@ -239,13 +237,19 @@
             const messagesColRef = collection(db, "chats", chatId, "messages");
             const q = query(messagesColRef, orderBy("createdAt"));
 
-            onSnapshot(q, (snapshot) => {
-                chatMessages.innerHTML = '';
-                snapshot.forEach(doc => {
-                    displayMessage(doc.data());
-                });
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            });
+            onSnapshot(q, 
+                (snapshot) => { // Hàm xử lý khi thành công
+                    chatMessages.innerHTML = '';
+                    snapshot.forEach(doc => {
+                        displayMessage(doc.data());
+                    });
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }, 
+                (error) => { // Hàm xử lý khi có lỗi
+                    console.error("Lỗi khi lắng nghe tin nhắn: ", error);
+                    alert("Không thể tải tin nhắn. Lỗi này thường xảy ra do thiếu chỉ mục (index) trong Firestore. Vui lòng nhấn F12 để mở Console, tìm thông báo lỗi màu đỏ và nhấn vào liên kết được cung cấp để tạo chỉ mục tự động.");
+                }
+            );
         }
 
         function displayMessage(data, isTyping = false) {
@@ -281,21 +285,13 @@
         }
         
         async function callGeminiAPI(prompt) {
+            // ... (Phần này giữ nguyên)
             const systemPrompt = "Bạn là một trợ lý ảo chuyên nghiệp trong lĩnh vực huấn luyện thể thao. Hãy đưa ra lời khuyên ngắn gọn, hữu ích và an toàn cho các vận động viên. Luôn trả lời bằng tiếng Việt.";
             const apiKey = "";
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-
-            const payload = {
-                contents: [{ parts: [{ text: prompt }] }],
-                systemInstruction: { parts: [{ text: systemPrompt }] },
-            };
-
+            const payload = { contents: [{ parts: [{ text: prompt }] }], systemInstruction: { parts: [{ text: systemPrompt }] }, };
             try {
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
+                const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
                 const result = await response.json();
                 return result.candidates?.[0]?.content?.parts?.[0]?.text || "Tôi chưa thể trả lời câu hỏi này. Vui lòng thử lại.";
             } catch (error) {
@@ -304,7 +300,6 @@
             }
         }
         
-        // SỬA LỖI: Tạo hàm riêng để xử lý submit
         async function handleMessageSubmit(e) {
             e.preventDefault();
             const text = messageInput.value.trim();
@@ -322,28 +317,20 @@
             
             try {
                 await addDoc(messagesColRef, userMessage);
-
                 if (isAIChat) {
                     displayMessage(null, true); 
                     chatMessages.scrollTop = chatMessages.scrollHeight;
-
                     const aiResponseText = await callGeminiAPI(text);
-                    
                     document.getElementById('typing-indicator')?.remove();
-
-                    const aiMessage = {
-                        text: aiResponseText,
-                        senderId: 'ai',
-                        receiverId: currentUser.uid,
-                        createdAt: serverTimestamp()
-                    };
+                    const aiMessage = { text: aiResponseText, senderId: 'ai', receiverId: currentUser.uid, createdAt: serverTimestamp() };
                     await addDoc(messagesColRef, aiMessage);
                 }
             } catch (error) {
                 console.error("Lỗi khi gửi tin nhắn:", error);
+                alert(`Không thể gửi tin nhắn. Lỗi: ${error.message}`);
             }
         }
-
     </script>
 </body>
 </html>
+
