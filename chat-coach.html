@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat - Hỗ Trợ Huấn Luyện</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+        :root {
+            --primary-color: #008080;
+            --background-color: #f0f4f8;
+            --card-bg-color: #ffffff;
+            --text-color: #333;
+            --text-light-color: #6c757d;
+            --border-color: #e9ecef;
+            --sender-bg: #e6f2f2;
+            --receiver-bg: var(--primary-color);
+        }
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            background-color: var(--background-color);
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 15px 30px; background-color: var(--primary-color); color: #fff; }
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        .logo { background-color: #fff; color: var(--primary-color); font-weight: 700; padding: 10px; border-radius: 8px; }
+        .project-info h1 { font-size: 24px; margin: 0; }
+        .navbar { display: flex; background-color: var(--card-bg-color); box-shadow: 0 2px 4px rgba(0,0,0,.05); padding: 0 30px; }
+        .navbar a { padding: 15px 25px; text-decoration: none; color: var(--text-light-color); font-weight: 500; }
+
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 140px); /* Chiều cao linh hoạt */
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: var(--card-bg-color);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+        .chat-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-color);
+            background-color: #f8f9fa;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .chat-header h2 {
+            margin: 0;
+            font-size: 18px;
+            color: var(--text-color);
+        }
+        .chat-header a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .chat-messages {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        .message {
+            max-width: 70%;
+            padding: 10px 15px;
+            border-radius: 18px;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+        .message.sent {
+            background-color: var(--sender-bg);
+            color: var(--text-color);
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+        .message.received {
+            background-color: var(--receiver-bg);
+            color: white;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+        .message .timestamp {
+            font-size: 11px;
+            color: var(--text-light-color);
+            margin-top: 5px;
+            display: block;
+        }
+        .message.received .timestamp {
+             color: rgba(255, 255, 255, 0.7);
+        }
+
+        .chat-input {
+            display: flex;
+            padding: 15px;
+            border-top: 1px solid var(--border-color);
+            background-color: #f8f9fa;
+        }
+        .chat-input input {
+            flex-grow: 1;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 10px 15px;
+            font-size: 16px;
+            outline: none;
+        }
+        .chat-input button {
+            background-color: var(--primary-color);
+            border: none;
+            color: white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            margin-left: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+         <header class="header">
+            <div class="header-left">
+                <div class="logo">LOGO</div>
+                <div class="project-info"><h1>HỖ TRỢ HUẤN LUYỆN THỂ THAO</h1></div>
+            </div>
+        </header>
+        <nav class="navbar">
+            <a href="index.html">Trang chủ</a>
+            <a href="gioithieu.html">Giới thiệu</a>
+            <a href="bangdieukhien.html">Bảng điều khiển</a>
+        </nav>
+
+        <div class="chat-container">
+            <div class="chat-header">
+                <h2 id="chatWithTitle">Đang tải...</h2>
+                <a href="coach-dashboard.html" id="backButton">&larr; Quay lại</a>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <!-- Tin nhắn sẽ được chèn vào đây -->
+            </div>
+            <form class="chat-input" id="messageForm">
+                <input type="text" id="messageInput" placeholder="Nhập tin nhắn..." autocomplete="off">
+                <button type="submit" aria-label="Gửi">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc, collection, addDoc, serverTimestamp, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyA2dXWCyjL2xgCSyeW9QQ7RvjI_O7kFHJw",
+            authDomain: "sporthealthdata.firebaseapp.com",
+            projectId: "sporthealthdata",
+            storageBucket: "sporthealthdata.appspot.com",
+            messagingSenderId: "789054240877",
+            appId: "1:789054240877:web:04a400c9ea586523a86764",
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const chatWithTitle = document.getElementById('chatWithTitle');
+            const chatMessages = document.getElementById('chatMessages');
+            const messageForm = document.getElementById('messageForm');
+            const messageInput = document.getElementById('messageInput');
+            
+            let currentUser, athleteId, chatId;
+
+            onAuthStateChanged(auth, async (user) => {
+                if (!user) {
+                    window.location.href = './dangnhap.html';
+                    return;
+                }
+                currentUser = user;
+
+                const params = new URLSearchParams(window.location.search);
+                athleteId = params.get('with');
+
+                if (!athleteId) {
+                    alert('Không tìm thấy ID của vận động viên.');
+                    window.location.href = './coach-dashboard.html';
+                    return;
+                }
+                
+                chatId = [currentUser.uid, athleteId].sort().join('_');
+                
+                const athleteDoc = await getDoc(doc(db, "users", athleteId));
+                if(athleteDoc.exists()){
+                     chatWithTitle.textContent = `Chat với ${athleteDoc.data().fullName}`;
+                }
+
+                listenForMessages();
+                
+                messageForm.addEventListener('submit', handleMessageSubmit);
+            });
+
+            function listenForMessages() {
+                const messagesColRef = collection(db, "chats", chatId, "messages");
+                const q = query(messagesColRef, orderBy("createdAt"));
+
+                onSnapshot(q, (snapshot) => {
+                    chatMessages.innerHTML = '';
+                    snapshot.forEach(doc => {
+                        displayMessage(doc.data());
+                    });
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }, (error) => {
+                    console.error("Lỗi khi lắng nghe tin nhắn: ", error);
+                    alert("Không thể tải tin nhắn. Vui lòng kiểm tra lại quy tắc bảo mật (Security Rules) của Firestore.");
+                });
+            }
+
+            function displayMessage(data) {
+                const messageDiv = document.createElement('div');
+                messageDiv.classList.add('message');
+                messageDiv.classList.add(data.senderId === currentUser.uid ? 'sent' : 'received');
+                
+                const text = document.createElement('span');
+                text.textContent = data.text;
+                
+                const timestamp = document.createElement('span');
+                timestamp.classList.add('timestamp');
+                timestamp.textContent = data.createdAt ? new Date(data.createdAt.seconds * 1000).toLocaleTimeString() : '';
+
+                messageDiv.appendChild(text);
+                messageDiv.appendChild(timestamp);
+                chatMessages.appendChild(messageDiv);
+            }
+
+            async function handleMessageSubmit(e) {
+                e.preventDefault();
+                const text = messageInput.value.trim();
+                if (text === '' || !chatId) return;
+
+                messageInput.value = '';
+                try {
+                    const messagesColRef = collection(db, "chats", chatId, "messages");
+                    await addDoc(messagesColRef, {
+                        text: text,
+                        senderId: currentUser.uid,
+                        receiverId: athleteId,
+                        createdAt: serverTimestamp()
+                    });
+                } catch (error) {
+                    console.error("Lỗi khi gửi tin nhắn:", error);
+                    alert(`Không thể gửi tin nhắn. Lỗi: ${error.message}`);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
