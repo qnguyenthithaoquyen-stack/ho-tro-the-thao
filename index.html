@@ -282,7 +282,7 @@
         <nav class="navbar">
             <a href="index.html" class="active">Trang chủ</a>
             <a href="gioithieu.html">Giới thiệu</a>
-            <a href="bangdieukhien.html" id="dashboard-link" style="display: none;">Bảng điều khiển</a>
+            <a href="#" id="dashboard-link" style="display: none;">Bảng điều khiển</a>
         </nav>
 
         <section class="welcome-section">
@@ -311,7 +311,6 @@
     </div>
     
     <script>
-        // Script for carousel (nếu bạn có script riêng, hãy giữ nó ở đây)
         document.addEventListener('DOMContentLoaded', function () {
             const slides = document.getElementById('slides');
             const dotsContainer = document.getElementById('dots');
@@ -320,7 +319,8 @@
             let currentIndex = 0;
             let slideInterval;
 
-            // Create dots
+            if (!slides || !dotsContainer || slideElements.length === 0) return;
+
             for (let i = 0; i < totalSlides; i++) {
                 const dot = document.createElement('div');
                 dot.classList.add('dot');
@@ -358,7 +358,7 @@
             }
             
             function startInterval() {
-                slideInterval = setInterval(nextSlide, 5000); // Change slide every 5 seconds
+                slideInterval = setInterval(nextSlide, 5000);
             }
 
             function resetInterval() {
@@ -374,8 +374,7 @@
                 prevSlide();
                 resetInterval();
             });
-
-            // Initial setup
+            
             goToSlide(0);
             startInterval();
         });
@@ -384,6 +383,8 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+
 
         const firebaseConfig = {
             apiKey: "AIzaSyA2dXWCyjL2xgCSyeW9QQ7RvjI_O7kFHJw",
@@ -397,14 +398,27 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        const db = getFirestore(app);
 
         const loginLink = document.getElementById('login-link');
         const registerLink = document.getElementById('register-link');
         const logoutLink = document.getElementById('logout-link');
         const dashboardLink = document.getElementById('dashboard-link');
 
-        const updateUI = (user) => {
+        const updateUI = async (user) => {
             if (user) {
+                const docRef = doc(db, "users", user.uid);
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+                    const userData = docSnap.data();
+                    if (userData.role === 'coach') {
+                        dashboardLink.href = 'coach-dashboard.html';
+                    } else { // athlete
+                        dashboardLink.href = 'athlete-dashboard.html';
+                    }
+                }
+
                 if(dashboardLink) dashboardLink.style.display = 'block';
                 if(logoutLink) logoutLink.style.display = 'inline-flex';
                 if(loginLink) loginLink.style.display = 'none';
@@ -431,3 +445,4 @@
     </script>
 </body>
 </html>
+
