@@ -143,6 +143,20 @@
       box-shadow: var(--shadow-sm);
     }
     .video-item .btn { padding: 6px 10px; font-size: 13px; margin-left: 8px; }
+    .video-item .delete-btn {
+        color: var(--accent-red);
+        border-color: var(--accent-red);
+        background-color: transparent;
+        width: 30px;
+        height: 30px;
+        padding: 0;
+        justify-content: center;
+        font-size: 18px;
+    }
+     .video-item .delete-btn:hover {
+        background-color: var(--accent-red);
+        color: #fff;
+    }
 
     .player-wrap {
       position: relative;
@@ -292,7 +306,7 @@
       <hr>
       
       <div>
-        <label>Danh sách video (lọc theo môn đã chọn)</label>
+        <label>Lịch sử video đã phân tích (lọc theo môn)</label>
         <div class="video-list" id="videoList"></div>
       </div>
     </div>
@@ -456,6 +470,19 @@
 
             request.onsuccess = (event) => resolve(event.target.result);
             request.onerror = (event) => reject('Error fetching videos: ' + event.target.errorCode);
+        });
+    }
+
+    function deleteVideoFromDB(videoId) {
+        return new Promise((resolve, reject) => {
+            if (!idb) return reject('DB not initialized');
+            
+            const transaction = idb.transaction([STORE_NAME], 'readwrite');
+            const store = transaction.objectStore(STORE_NAME);
+            const request = store.delete(videoId);
+
+            transaction.oncomplete = () => resolve();
+            transaction.onerror = (event) => reject('Error deleting video: ' + event.target.errorCode);
         });
     }
 
@@ -693,30 +720,81 @@
         aiStatusPill.textContent = 'AI: chưa có model';
       }
     }
-    tryLoadAIModel();
+    
+    function deleteVideo(videoId) {
+        showModal(`Bạn có chắc muốn xóa video này và kết quả phân tích của nó?`, true, async () => {
+            try {
+                const videoToDelete = uploadedVideos.find(v => v.id === videoId);
+                if (videoToDelete && videoToDelete.url) {
+                    URL.revokeObjectURL(videoToDelete.url);
+                }
+
+                await deleteVideoFromDB(videoId);
+                
+                uploadedVideos = uploadedVideos.filter(v => v.id !== videoId);
+                if (results[videoId]) {
+                    delete results[videoId];
+                    saveResults(); 
+                }
+
+                renderVideoList();
+
+                if(currentVideo && currentVideo.id === videoId) {
+                    player.src = '';
+                    analysisPanel.innerHTML = 'Chưa có video được chọn.';
+                    currentVideo = null;
+                }
+
+                showModal('Đã xóa video thành công.');
+
+            } catch (err) {
+                console.error('Lỗi khi xóa video:', err);
+                showModal('Không thể xóa video khỏi cơ sở dữ liệu.');
+            }
+        });
+    }
 
     function renderVideoList(){
-      const sport = sportSel.value;
-      videoListEl.innerHTML='';
-      const filtered = uploadedVideos.filter(v=>{
-        if(v.sportTag === sport) return true;
-        const ln = (v.name||'').toLowerCase();
-        return ln.includes(sport) || ln.includes(sport === 'xuatphat' ? 'xuat' : (sport === 'nhaycao' ? 'nhay' : 'nem'));
-      });
-      if(filtered.length===0){ videoListEl.innerHTML='<div class="small">Chưa có video cho môn này. Hãy tải lên.</div>'; return }
-      filtered.forEach((v)=>{
-        const div = document.createElement('div'); div.className='video-item';
-        div.innerHTML = `<div><strong>${v.name}</strong><div class="small">${v.sportTag || ''}</div></div>`;
-        const btnWrap = document.createElement('div');
-        const openBtn = document.createElement('button'); openBtn.textContent='Mở'; openBtn.className='btn';
-        openBtn.onclick = ()=>{ openVideo(v) };
-        const analyze = document.createElement('button'); analyze.textContent='Phân tích'; analyze.className='btn btn-primary';
-        analyze.onclick = ()=>{ openVideo(v); setTimeout(()=>runAnalysisIfNeeded(v,false),200) };
-        btnWrap.appendChild(openBtn); btnWrap.appendChild(analyze);
-        div.appendChild(btnWrap);
-        videoListEl.appendChild(div);
-      });
+        const sport = sportSel.value;
+        videoListEl.innerHTML='';
+        const filtered = uploadedVideos.filter(v=>{
+          if(v.sportTag === sport) return true;
+          const ln = (v.name||'').toLowerCase();
+          return ln.includes(sport) || ln.includes(sport === 'xuatphat' ? 'xuat' : (sport === 'nhaycao' ? 'nhay' : 'nem'));
+        });
+        if(filtered.length===0){ videoListEl.innerHTML='<div class="small">Chưa có video cho môn này. Hãy tải lên.</div>'; return }
+        
+        filtered.forEach((v)=>{
+            const div = document.createElement('div'); 
+            div.className='video-item';
+            const hasResult = !!results[v.id];
+    
+            div.innerHTML = `
+                <div style="flex-grow: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-right: 10px;">
+                    <strong title="${v.name}">${v.name}</strong>
+                    <div class="small">${v.sportTag || ''}</div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
+                    ${hasResult ? `<span class="pill" style="background-color: #e6ffed; border-color: #b7eb8f; color: #389e0d;" title="Đã phân tích: ${results[v.id].tile}%">✔ Đã phân tích</span>` : ''}
+                    <button class="btn open-btn" title="Xem video này">Xem</button>
+                    <button class="btn analyze-btn ${hasResult ? '' : 'btn-primary'}" title="${hasResult ? 'Chạy lại phân tích' : 'Phân tích video này'}">${hasResult ? 'Phân tích lại' : 'Phân tích'}</button>
+                    <button class="btn delete-btn" title="Xóa video và kết quả">&times;</button>
+                </div>
+            `;
+    
+            div.querySelector('.open-btn').onclick = () => openVideo(v);
+    
+            div.querySelector('.analyze-btn').onclick = () => {
+                openVideo(v);
+                setTimeout(() => runAnalysisIfNeeded(v, hasResult), 200); 
+            };
+    
+            div.querySelector('.delete-btn').onclick = () => deleteVideo(v.id);
+    
+            videoListEl.appendChild(div);
+        });
     }
+
 
     function renderGallery(){
       gallery.innerHTML='';
@@ -1440,17 +1518,18 @@
     clearStorageBtn.addEventListener('click', ()=>{ 
       showModal(
         'Bạn có chắc muốn xóa toàn bộ dữ liệu (kết quả phân tích, ảnh và video đã tải lên)?',
-        true, // isConfirm
-        async () => { // onConfirm
+        true,
+        async () => {
           localStorage.removeItem('thethaott_results'); 
           localStorage.removeItem('thethaott_gallery'); 
           try {
               await clearVideosFromDB();
+              uploadedVideos.forEach(v => URL.revokeObjectURL(v.url));
               uploadedVideos = [];
               renderVideoList();
-              console.log('Cleared all videos from IndexedDB.');
+              console.log('Đã xóa tất cả video khỏi IndexedDB.');
           } catch(e) {
-              console.error('Failed to clear videos from DB', e);
+              console.error('Không thể xóa video khỏi DB', e);
           }
           results={}; 
           renderGallery(); 
@@ -1458,7 +1537,7 @@
           showAnalysisPanel(null);
           player.src = '';
           currentVideo = null;
-          showModal('Đã xóa dữ liệu thành công.');
+          showModal('Đã xóa toàn bộ dữ liệu thành công.');
         }
       );
     });
@@ -1467,11 +1546,14 @@
         try {
             await initDB();
             const storedVideos = await getVideosFromDB();
+            // Clean up old blob URLs before creating new ones
+            uploadedVideos.forEach(v => URL.revokeObjectURL(v.url)); 
+            
             uploadedVideos = storedVideos.map(v => ({
                 ...v,
-                url: URL.createObjectURL(v.file) // Recreate blob URL from file object
+                url: URL.createObjectURL(v.file)
             }));
-            console.log(`Loaded ${uploadedVideos.length} videos from IndexedDB.`);
+            console.log(`Đã tải ${uploadedVideos.length} video từ IndexedDB.`);
         } catch (error) {
             console.error('Could not load videos from IndexedDB:', error);
             showModal('Không thể tải video đã lưu. Dữ liệu có thể bị mất.');
