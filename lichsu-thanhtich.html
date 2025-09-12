@@ -42,8 +42,36 @@
         .navbar a.active::after { content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 70%; height: 3px; background-color: var(--primary-color); }
 
         .main-content { padding: 30px; }
-        .main-content h1 { font-size: 28px; color: var(--primary-color); }
-        .main-content p { color: var(--text-light-color); margin-top: -10px; }
+        .main-content h1 { font-size: 28px; color: var(--primary-color); margin-bottom: 0;}
+        .main-content .subtitle { color: var(--text-light-color); margin-top: 4px; }
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 20px;
+        }
+
+        .btn-back {
+            background-color: var(--primary-color);
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-back:hover {
+            background-color: #006666;
+        }
+
 
         .add-achievement-card {
             background-color: var(--card-bg-color);
@@ -163,8 +191,18 @@
             <a href="bangdieukhien.html" class="active">Bảng điều khiển</a>
         </nav>
         <main class="main-content">
-            <h1>Lịch sử thành tích</h1>
-            <p id="athlete-name-display">Dữ liệu của vận động viên</p>
+            <div class="page-header">
+                <div>
+                    <h1>Lịch sử thành tích</h1>
+                    <p id="athlete-name-display" class="subtitle">Dữ liệu của vận động viên</p>
+                </div>
+                <a href="bangdieukhien.html" class="btn-back">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="vertical-align: text-bottom;">
+                        <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"></path>
+                    </svg>
+                    <span>Quay về Bảng điều khiển</span>
+                </a>
+            </div>
             
             <div class="add-achievement-card">
                 <h2>Thêm thành tích mới</h2>
@@ -351,3 +389,4 @@
     </script>
 </body>
 </html>
+
