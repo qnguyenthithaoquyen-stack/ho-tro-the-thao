@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>MediaPipe Pose</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+  <style>
+    body{font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+    .container-center{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;background:#f3f4f6}
+    .result-badge{position:absolute;top:.5rem;left:.5rem;background:rgba(0,0,0,.7);color:#fff;font-size:.9rem;border-radius:.6rem;padding:.5rem .75rem;box-shadow:0 6px 20px rgba(0,0,0,.25);backdrop-filter:blur(4px)}
+    .debug-box{position:absolute;left:.5rem;bottom:.5rem;max-width:calc(100% - 1rem);background:rgba(0,0,0,.72);color:#e5e7eb;font-size:.8rem;border-radius:.6rem;padding:.6rem .7rem;line-height:1.25;box-shadow:0 6px 20px rgba(0,0,0,.25)}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace}
+    .tbl th,.tbl td{padding:.5rem .75rem;border-bottom:1px solid #e5e7eb}
+    .pill{padding:.125rem .5rem;border-radius:999px;font-size:.75rem}
+    .thumb{border-radius:.5rem;box-shadow:0 6px 20px rgba(0,0,0,.12)}
+    .badge{font-size:.7rem;padding:.15rem .4rem;border-radius:.4rem}
+    .section-title{font-size:1rem;font-weight:600}
+    .subtle{font-size:.9rem;color:#6b7280}
+  </style>
+</head>
+<body class="bg-gray-100 p-8 container-center">
+
+  <div class="bg-white shadow-xl rounded-xl p-6 md:p-10 text-center max-w-lg w-full">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-6">MediaPipe Pose</h1>
+    <p class="text-gray-600 mb-6">
+      Nhận diện <b>Ném tạ, Nhảy cao, Xuất phát</b>, xác định <b>pha</b>, chấm <b>ĐÚNG/SAI</b>, <b>quét keyframe</b> & <b>debug</b>.
+    </p>
+
+    <div class="relative w-full rounded-lg shadow-inner overflow-hidden">
+      <video id="webcam" class="w-full h-auto rounded-lg" autoplay playsinline muted></video>
+      <canvas id="pose-canvas" class="absolute top-0 left-0 w-full h-full rounded-lg"></canvas>
+
+      <div id="resultBadge" class="result-badge hidden">Đang nhận diện...</div>
+      <div id="debugBox" class="debug-box hidden"></div>
+      <div id="loading" class="absolute inset-0 bg-white/70 flex items-center justify-center text-gray-700 font-semibold text-lg">Đang tải...</div>
+    </div>
+
+    <!-- Panel phân tích -->
+    <div id="analysisPanel" class="mt-5 text-left hidden">
+      <div id="analysisStatus" class="text-sm font-bold"></div>
+      <ul id="analysisReasons" class="mt-2 text-sm list-disc list-inside text-gray-700"></ul>
+
+      <!-- Báo cáo động tác (giữ nguyên) -->
+      <div id="repExtra" class="mt-4 text-sm hidden">
+        <hr class="my-3">
+        <div class="font-semibold mb-1">Báo cáo động tác (sau khi khóa môn)</div>
+        <div class="flex flex-wrap items-center gap-3 mb-2">
+          <span>Đếm động tác: <span class="font-semibold text-emerald-700" id="repOk">0</span> đúng • <span class="font-semibold text-rose-700" id="repBad">0</span> sai</span>
+          <span class="subtle">(đếm theo nhịp chuyển động hông)</span>
+        </div>
+
+        <div class="mb-2">
+          <div class="section-title mb-1">Động tác sai gặp nhiều</div>
+          <ul id="badTop" class="list-disc list-inside text-gray-700"></ul>
+        </div>
+
+        <div class="mb-2">
+          <div class="section-title mb-1">Nguy cơ chấn thương</div>
+          <ul id="riskTop" class="list-disc list-inside text-gray-700"></ul>
+        </div>
+
+        <div class="mb-2">
+          <div class="section-title mb-1">Gợi ý bài tập phù hợp</div>
+          <ul id="exTop" class="list-disc list-inside text-gray-700"></ul>
+        </div>
+
+        <div class="italic text-gray-800" id="motivation"></div>
+      </div>
+    </div>
+
+    <!-- Panel Cảnh báo chấn thương (suy luận từ phân tích) -->
+    <div id="injuryPanel" class="mt-6 text-left hidden">
+      <div class="section-title mb-2">Cảnh báo chấn thương (suy luận từ phân tích)</div>
+      <div id="injuryGrid" class="grid grid-cols-1 gap-3"></div>
+      <div class="mt-3">
+        <div class="section-title mb-1">Ưu tiên can thiệp</div>
+        <ul id="injuryPriority" class="list-disc list-inside text-gray-700 text-sm"></ul>
+      </div>
+    </div>
+
+    <!-- Điều khiển Quét -->
+    <div class="mt-6 w-full text-left space-y-3">
+      <div class="flex flex-wrap items-center gap-3">
+        <button id="scanBtn" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow">Quét 1 lượt</button>
+        <span id="scanProg" class="text-sm text-gray-600"></span>
+
+        <!-- Toggle Debug -->
+        <label class="ml-auto inline-flex items-center gap-2 text-sm select-none">
+          <input id="debugToggle" type="checkbox" class="h-4 w-4 rounded border-gray-300">
+          <span>Bật debug</span>
+        </label>
+      </div>
+
+      <div class="grid grid-cols-1 gap-2">
+        <label class="text-sm text-gray-700 flex items-center justify-between">
+          <span>Thời lượng quét (<span id="scanSecLabel">3</span>s)</span>
+          <input id="scanSec" type="range" min="1" max="10" step="1" value="3" class="w-40">
+        </label>
+        <p class="subtle">~30 khung hình/giây.</p>
+      </div>
+
+      <div id="scanPanel" class="mt-2 hidden">
+        <div class="flex flex-wrap items-center gap-2">
+          <div class="section-title">Kết quả quét</div>
+          <span id="scanConclusionPill" class="pill bg-gray-200 text-gray-700">—</span>
+          <span id="lockHint" class="pill bg-indigo-100 text-indigo-800 hidden">Đang khóa môn theo quét</span>
+
+          <!-- Khoá thủ công -->
+          <div class="ml-auto flex flex-wrap items-center gap-2">
+            <button data-lock="Ném tạ" class="px-2 py-1 rounded bg-emerald-600 text-white text-xs">Khóa Ném tạ</button>
+            <button data-lock="Nhảy cao" class="px-2 py-1 rounded bg-blue-600 text-white text-xs">Khóa Nhảy cao</button>
+            <button data-lock="Xuất phát" class="px-2 py-1 rounded bg-amber-600 text-white text-xs">Khóa Xuất phát</button>
+            <button id="unlockBtn" class="px-2 py-1 rounded bg-gray-700 text-white text-xs">Bỏ khóa</button>
+          </div>
+        </div>
+        <table class="tbl w-full text-sm mt-2">
+          <thead class="text-gray-500"><tr><th class="text-left">Nhãn</th><th class="text-right">Số khung</th><th class="text-right">Tỷ lệ</th></tr></thead>
+          <tbody id="scanTableBody" class="text-gray-800"></tbody>
+        </table>
+
+        <div class="mt-4">
+          <div class="section-title mb-2">Keyframe theo môn</div>
+          <div id="keyframeGallery" class="grid grid-cols-2 gap-3"></div>
+        </div>
+        <div class="mt-4">
+          <div class="section-title mb-2">Keyframe theo pha</div>
+          <div id="phaseGallery" class="grid grid-cols-2 gap-3"></div>
+        </div>
+
+        <div class="mt-4 flex items-center gap-3">
+          <button id="exportZipBtn" class="px-4 py-2 bg-gray-900 hover:bg-black text-white rounded-lg shadow">Xuất ZIP keyframe</button>
+          <span class="subtle">Theo <i>môn</i> và <i>pha</i>.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MediaPipe -->
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils"></script>
+
+  <script>
+    // ====== DOM ======
+    const videoElement = document.getElementById('webcam');
+    const canvasElement = document.getElementById('pose-canvas');
+    const ctx = canvasElement.getContext('2d');
+    const loadingEl = document.getElementById('loading');
+    const resultBadge = document.getElementById('resultBadge');
+    const debugBox = document.getElementById('debugBox');
+    const debugToggle = document.getElementById('debugToggle');
+
+    const analysisPanel = document.getElementById('analysisPanel');
+    const analysisStatus = document.getElementById('analysisStatus');
+    const analysisReasons = document.getElementById('analysisReasons');
+
+    // Báo cáo rep
+    const repExtra = document.getElementById('repExtra');
+    const repOkEl = document.getElementById('repOk');
+    const repBadEl = document.getElementById('repBad');
+    const badTopEl = document.getElementById('badTop');
+    const riskTopEl = document.getElementById('riskTop');
+    const exTopEl = document.getElementById('exTop');
+    const motivationEl = document.getElementById('motivation');
+
+    // Injury UI
+    const injuryPanel = document.getElementById('injuryPanel');
+    const injuryGrid = document.getElementById('injuryGrid');
+    const injuryPriority = document.getElementById('injuryPriority');
+
+    const scanBtn = document.getElementById('scanBtn');
+    const scanProg = document.getElementById('scanProg');
+    const scanPanel = document.getElementById('scanPanel');
+    const scanTableBody = document.getElementById('scanTableBody');
+    const scanConclusionPill = document.getElementById('scanConclusionPill');
+    const lockHint = document.getElementById('lockHint');
+    const keyframeGallery = document.getElementById('keyframeGallery');
+    const phaseGallery = document.getElementById('phaseGallery');
+    const exportZipBtn = document.getElementById('exportZipBtn');
+    const scanSec = document.getElementById('scanSec');
+    const scanSecLabel = document.getElementById('scanSecLabel');
+    const manualLockBtns = document.querySelectorAll('[data-lock]');
+    const unlockBtn = document.getElementById('unlockBtn');
+
+    // ====== Utils ======
+    function ensureCanvasSize(w,h){ if(canvasElement.width!==w||canvasElement.height!==h){ canvasElement.width=w; canvasElement.height=h; } }
+    const clamp=(v,lo,hi)=>Math.max(lo,Math.min(hi,v));
+    const avg=(a,b)=>(a+b)/2;
+    const dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+    const fmtDeg=v=>v==null?'—':`${v.toFixed(0)}°`;
+    function toPx(lm,w,h){ return {x:lm.x*w, y:lm.y*h, z:lm.z, v:(lm.visibility ?? 0.9)} }
+    function angle(p1,p2,p3){ const v1={x:p1.x-p2.x,y:p1.y-p2.y}, v2={x:p3.x-p2.x,y:p3.y-p2.y};
+      const m1=Math.hypot(v1.x,v1.y), m2=Math.hypot(v2.x,v2.y); if(!m1||!m2) return null;
+      let c=(v1.x*v2.x+v1.y*v2.y)/(m1*m2); c=Math.max(-1,Math.min(1,c)); return Math.acos(c)*180/Math.PI; }
+    function lineAngle(a,b){ return Math.atan2(a.y-b.y,a.x-b.x)*180/Math.PI; }
+    function scoreRange(val,lo,hi){ if(val==null) return 0; const mid=(lo+hi)/2,tol=(hi-lo)/2; const d=Math.abs(val-mid); return d>=tol?0:1-d/tol; }
+
+    // ====== Motion history ======
+    const kHist={ hip:[], ankle:[], wrist:[] }; const MAX_HIST=12;
+    function pushHist(hip,ankle,wrist){ kHist.hip.push(hip);kHist.ankle.push(ankle);kHist.wrist.push(wrist);
+      ['hip','ankle','wrist'].forEach(k=>{ if(kHist[k].length>MAX_HIST) kHist[k].shift(); }); }
+    function avgSpeed(arr){ if(arr.length<3) return 0; let s=0; for(let i=1;i<arr.length;i++) s+=Math.hypot(arr[i].x-arr[i-1].x,arr[i].y-arr[i-1].y); return s/(arr.length-1); }
+    function verticalVelocity(arr){ if(arr.length<2) return 0; const a=arr[arr.length-2], b=arr[arr.length-1]; return a.y-b.y; } // + đi lên
+    function horizVelocity(arr){ if(arr.length<2) return 0; const a=arr[arr.length-2], b=arr[arr.length-1]; return b.x-a.x; }
+
+    // ====== THAM SỐ ======
+    const MIN_QUALITY = 0.50;
+    const START_KNEE_TOL = 0.14;
+    const SHOT_HEAD_DIST = 0.075;
+    const JUMP_HIP_UP = 1.7;
+    const RUN_MOTION = 6.5;
+    const FRAME_DIFF_MIN = 0.15;
+
+    // ====== Sport classification ======
+    function classifySport(lms,w,h){
+      const L=i=>toPx(lms[i],w,h);
+      const LEAR=L(7), REAR=L(8);
+      const LS=L(11), LE=L(13), LW=L(15), RS=L(12), RE=L(14), RW=L(16);
+      const LH=L(23), LK=L(25), LA=L(27), RH=L(24), RK=L(26), RA=L(28);
+
+      const S={x:avg(LS.x,RS.x), y:avg(LS.y,RS.y)}, H={x:avg(LH.x,RH.x), y:avg(LH.y,RH.y)};
+      const elbowL=angle(LS,LE,LW), elbowR=angle(RS,RE,RW);
+      const kneeL=angle(LH,LK,LA), kneeR=angle(RH,RK,RA);
+      const armLineL=Math.abs(lineAngle(LW,LS)), armLineR=Math.abs(lineAngle(RW,RS));
+      const torsoLineDeg=Math.abs(lineAngle(S,H)), torsoTiltFromVertical=Math.abs(90-torsoLineDeg);
+
+      const vis = [LS,RS,LE,RE,LW,RW,LH,RH,LK,RK,LA,RA].map(p=>p.v);
+      const quality = vis.reduce((a,b)=>a+b,0)/vis.length;
+      if (quality < MIN_QUALITY) {
+        return { sport:'Chưa xác định', conf:0.01,
+          metrics:{ elbowL,elbowR,kneeL,kneeR,torsoTiltFromVertical,armLineL,armLineR },
+          debug:{ quality:+quality.toFixed(2), reason:'low_quality' }
+        };
+      }
+      const qualityScale = clamp((quality-0.5)/0.35, 0, 1);
+
+      const base = {
+        nhaycao: 0.6*Math.max(scoreRange(kneeL,60,80),scoreRange(kneeR,60,80))
+               + 0.4*Math.max(scoreRange(elbowL,90,110),scoreRange(elbowR,90,110)),
+        xuatphat: 0.45*Math.max(scoreRange(kneeL,80,100),scoreRange(kneeR,80,100))
+                + 0.25*Math.max(scoreRange(kneeL,110,130),scoreRange(kneeR,110,130))
+                + 0.30*clamp((torsoTiltFromVertical-20)/25,0,1),
+        nemta: 0.55*Math.max(scoreRange(armLineL,35,50),scoreRange(armLineR,35,50))
+             + 0.45*Math.max(scoreRange(elbowL,165,180),scoreRange(elbowR,165,180))
+      };
+
+      const wristBelowHip = (LW.y>H.y && RW.y>H.y);
+      const kneeMidY = avg(LK.y,RK.y);
+      const wristNearKnee = (Math.abs(LW.y-kneeMidY)<START_KNEE_TOL*h && Math.abs(RW.y-kneeMidY)<START_KNEE_TOL*h);
+      const kneesStaggered = (Math.abs((kneeL??0)-(kneeR??0))>15);
+      const startGate = (wristBelowHip && wristNearKnee && torsoTiltFromVertical>20 && kneesStaggered);
+      const startMul = startGate ? 1 : 0.3;
+
+      const wristNearHeadL = (dist(LW,LEAR) < SHOT_HEAD_DIST*w) || (LW.y < LS.y);
+      const wristNearHeadR = (dist(RW,REAR) < SHOT_HEAD_DIST*w) || (RW.y < RS.y);
+      const shotGate = (wristNearHeadL || wristNearHeadR);
+      const shotMul = shotGate ? 1 : 0.28;
+
+      const hipUp = verticalVelocity(kHist.hip) > JUMP_HIP_UP;
+      const runMotion = avgSpeed(kHist.ankle) > RUN_MOTION;
+      const jumpGate = (hipUp || runMotion);
+      const jumpMul = jumpGate ? 1 : 0.28;
+
+      const conf = {
+        nhaycao: base.nhaycao * jumpMul * qualityScale,
+        xuatphat: base.xuatphat * startMul * qualityScale,
+        nemta: base.nemta * shotMul * qualityScale
+      };
+
+      const cands=[{label:'Nhảy cao',conf:conf.nhaycao},{label:'Xuất phát',conf:conf.xuatphat},{label:'Ném tạ',conf:conf.nemta}]
+        .sort((a,b)=>b.conf-a.conf);
+      const best=cands[0], second=cands[1];
+
+      let sport = (best.conf >= 0.5 && (best.conf - second.conf) >= FRAME_DIFF_MIN) ? best.label : 'Chưa xác định';
+
+      const debug = {
+        quality:+quality.toFixed(2), qualityScale:+qualityScale.toFixed(2),
+        gates:{
+          startGate, wristBelowHip, wristNearKnee, kneesStaggered, torsoTilt:+torsoTiltFromVertical.toFixed(0), startMul,
+          shotGate, wristNearHeadL, wristNearHeadR, shotMul,
+          jumpGate, hipUp:+hipUp, runMotion:+runMotion, jumpMul
+        },
+        base:{'Nhảy cao':+base.nhaycao.toFixed(2),'Xuất phát':+base.xuatphat.toFixed(2),'Ném tạ':+base.nemta.toFixed(2)},
+        final:{'Nhảy cao':+conf.nhaycao.toFixed(2),'Xuất phát':+conf.xuatphat.toFixed(2),'Ném tạ':+conf.nemta.toFixed(2)},
+        metrics:{ elbowL,elbowR,kneeL,kneeR,armLineL,armLineR,torsoTiltFromVertical }
+      };
+
+      return { sport, conf:best.conf, metrics:{ elbowL,elbowR,kneeL,kneeR,torsoTiltFromVertical,armLineL,armLineR }, debug };
+    }
+
+    // Mượt nhãn realtime
+    const sportHist=[];
+    function smoothSport(raw){
+      sportHist.push(raw); if(sportHist.length>MAX_HIST) sportHist.shift();
+      const acc={'Nhảy cao':0,'Xuất phát':0,'Ném tạ':0,'Chưa xác định':0};
+      const w=(i)=>(i+1)/sportHist.length;
+      sportHist.forEach((r,i)=>{ acc[r.sport]+=r.conf*w(i); });
+      let best='Chưa xác định',val=-1; for(const k in acc){ if(acc[k]>val){val=acc[k];best=k;} }
+      return best;
+    }
+
+    // ====== Phase detection ======
+    const phaseState={ sport:'Chưa xác định', phase:'—', lockCount:0 };
+    function detectPhase(sport,m){
+      const hipV=verticalVelocity(kHist.hip), hipVX=horizVelocity(kHist.hip);
+      const moveAnkle=avgSpeed(kHist.ankle), moveWrist=avgSpeed(kHist.wrist);
+      const motion=0.5*moveAnkle+0.5*moveWrist;
+      const kneeMin=Math.min(m.kneeL??999,m.kneeR??999), kneeMax=Math.max(m.kneeL??0,m.kneeR??0);
+      const elbowMax=Math.max(m.elbowL??0,m.elbowR??0), torsoLean=m.torsoTiltFromVertical??0;
+      const LOW=2.0,RUN=6.0,HIP_UP=1.5,HIP_DOWN=-1.5; let phase='—';
+      if(sport==='Nhảy cao'){
+        if(motion>RUN && kneeMin>110 && torsoLean>=10) phase='Chạy đà';
+        if(kneeMin>=60 && kneeMin<=95 && hipV>HIP_UP) phase='Giậm nhảy';
+        if(Math.abs(hipV)<0.8 && kneeMax>=120) phase='Trên không';
+        if(hipV<HIP_DOWN && kneeMin<=120) phase='Tiếp đất';
+      } else if(sport==='Xuất phát'){
+        if(motion<=LOW && torsoLean<15) phase='Vào chỗ';
+        const f=(scoreRange(m.kneeL,80,100)>.6)||(scoreRange(m.kneeR,80,100)>.6);
+        const r=(scoreRange(m.kneeL,110,130)>.6)||(scoreRange(m.kneeR,110,130)>.6);
+        if(torsoLean>20 && f && r && motion<=RUN) phase='Sẵn sàng';
+        if(motion>RUN && torsoLean<25) phase='Chạy';
+      } else if(sport==='Ném tạ'){
+        if(motion<=LOW && elbowMax<160) phase='Chuẩn bị';
+        if(motion>LOW && motion<=RUN && torsoLean>=10 && elbowMax<165) phase='Lăng đà';
+        if(Math.abs(hipVX)>3.0 && motion>RUN/1.3) phase='Trượt đà';
+        if(((m.armLineL && scoreRange(m.armLineL,35,50)>.5)||(m.armLineR && scoreRange(m.armLineR,35,50)>.5)) && elbowMax>=165) phase='Ra tay';
+      }
+      const stable=3; if(phase!==phaseState.phase){ phaseState.lockCount++; if(phaseState.lockCount>=stable){phaseState.phase=phase;phaseState.lockCount=0;} } else { phaseState.lockCount=0; }
+      return phaseState.phase||'—';
+    }
+
+    // HUD
+    function drawHUD(label,conf,phase,locked){
+      if(resultBadge.classList.contains('hidden')) return;
+      const c=(label!=='Chưa xác định')?` • Tin cậy ${(conf*100).toFixed(0)}%`:''; 
+      const p=(label!=='Chưa xác định'&&phase&&phase!=='—')?` • Pha <span class="mono">${phase}</span>`:''; 
+      const lk=locked?' • (khóa)':''; 
+      resultBadge.innerHTML=`<span class="font-semibold">${label}</span>${p}${c}${lk}`;
+    }
+
+    // Debug
+    function renderDebug(info, effectiveLabel, locked){
+      if(!debugToggle.checked){ debugBox.classList.add('hidden'); return; }
+      debugBox.classList.remove('hidden');
+      const m = info.metrics || {}, g = info.gates || {};
+      const base = info.base || {}; const fin = info.final || {};
+      debugBox.innerHTML = `
+        <div><span class="mono">LOCK</span>: ${locked?'<span class="text-emerald-300 font-semibold">ON</span>':'<span class="text-gray-300">off</span>'} • <span class="mono">Label</span>: <b>${effectiveLabel}</b></div>
+        <div><span class="mono">Quality</span>: ${info.quality ?? '—'} • scale ${info.qualityScale ?? '—'}</div>
+        <div class="mt-1"><b>Conf (base → final)</b></div>
+        <div class="mono">Nhảy cao: ${(base['Nhảy cao']??'—')} → ${(fin['Nhảy cao']??'—')}</div>
+        <div class="mono">Xuất phát: ${(base['Xuất phát']??'—')} → ${(fin['Xuất phát']??'—')}</div>
+        <div class="mono">Ném tạ: ${(base['Ném tạ']??'—')} → ${(fin['Ném tạ']??'—')}</div>
+        <div class="mt-1"><b>Gates</b>:
+          <div class="mono">Start: wristBelowHip=${g.wristBelowHip} wristNearKnee=${g.wristNearKnee} kneesStaggered=${g.kneesStaggered} torsoTilt=${g.torsoTilt}°</div>
+          <div class="mono">Shot: nearHeadL=${g.wristNearHeadL} nearHeadR=${g.wristNearHeadR}</div>
+          <div class="mono">Jump: hipUp=${g.hipUp} runMotion=${g.runMotion}</div>
+        </div>
+        <div class="mt-1"><b>Angles</b>:
+          <div class="mono">kneeL=${fmtDeg(m.kneeL)} kneeR=${fmtDeg(m.kneeR)} • elbowL=${fmtDeg(m.elbowL)} elbowR=${fmtDeg(m.elbowR)}</div>
+          <div class="mono">armLineL=${fmtDeg(m.armLineL)} armLineR=${fmtDeg(m.armLineR)} • torsoTilt=${fmtDeg(m.torsoTiltFromVertical)}</div>
+        </div>
+      `;
+    }
+
+    /* ====== ĐÚNG/SAI — GIỮ NGUYÊN Y CHANG ====== */
+    function evaluateForm(sport,m,phase){
+      const R=[]; let ok=false;
+      const eL=m.elbowL, eR=m.elbowR, kL=m.kneeL, kR=m.kneeR, torso=m.torsoTiltFromVertical, armL=m.armLineL, armR=m.armLineR;
+      const inR=(v,lo,hi)=> v!=null && v>=lo && v<=hi;
+      if(sport==='Nhảy cao'){
+        const kneeOK=(inR(kL,60,80)||inR(kR,60,80)); const elbowOK=(inR(eL,90,110)||inR(eR,90,110));
+        ok=kneeOK && elbowOK; if(!kneeOK) R.push(`Gối ~60–80° chưa đạt (L:${fmtDeg(kL)}, R:${fmtDeg(kR)})`);
+        if(!elbowOK) R.push(`Khuỷu ~90–110° chưa đạt (L:${fmtDeg(eL)}, R:${fmtDeg(eR)})`);
+      } else if(sport==='Xuất phát'){
+        const frontOK=(scoreRange(kL,80,100)>.6)||(scoreRange(kR,80,100)>.6);
+        const rearOK =(scoreRange(kL,110,130)>.6)||(scoreRange(kR,110,130)>.6);
+        const torsoOK=(torso!=null && torso>20);
+        ok=[frontOK,rearOK,torsoOK].filter(Boolean).length>=2;
+        if(!frontOK) R.push(`Chân trước ~90° chưa đạt (L:${fmtDeg(kL)}, R:${fmtDeg(kR)})`);
+        if(!rearOK)  R.push(`Chân sau ~110–130° chưa đạt (L:${fmtDeg(kL)}, R:${fmtDeg(kR)})`);
+        if(!torsoOK) R.push(`Độ nghiêng thân >20° (hiện: ${fmtDeg(torso)})`);
+      } else if(sport==='Ném tạ'){
+        const arm=(armL!=null||armR!=null)?Math.max(armL??0,armR??0):null;
+        const elb=Math.max(eL??0,eR??0);
+        const armOK=(arm!=null && arm>=35 && arm<=50); const elbOK=(elb>=165);
+        ok=armOK && elbOK;
+        if(!armOK) R.push(`Góc tay ra tạ ~35–50° (hiện: ${fmtDeg(arm)})`);
+        if(!elbOK) R.push(`Khuỷu duỗi ≥165° (hiện: ${fmtDeg(elb)})`);
+      } else return {ok:false,reasons:['Chưa xác định môn — không thể phân tích.']};
+      if(phase&&phase!=='—') R.push(`Pha hiện tại: ${phase}`);
+      if(ok&&R.length===0) R.push('Các chỉ số chính nằm trong khoảng chuẩn.');
+      return {ok,reasons:R};
+    }
+    function renderAnalysis(sport, verdict){
+      analysisPanel.classList.remove('hidden');
+      analysisReasons.innerHTML='';
+      if(verdict.ok){ analysisStatus.className='text-sm font-bold text-green-600'; analysisStatus.textContent=`Phân tích: ĐÚNG (${sport})`; }
+      else { analysisStatus.className='text-sm font-bold text-red-600'; analysisStatus.textContent=`Phân tích: SAI (${sport})`; }
+      verdict.reasons.forEach(m=>{ const li=document.createElement('li'); li.textContent=m; analysisReasons.appendChild(li); });
+    }
+
+    // ====== Scan + keyframes ======
+    const SPORTS=['Ném tạ','Nhảy cao','Xuất phát','Chưa xác định'];
+    const PHASES={'Nhảy cao':['Chạy đà','Giậm nhảy','Trên không','Tiếp đất'],'Xuất phát':['Vào chỗ','Sẵn sàng','Chạy'],'Ném tạ':['Chuẩn bị','Lăng đà','Trượt đà','Ra tay'],'Chưa xác định':['—']};
+
+    let scanning=false, scanFrames=0, SCAN_MAX_FRAMES=90;
+    let scanLabels=[];
+    let scanCounts={}, scanConfSums={};
+    let bestFramesBySport=Object.fromEntries(SPORTS.map(k=>[k,null]));
+    let bestFramesByPhase={'Nhảy cao':Object.fromEntries(PHASES['Nhảy cao'].map(p=>[p,null])),'Xuất phát':Object.fromEntries(PHASES['Xuất phát'].map(p=>[p,null])),'Ném tạ':Object.fromEntries(PHASES['Ném tạ'].map(p=>[p,null])),'Chưa xác định':{'—':null}};
+
+    const SCAN_LOCK_THRESHOLD=50;
+    const UNSURE_WEIGHT=0.8;
+    const SECONDARY_LOCK_THRESHOLD = 20;
+    let scanChosenSport=null;
+
+    const snapCanvas=document.createElement('canvas'); const snapCtx=snapCanvas.getContext('2d');
+    function captureSnapshot(){ snapCanvas.width=canvasElement.width; snapCanvas.height=canvasElement.height; snapCtx.drawImage(canvasElement,0,0); return snapCanvas.toDataURL('image/png'); }
+    function maybeUpdate(cur,conf){ return (!cur || conf>cur.conf); }
+    function updateKeyframes(label,phase,conf){ const dataUrl=captureSnapshot(),now=Date.now();
+      if(maybeUpdate(bestFramesBySport[label],conf)) bestFramesBySport[label]={conf,dataUrl,time:now};
+      if(PHASES[label] && PHASES[label].includes(phase)){ if(maybeUpdate(bestFramesByPhase[label][phase],conf)) bestFramesByPhase[label][phase]={conf,dataUrl,time:now}; }
+      else if(label==='Chưa xác định'){ if(maybeUpdate(bestFramesByPhase['Chưa xác định']['—'],conf)) bestFramesByPhase['Chưa xác định']['—']={conf,dataUrl,time:now}; }
+    }
+
+    scanSec.addEventListener('input',()=>{ scanSecLabel.textContent=scanSec.value; SCAN_MAX_FRAMES=Math.max(1,parseInt(scanSec.value,10))*30; });
+    SCAN_MAX_FRAMES=parseInt(scanSec.value,10)*30;
+
+    // ====== BẬT PHÂN TÍCH NGAY KHI KHOÁ THỦ CÔNG ======
+    function showAnalyzingBanner(){
+      analysisPanel.classList.remove('hidden');
+      analysisStatus.className='text-sm font-bold text-blue-600';
+      analysisStatus.textContent=`Đang phân tích: ${scanChosenSport}…`;
+      analysisReasons.innerHTML='';
+      analysisPanel.scrollIntoView({behavior:'smooth',block:'nearest'});
+    }
+
+    manualLockBtns.forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        scanChosenSport = btn.getAttribute('data-lock');
+        lockHint.textContent = `Khóa thủ công: ${scanChosenSport}`;
+        lockHint.classList.remove('hidden');
+        repExtra.classList.remove('hidden');
+        injuryPanel.classList.remove('hidden');
+        resetRepStats();
+        showAnalyzingBanner();
+      });
+    });
+    unlockBtn.addEventListener('click', ()=>{
+      scanChosenSport = null;
+      lockHint.textContent = 'Đang khóa môn theo quét';
+      lockHint.classList.add('hidden');
+      repExtra.classList.add('hidden');
+      injuryPanel.classList.add('hidden');
+      resetRepStats();
+      analysisPanel.classList.remove('hidden');
+      analysisStatus.className='text-sm font-bold text-gray-500';
+      analysisStatus.textContent='Chưa phân tích: chưa khoá môn';
+      analysisReasons.innerHTML='';
+    });
+
+    scanBtn.addEventListener('click',()=>{
+      if(scanning) return;
+      scanChosenSport=null; lockHint.textContent='Đang khóa môn theo quét'; lockHint.classList.add('hidden');
+      scanning=true; scanFrames=0; scanLabels=[];
+      scanCounts=Object.fromEntries(SPORTS.map(k=>[k,0]));
+      scanConfSums=Object.fromEntries(SPORTS.map(k=>[k,0]));
+      SPORTS.forEach(k=>bestFramesBySport[k]=null);
+      bestFramesByPhase={'Nhảy cao':Object.fromEntries(PHASES['Nhảy cao'].map(p=>[p,null])),'Xuất phát':Object.fromEntries(PHASES['Xuất phát'].map(p=>[p,null])),'Ném tạ':Object.fromEntries(PHASES['Ném tạ'].map(p=>[p,null])),'Chưa xác định':{'—':null}};
+      keyframeGallery.innerHTML=''; phaseGallery.innerHTML=''; scanPanel.classList.add('hidden');
+      scanProg.textContent='Đang quét... 0%'; scanBtn.disabled=true; scanBtn.classList.add('opacity-60','cursor-not-allowed');
+      resetRepStats();
+      repExtra.classList.add('hidden');
+      injuryPanel.classList.add('hidden');
+      // Cho thấy panel phân tích ngay từ đầu lượt quét
+      analysisPanel.classList.remove('hidden');
+      analysisStatus.className='text-sm font-bold text-gray-500';
+      analysisStatus.textContent='Đang quét… chờ kết luận để phân tích.';
+      analysisReasons.innerHTML='';
+    });
+
+    function pushScan(label,conf,phase){
+      if(!scanning) return;
+      const lab = SPORTS.includes(label) ? label : 'Chưa xác định';
+      scanLabels.push(lab);
+      scanCounts[lab] = (scanCounts[lab]||0) + 1;
+      scanConfSums[lab] = (scanConfSums[lab]||0) + (conf||0);
+
+      updateKeyframes(lab, phase, conf);
+
+      scanFrames++;
+      const pct=Math.round((scanFrames/SCAN_MAX_FRAMES)*100);
+      scanProg.textContent=`Đang quét... ${clamp(pct,0,100)}%`;
+      if(scanFrames>=SCAN_MAX_FRAMES){
+        scanning=false;
+        scanBtn.disabled=false; scanBtn.classList.remove('opacity-60','cursor-not-allowed');
+        scanProg.textContent='Hoàn tất quét.';
+        summarizeScan();
+      }
+    }
+
+    function summarizeScan(){
+      const total=scanLabels.length||1;
+      const displayRows=SPORTS.map(k=>({label:k,n:scanCounts[k]||0,pct:((scanCounts[k]||0)/total)*100}));
+      scanTableBody.innerHTML='';
+      displayRows.forEach(r=>{
+        const tr=document.createElement('tr');
+        tr.innerHTML=`<td class="text-left">${r.label}</td><td class="text-right">${r.n}</td><td class="text-right">${r.pct.toFixed(0)}%</td>`;
+        scanTableBody.appendChild(tr);
+      });
+
+      const sumSports = (scanConfSums['Ném tạ']||0) + (scanConfSums['Nhảy cao']||0) + (scanConfSums['Xuất phát']||0);
+      const sumUnsure = (scanConfSums['Chưa xác định']||0) * UNSURE_WEIGHT;
+      const denom = Math.max(1e-6, sumSports + sumUnsure);
+      const scores = ['Ném tạ','Nhảy cao','Xuất phát'].map(k=>({label:k, weightedPct: ((scanConfSums[k]||0)/denom)*100}));
+      const best = scores.reduce((a,b)=> b.weightedPct>a.weightedPct?b:a);
+      const conclusion = best.weightedPct >= SCAN_LOCK_THRESHOLD ? best.label : 'Chưa xác định';
+
+      scanConclusionPill.textContent=conclusion;
+      scanConclusionPill.className='pill ' + (
+        conclusion==='Chưa xác định' ? 'bg-gray-200 text-gray-700'
+        : conclusion==='Ném tạ' ? 'bg-emerald-200 text-emerald-900'
+        : conclusion==='Nhảy cao' ? 'bg-blue-200 text-blue-900'
+        : 'bg-amber-200 text-amber-900'
+      );
+
+      scanChosenSport = (conclusion !== 'Chưa xác định') ? conclusion : null;
+      if (scanChosenSport) {
+        lockHint.textContent=`Đang khóa môn theo quét`;
+        lockHint.classList.remove('hidden');
+        repExtra.classList.remove('hidden');
+        injuryPanel.classList.remove('hidden');
+        resetRepStats();
+        showAnalyzingBanner(); // <— HIỆN PANEL PHÂN TÍCH NGAY
+      } else {
+        lockHint.classList.add('hidden');
+        repExtra.classList.add('hidden');
+        injuryPanel.classList.add('hidden');
+        resetRepStats();
+        analysisPanel.classList.remove('hidden');
+        analysisStatus.className='text-sm font-bold text-gray-500';
+        analysisStatus.textContent='Chưa phân tích: cần khoá môn (≥50% hoặc khoá thủ công).';
+        analysisReasons.innerHTML='';
+      }
+
+      // Fallback 20%
+      if (!scanChosenSport) {
+        const top3 = ['Ném tạ','Nhảy cao','Xuất phát']
+          .map(k => ({ label: k, pct: ((scanCounts[k] || 0) / (scanLabels.length || 1)) * 100 }))
+          .sort((a,b) => b.pct - a.pct)[0];
+
+        if (top3 && top3.pct >= SECONDARY_LOCK_THRESHOLD) {
+          scanChosenSport = top3.label;
+          lockHint.textContent = `Khóa theo 20%: ${scanChosenSport}`;
+          lockHint.classList.remove('hidden');
+          repExtra.classList.remove('hidden');
+          injuryPanel.classList.remove('hidden');
+          resetRepStats();
+          showAnalyzingBanner();
+        }
+      }
+
+      // Render keyframes
+      keyframeGallery.innerHTML='';
+      [{k:'Ném tạ',c:'bg-emerald-600'},{k:'Nhảy cao',c:'bg-blue-600'},{k:'Xuất phát',c:'bg-amber-600'},{k:'Chưa xác định',c:'bg-gray-600'}].forEach(({k,c})=>{
+        const bf=bestFramesBySport[k]; if(!bf) return;
+        const wrap=document.createElement('div'); wrap.className='p-2 border border-gray-200 rounded-lg';
+        wrap.innerHTML=`<div class="flex items-center justify-between mb-2"><span class="text-sm font-semibold">${k}</span><span class="badge ${c} text-white">conf ${(bf.conf*100).toFixed(0)}%</span></div>
+          <img src="${bf.dataUrl}" alt="${k}" class="thumb w-full h-auto"/>
+          <a href="${bf.dataUrl}" download="keyframe_${k.replace(/\s/g,'_')}.png" class="mt-2 inline-flex items-center justify-center w-full px-3 py-1.5 bg-gray-900 hover:bg-black text-white rounded-md text-sm">Tải ảnh keyframe</a>`;
+        keyframeGallery.appendChild(wrap);
+      });
+      phaseGallery.innerHTML='';
+      ['Ném tạ','Nhảy cao','Xuất phát'].forEach(s=>{
+        ( {'Ném tạ':['Chuẩn bị','Lăng đà','Trượt đà','Ra tay'], 'Nhảy cao':['Chạy đà','Giậm nhảy','Trên không','Tiếp đất'], 'Xuất phát':['Vào chỗ','Sẵn sàng','Chạy']}[s] ).forEach(p=>{
+          const bf=bestFramesByPhase[s][p]; if(!bf) return;
+          const color = s==='Ném tạ'?'bg-emerald-600': s==='Nhảy cao'?'bg-blue-600':'bg-amber-600';
+          const wrap=document.createElement('div'); wrap.className='p-2 border border-gray-200 rounded-lg';
+          wrap.innerHTML=`<div class="flex items-center justify-between mb-2"><span class="text-sm font-semibold">${s} • <span class="mono">${p}</span></span><span class="badge ${color} text-white">conf ${(bf.conf*100).toFixed(0)}%</span></div>
+            <img src="${bf.dataUrl}" alt="${s}-${p}" class="thumb w-full h-auto"/>
+            <a href="${bf.dataUrl}" download="keyframe_${s.replace(/\s/g,'_')}_${p.replace(/\s/g,'_')}.png" class="mt-2 inline-flex items-center justify-center w-full px-3 py-1.5 bg-gray-900 hover:bg-black text-white rounded-md text-sm">Tải ảnh keyframe pha</a>`;
+          phaseGallery.appendChild(wrap);
+        });
+      });
+
+      scanPanel.classList.remove('hidden');
+    }
+
+    // ZIP export
+    function dataURLtoBlob(dataUrl){ const arr=dataUrl.split(','), mime=arr[0].match(/:(.*?);/)[1]; const bstr=atob(arr[1]); let n=bstr.length; const u8=new Uint8Array(n); while(n--) u8[n]=bstr.charCodeAt(n); return new Blob([u8],{type:mime}); }
+    exportZipBtn.addEventListener('click',async()=>{
+      const zip=new JSZip();
+      for(const [label,bf] of Object.entries(bestFramesBySport)){ if(bf){ const f=zip.folder(`by_sport/${label.replace(/\s/g,'_')}`); f.file(`keyframe_${label.replace(/\s/g,'_')}.png`,dataURLtoBlob(bf.dataUrl)); } }
+      for(const s of ['Ném tạ','Nhảy cao','Xuất phát']){ const phases={'Ném tạ':['Chuẩn bị','Lăng đà','Trượt đà','Ra tay'],'Nhảy cao':['Chạy đà','Giậm nhảy','Trên không','Tiếp đất'],'Xuất phát':['Vào chỗ','Sẵn sàng','Chạy']}[s];
+        for(const p of phases){ const bf=bestFramesByPhase[s][p]; if(bf){ const f=zip.folder(`by_phase/${s.replace(/\s/g,'_')}`); f.file(`keyframe_${s.replace(/\s/g,'_')}_${p.replace(/\s/g,'_')}.png`,dataURLtoBlob(bf.dataUrl)); } } }
+      const blob=await zip.generateAsync({type:'blob'}); saveAs(blob,`keyframes_${new Date().toISOString().replace(/[:.]/g,'-')}.zip`);
+    });
+
+    // ====== Đếm rep, lỗi, nguy cơ, bài tập, động viên ======
+    let prevHipV=null;
+    let repCounters={ok:0,bad:0};
+    let issueTally={};
+    let riskTally={};
+
+    function tally(obj,key,inc=1){ obj[key]=(obj[key]||0)+inc; }
+    function topK(obj,k=3){ return Object.entries(obj).sort((a,b)=>b[1]-a[1]).slice(0,k); }
+    function clearList(el){ while(el.firstChild) el.removeChild(el.firstChild); }
+
+    function reasonToRisks(sport, reason){
+      const risks=[];
+      if(/Gối|Chân trước/.test(reason)) risks.push('Đầu gối (PFP/viêm gân bánh chè)');
+      if(/Chân sau/.test(reason)) risks.push('Gân kheo/Achilles căng quá mức');
+      if(/Độ nghiêng thân/.test(reason)) risks.push('Lưng dưới căng chịu tải');
+      if(/Khuỷu duỗi/.test(reason)) risks.push('Khuỷu tay (viêm lồi cầu)');
+      if(/Góc tay ra tạ/.test(reason)) risks.push('Vai/cổ tay (quá tầm/thiếu ổn định)');
+      if(/Khuỷu ~90–110°/.test(reason)) risks.push('Vai trước/khớp vai kém ổn định');
+      return risks;
+    }
+
+    function issuesToExercises(sport, issues){
+      const exSet=new Map();
+      const add=(name, w=1)=>exSet.set(name,(exSet.get(name)||0)+w);
+      issues.forEach(([txt,count])=>{
+        if(/Gối|Chân trước/.test(txt)){ add('Split squat (giữ ở ~90°)',count); add('Dãn cổ chân (dorsi-flexion)',count); add('Wall sit 30–45s',count); }
+        if(/Chân sau/.test(txt)){ add('Hip flexor lunge stretch',count); add('Nordic hamstring eccentrics',count); }
+        if(/Độ nghiêng thân/.test(txt)){ add('Wall starts (tư thế nghiêng chuẩn)',count); add('Plank hollow 30–45s',count); add('Hip hinge drill (gậy)',count); }
+        if(/Góc tay ra tạ/.test(txt)){ add('Medicine-ball chest/shot throw (góc 40–45° vào tường)',count); add('Band ER/IR vai (2×12)',count); }
+        if(/Khuỷu duỗi/.test(txt)){ add('Triceps eccentric extension (2×10)',count); add('Scap push-up (2×12)',count); }
+        if(/Khuỷu ~90–110°/.test(txt)){ add('Arm swing drill (nhịp tay)',count); add('Band row (2×12)',count); }
+      });
+      return [...exSet.entries()].sort((a,b)=>b[1]-a[1]).slice(0,5).map(([k])=>k);
+    }
+
+    function motivationText(ok,bad){
+      const total=Math.max(1,ok+bad); const r=ok/total;
+      if(r>=0.7) return 'Quá đã! Form của ông chủ đang vào phom — giữ nhịp thế này là sớm “đỉnh” thôi 💪';
+      if(r>=0.4) return 'Tiến bộ tốt rồi — fix vài lỗi chính là bùng nổ ngay. Kiên trì nào!';
+      return 'Không sao, từng nhịp một. Sửa 1 lỗi mỗi lần, rồi số rep đúng sẽ vượt lên ngay!';
+    }
+
+    function updateRepUI(){
+      repOkEl.textContent = repCounters.ok;
+      repBadEl.textContent = repCounters.bad;
+
+      clearList(badTopEl);
+      topK(issueTally,3).forEach(([k,v])=>{ const li=document.createElement('li'); li.textContent=`${k} • ${v} lần`; badTopEl.appendChild(li); });
+
+      clearList(riskTopEl);
+      topK(riskTally,3).forEach(([k,v])=>{ const li=document.createElement('li'); li.textContent=`${k} • ${v}`; riskTopEl.appendChild(li); });
+
+      const exs = issuesToExercises(phaseState.sport, topK(issueTally,5));
+      clearList(exTopEl);
+      exs.forEach(e=>{ const li=document.createElement('li'); li.textContent=e; exTopEl.appendChild(li); });
+
+      motivationEl.textContent = motivationText(repCounters.ok, repCounters.bad);
+    }
+
+    function resetRepStats(){
+      prevHipV=null;
+      repCounters={ok:0,bad:0};
+      issueTally={}; riskTally={};
+      updateRepUI();
+    }
+
+    // ====== Pose callback ======
+    let firstFrame=false;
+    function onResults(res){
+      try {
+        if(!firstFrame){ ensureCanvasSize(res.image.width,res.image.height); firstFrame=true; loadingEl.style.display='none'; resultBadge.classList.remove('hidden'); }
+        ctx.save(); ctx.clearRect(0,0,canvasElement.width,canvasElement.height); ctx.drawImage(res.image,0,0,canvasElement.width,canvasElement.height);
+
+        let realtime='Chưa xác định', conf=0, metrics=null, phase='—', debugInfo={};
+        if(res.poseLandmarks){
+          drawConnectors(ctx,res.poseLandmarks,POSE_CONNECTIONS,{color:'#22c55e',lineWidth:4});
+          drawLandmarks (ctx,res.poseLandmarks,{color:'#ef4444',lineWidth:2});
+
+          const L=i=>toPx(res.poseLandmarks[i],canvasElement.width,canvasElement.height);
+          const hipMid={x:avg(L(23).x,L(24).x),y:avg(L(23).y,L(24).y)};
+          const ankleMid={x:avg(L(27).x,L(28).x),y:avg(L(27).y,L(28).y)};
+          const wristMid={x:avg(L(15).x,L(16).x),y:avg(L(15).y,L(16).y)};
+          pushHist(hipMid,ankleMid,wristMid);
+
+          const out=classifySport(res.poseLandmarks,canvasElement.width,canvasElement.height);
+          realtime=smoothSport(out); conf=out.conf; metrics=out.metrics; debugInfo=out.debug||{};
+
+          if(scanChosenSport){
+            if(phaseState.sport!==scanChosenSport){ phaseState.sport=scanChosenSport; phaseState.phase='—'; phaseState.lockCount=0; }
+            phase=detectPhase(scanChosenSport,metrics);
+            ctx.restore(); drawHUD(scanChosenSport,conf,phase,true);
+            renderDebug(debugInfo, scanChosenSport, true);
+            const verdict=evaluateForm(scanChosenSport,metrics,phase); renderAnalysis(scanChosenSport,verdict);
+
+            // Đếm rep theo nhịp hông
+            const hipVNow = verticalVelocity(kHist.hip);
+            const pulse = (prevHipV!=null && prevHipV>0 && hipVNow<=0);
+            prevHipV = hipVNow;
+            if(pulse){
+              if(verdict.ok){ repCounters.ok++; }
+              else{
+                repCounters.bad++;
+                verdict.reasons.forEach(r=>{
+                  if(!/^Pha hiện tại/.test(r) && !/^Các chỉ số chính/.test(r)){
+                    tally(issueTally,r);
+                    reasonToRisks(scanChosenSport,r).forEach(rk=>tally(riskTally,rk));
+                  }
+                });
+              }
+              updateRepUI();
+            }
+
+            repExtra.classList.remove('hidden');
+
+            // Cảnh báo chấn thương
+            const levels = computeRiskLevels(scanChosenSport, phase, metrics, verdict.reasons, issueTally);
+            renderInjuryPanel(levels, verdict.reasons, scanChosenSport, phase);
+            injuryPanel.classList.remove('hidden');
+
+          } else {
+            ctx.restore(); drawHUD(realtime,conf,'—',false);
+            renderDebug(debugInfo, realtime, false);
+            analysisPanel.classList.remove('hidden');
+            analysisStatus.className='text-sm font-bold text-gray-500';
+            analysisStatus.textContent='Chưa phân tích: hãy "Quét 1 lượt" và cần môn ≥ 50% (hoặc khoá thủ công).';
+            analysisReasons.innerHTML='';
+            repExtra.classList.add('hidden');
+            injuryPanel.classList.add('hidden');
+          }
+
+          pushScan(realtime,conf,phase);
+        } else {
+          ctx.restore(); drawHUD('Chưa xác định',0,'—',!!scanChosenSport);
+          debugBox.classList.add('hidden');
+          if(!scanChosenSport){
+            analysisPanel.classList.remove('hidden');
+            analysisStatus.className='text-sm font-bold text-gray-500';
+            analysisStatus.textContent='Chưa phân tích: chưa thấy người / chưa khoá môn';
+            analysisReasons.innerHTML='';
+            repExtra.classList.add('hidden');
+            injuryPanel.classList.add('hidden');
+          }
+          pushScan('Chưa xác định',0,'—');
+        }
+      } catch (err) {
+        console.error(err);
+        if (debugToggle && debugToggle.checked && debugBox){
+          debugBox.classList.remove('hidden');
+          debugBox.textContent = 'Lỗi: ' + (err && err.message ? err.message : err);
+        }
+      }
+    }
+
+    // ====== Init Pose + Camera ======
+    const pose=new Pose({ locateFile:(f)=>`https://cdn.jsdelivr.net/npm/@mediapipe/pose/${f}` });
+    pose.setOptions({ modelComplexity:1, smoothLandmarks:true, enableSegmentation:false, smoothSegmentationMask:false, minDetectionConfidence:0.5, minTrackingConfidence:0.5 });
+    pose.onResults(onResults);
+
+    const camera=new Camera(videoElement,{ onFrame:async()=>{ await pose.send({image:videoElement}); }, width:1280, height:720 });
+    camera.start();
+
+    /* =========================
+       PHẦN THÊM: Injury logic
+       ========================= */
+    const RISK_ZONES = [
+      { key:'knee',     label:'Gối',              kw:/Gối|Chân trước/i },
+      { key:'ham_ach',  label:'Gân kheo/Achilles',kw:/Chân sau|Achilles|gân kheo/i },
+      { key:'lumbar',   label:'Lưng dưới',        kw:/Lưng dưới|nghiêng thân/i },
+      { key:'shoulder', label:'Vai',              kw:/Vai|Góc tay/i },
+      { key:'elbow',    label:'Khuỷu',            kw:/Khuỷu/i },
+      { key:'wrist',    label:'Cổ tay',           kw:/Cổ tay/i }
+    ];
+
+    function metricDeviationScore(sport, m){
+      if(!m) return {};
+      const dev = {};
+      const clamp01 = v=>Math.max(0,Math.min(1,v));
+      const within = (v,[lo,hi])=>{
+        if(v==null) return 0;
+        if(v<lo) return clamp01((lo-v)/(hi-lo+1e-6));
+        if(v>hi) return clamp01((v-hi)/(hi-lo+1e-6));
+        return 0;
+      };
+      if(sport==='Nhảy cao'){
+        const kneeErr = Math.max( within(m.kneeL,[60,80]), within(m.kneeR,[60,80]) );
+        const elbowErr= Math.max( within(m.elbowL,[90,110]), within(m.elbowR,[90,110]) );
+        dev.knee=kneeErr;
+        dev.shoulder=elbowErr*0.6;
+      } else if(sport==='Xuất phát'){
+        const front = Math.max( within(m.kneeL,[80,100]), within(m.kneeR,[80,100]) );
+        const rear  = Math.max( within(m.kneeL,[110,130]), within(m.kneeR,[110,130]) );
+        const torso = (m.torsoTiltFromVertical!=null && m.torsoTiltFromVertical<20) ? clamp01((20-m.torsoTiltFromVertical)/20) : 0;
+        dev.knee=Math.max(front,rear);
+        dev.lumbar=torso*0.8;
+      } else if(sport==='Ném tạ'){
+        const arm = Math.max( within(m.armLineL,[35,50]), within(m.armLineR,[35,50]) );
+        const elb = (Math.max(m.elbowL??0,m.elbowR??0)<165) ? clamp01((165 - Math.max(m.elbowL??0,m.elbowR??0))/30) : 0;
+        dev.shoulder=arm;
+        dev.elbow=elb;
+        dev.wrist=arm*0.5;
+      }
+      return dev;
+    }
+
+    function computeRiskLevels(sport, phase, metrics, reasons, issueTallies){
+      const levels = {knee:0,ham_ach:0,lumbar:0,shoulder:0,elbow:0,wrist:0};
+
+      const bumpByReason = (txt, lvl=2)=>{
+        RISK_ZONES.forEach(z=>{ if(z.kw.test(txt)) levels[z.key]=Math.max(levels[z.key], lvl); });
+      };
+      (reasons||[]).forEach(r=>bumpByReason(r,2));
+      Object.entries(issueTallies||{}).forEach(([r,cnt])=>{
+        if(cnt>=2) bumpByReason(r,3);
+      });
+
+      const dev = metricDeviationScore(sport, metrics);
+      Object.entries(dev).forEach(([k,v])=>{
+        if(v>0.66) levels[k]=Math.max(levels[k],3);
+        else if(v>0.33) levels[k]=Math.max(levels[k],2);
+        else if(v>0.15) levels[k]=Math.max(levels[k],1);
+      });
+
+      const boost=(k,lv)=>{ levels[k]=Math.max(levels[k],lv); };
+      if(sport==='Nhảy cao' && phase==='Giậm nhảy') boost('knee',2);
+      if(sport==='Nhảy cao' && phase==='Tiếp đất') boost('knee',3);
+      if(sport==='Xuất phát' && phase==='Chạy') boost('ham_ach',2);
+      if(sport==='Ném tạ' && (phase==='Trượt đà'||phase==='Ra tay')) { boost('shoulder',2); boost('elbow',2); }
+
+      return levels;
+    }
+
+    function levelBadge(level){
+      return level===0?['Thấp','bg-emerald-100 text-emerald-800']
+          : level===1?['Vừa','bg-amber-100 text-amber-800']
+          : level===2?['Cao','bg-orange-200 text-orange-900']
+          : ['Rất cao','bg-rose-200 text-rose-900'];
+    }
+    function renderInjuryPanel(levels, reasons, sport, phase){
+      injuryGrid.innerHTML='';
+      const weights = {};
+      RISK_ZONES.forEach(z=>{
+        const lv = levels[z.key]||0;
+        const [txt, cls] = levelBadge(lv);
+        const card=document.createElement('div');
+        card.className='p-3 border border-gray-200 rounded-lg';
+        card.innerHTML=`
+          <div class="flex items-center justify-between">
+            <div class="text-sm font-semibold">${z.label}</div>
+            <span class="pill ${cls}">${txt}</span>
+          </div>
+          <div class="mt-2 w-full bg-gray-100 h-2 rounded">
+            <div class="h-2 rounded ${lv>=3?'bg-rose-500':lv===2?'bg-orange-500':lv===1?'bg-amber-500':'bg-emerald-500'}" style="width:${(lv+1)/4*100}%"></div>
+          </div>`;
+        injuryGrid.appendChild(card);
+
+        weights[z.key]=(lv*10)+(reasons||[]).filter(r=>z.kw.test(r)).length;
+      });
+
+      injuryPriority.innerHTML='';
+      Object.entries(weights).sort((a,b)=>b[1]-a[1]).slice(0,5).forEach(([k,_w])=>{
+        const z=RISK_ZONES.find(x=>x.key===k); if(!z) return;
+        const lv=levels[k]||0; const [txt,cls]=levelBadge(lv);
+        const li=document.createElement('li');
+        li.innerHTML=`<span class="font-medium">${z.label}</span> — <span class="pill ${cls}">${txt}</span> • trong <span class="mono">${phase||'—'}</span> của <span class="mono">${sport||'—'}</span>`;
+        injuryPriority.appendChild(li);
+      });
+    }
+
+  </script>
+
+  <!-- =========================
+       TÍCH HỢP NHẬN DIỆN TỪ FILE Ê.HTML (CHỈ BỔ SUNG, KHÔNG SỬA CODE CŨ)
+       ========================= -->
+  <script>
+    // Thuật toán nhận diện từ file ê.html — rút gọn theo đúng công thức trong file. :contentReference[oaicite:1]{index=1}
+    (function(){
+      // Bản EXT: tính góc + confidence theo ranges cố định
+      function classifySport_EXT(landmarks, w, h){
+        const avg=(a,b)=>(a+b)/2;
+        const angle=(p1,p2,p3)=>{const v1={x:p1.x-p2.x,y:p1.y-p2.y},v2={x:p3.x-p2.x,y:p3.y-p2.y};
+          const m1=Math.hypot(v1.x,v1.y),m2=Math.hypot(v2.x,v2.y); if(!m1||!m2) return null;
+          let c=(v1.x*v2.x+v1.y*v2.y)/(m1*m2); c=Math.max(-1,Math.min(1,c)); return Math.acos(c)*180/Math.PI;};
+        const lineAngle=(a,b)=>Math.atan2(a.y-b.y,a.x-b.x)*180/Math.PI;
+        const clamp=(v,lo,hi)=>Math.max(lo,Math.min(hi,v));
+        const scoreRange=(val,lo,hi)=>{ if(val==null) return 0; const mid=(lo+hi)/2,tol=(hi-lo)/2; const d=Math.abs(val-mid); return d>=tol?0:1-d/tol; };
+        const L = i=> ({ x: landmarks[i].x*w, y: landmarks[i].y*h, z: landmarks[i].z });
+
+        const LS=L(11), LE=L(13), LW=L(15), RS=L(12), RE=L(14), RW=L(16);
+        const LH=L(23), LK=L(25), LA=L(27), RH=L(24), RK=L(26), RA=L(28);
+        const S={x:avg(LS.x,RS.x), y:avg(LS.y,RS.y)}, H={x:avg(LH.x,RH.x), y:avg(LH.y,RH.y)};
+
+        const elbowL=angle(LS,LE,LW), elbowR=angle(RS,RE,RW);
+        const kneeL=angle(LH,LK,LA), kneeR=angle(RH,RK,RA);
+        const torsoLineDeg=Math.abs(lineAngle(S,H)), torsoTiltFromVertical=Math.abs(90-torsoLineDeg);
+        const armLineL=Math.abs(lineAngle(LW,LS)), armLineR=Math.abs(lineAngle(RW,RS));
+
+        const nhaycao_conf = 0.6*Math.max(scoreRange(kneeL,60,80), scoreRange(kneeR,60,80))
+                           + 0.4*Math.max(scoreRange(elbowL,90,110), scoreRange(elbowR,90,110));
+        const xuatphat_conf = 0.45*Math.max(scoreRange(kneeL,80,100), scoreRange(kneeR,80,100))
+                            + 0.25*Math.max(scoreRange(kneeL,110,130), scoreRange(kneeR,110,130))
+                            + 0.30*clamp((torsoTiltFromVertical-20)/25,0,1);
+        const nemta_conf = 0.65*Math.max(scoreRange(armLineL,35,50), scoreRange(armLineR,35,50))
+                         + 0.35*Math.max(scoreRange(elbowL,165,180), scoreRange(elbowR,165,180));
+
+        const list=[{label:'Nhảy cao',conf:nhaycao_conf},{label:'Xuất phát',conf:xuatphat_conf},{label:'Ném tạ',conf:nemta_conf}]
+          .sort((a,b)=>b.conf-a.conf);
+        const best=list[0], second=list[1];
+        const sport = (best.conf>=0.45 && (best.conf-second.conf)>=0.10) ? best.label : 'Chưa xác định';
+        return { sport, conf:best.conf, metrics:{ elbowL,elbowR,kneeL,kneeR, torsoTiltFromVertical, armLineL,armLineR } };
+      }
+
+      // Monkey-patch: giữ nguyên hàm gốc, chỉ “đè” kết quả nếu EXT nhận ra môn rõ ràng
+      if (typeof window.classifySport === 'function') {
+        const origClassify = window.classifySport;
+        window.classifySport = function(lms,w,h){
+          const base = origClassify(lms,w,h);
+          try{
+            const ext = classifySport_EXT(lms,w,h); // từ ê.html  :contentReference[oaicite:2]{index=2}
+            // Nếu EXT xác định được môn (khác 'Chưa xác định') thì dùng EXT, còn lại giữ nguyên base
+            if (ext && ext.sport && ext.sport !== 'Chưa xác định') {
+              // giữ lại debug của base (nếu có) để UI debug không đổi
+              return { ...ext, debug: base && base.debug ? base.debug : undefined };
+            }
+          }catch(e){}
+          return base;
+        };
+      }
+    })();
+  </script>
+
+</body>
+</html>
