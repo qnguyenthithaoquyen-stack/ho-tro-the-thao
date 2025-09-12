@@ -385,7 +385,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, serverTimestamp, Timestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
     
     const firebaseConfig = {
         apiKey: "AIzaSyA2dXWCyjL2xgCSyeW9QQ7RvjI_O7kFHJw",
@@ -398,6 +398,81 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
+
+    // ==== IndexedDB Functions for Video Persistence ====
+    const DB_NAME = 'thethaott_videos_db';
+    const DB_VERSION = 1;
+    const STORE_NAME = 'videos';
+    let idb;
+
+    function initDB() {
+        return new Promise((resolve, reject) => {
+            const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+            request.onupgradeneeded = (event) => {
+                const dbInstance = event.target.result;
+                if (!dbInstance.objectStoreNames.contains(STORE_NAME)) {
+                    dbInstance.createObjectStore(STORE_NAME, { keyPath: 'id' });
+                }
+            };
+
+            request.onsuccess = (event) => {
+                idb = event.target.result;
+                console.log('Database initialized successfully.');
+                resolve(idb);
+            };
+
+            request.onerror = (event) => {
+                console.error('Database error:', event.target.errorCode);
+                reject('Database error');
+            };
+        });
+    }
+
+    function saveVideoToDB(videoData) {
+        return new Promise((resolve, reject) => {
+            if (!idb) {
+                reject('DB not initialized');
+                return;
+            }
+            const transaction = idb.transaction([STORE_NAME], 'readwrite');
+            const store = transaction.objectStore(STORE_NAME);
+            const request = store.put(videoData);
+
+            request.onsuccess = () => resolve();
+            request.onerror = (event) => reject('Error saving video: ' + event.target.errorCode);
+        });
+    }
+    
+    function getVideosFromDB() {
+        return new Promise((resolve, reject) => {
+            if (!idb) {
+                reject('DB not initialized');
+                return;
+            }
+            const transaction = idb.transaction([STORE_NAME], 'readonly');
+            const store = transaction.objectStore(STORE_NAME);
+            const request = store.getAll();
+
+            request.onsuccess = (event) => resolve(event.target.result);
+            request.onerror = (event) => reject('Error fetching videos: ' + event.target.errorCode);
+        });
+    }
+
+    function clearVideosFromDB() {
+        return new Promise((resolve, reject) => {
+             if (!idb) {
+                reject('DB not initialized');
+                return;
+            }
+            const transaction = idb.transaction([STORE_NAME], 'readwrite');
+            const store = transaction.objectStore(STORE_NAME);
+            const request = store.clear();
+            
+            request.onsuccess = () => resolve();
+            request.onerror = (event) => reject('Error clearing videos: ' + event.target.errorCode);
+        });
+    }
 
     // ==== Modal Functions ====
     function showModal(message, isConfirm = false, onConfirm = null) {
@@ -1313,9 +1388,9 @@
       return a;
     }
 
-    videoUpload.addEventListener('change', (e)=>{
+    videoUpload.addEventListener('change', async (e)=>{
       const files = Array.from(e.target.files);
-      files.forEach(f=>{
+      for (const f of files) { // Use a for...of loop to handle async properly
         const id = uidFromName(f.name + '_' + Date.now());
         const url = URL.createObjectURL(f);
         let tag = '';
@@ -1324,8 +1399,18 @@
         else if(ln.includes('nhay')||ln.includes('xax')||ln.includes('nhaycao')) tag='nhaycao';
         else if(ln.includes('nem')||ln.includes('nemta')) tag='nemta';
         if(!tag) tag = sportSel.value || 'xuatphat';
-        uploadedVideos.push({id,name:f.name,url,sportTag:tag, file: f});
-      });
+        
+        const videoData = {id, name:f.name, url, sportTag:tag, file: f};
+        uploadedVideos.push(videoData);
+
+        try {
+            // We store the file object, not the blob URL which is temporary
+            await saveVideoToDB({id, name:f.name, sportTag:tag, file: f}); 
+        } catch (error) {
+            console.error('Failed to save video to DB:', error);
+            showModal('Lỗi khi lưu video. Video này sẽ không được giữ lại sau khi tải lại trang.');
+        }
+      }
       renderVideoList();
       if(uploadedVideos.length>0 && !currentVideo){
         openVideo(uploadedVideos[uploadedVideos.length-1]);
@@ -1354,21 +1439,44 @@
 
     clearStorageBtn.addEventListener('click', ()=>{ 
       showModal(
-        'Bạn có chắc muốn xóa toàn bộ dữ liệu?',
+        'Bạn có chắc muốn xóa toàn bộ dữ liệu (kết quả phân tích, ảnh và video đã tải lên)?',
         true, // isConfirm
-        () => { // onConfirm
+        async () => { // onConfirm
           localStorage.removeItem('thethaott_results'); 
           localStorage.removeItem('thethaott_gallery'); 
+          try {
+              await clearVideosFromDB();
+              uploadedVideos = [];
+              renderVideoList();
+              console.log('Cleared all videos from IndexedDB.');
+          } catch(e) {
+              console.error('Failed to clear videos from DB', e);
+          }
           results={}; 
           renderGallery(); 
           renderChart(); 
           showAnalysisPanel(null);
+          player.src = '';
+          currentVideo = null;
           showModal('Đã xóa dữ liệu thành công.');
         }
       );
     });
 
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', async () => {
+        try {
+            await initDB();
+            const storedVideos = await getVideosFromDB();
+            uploadedVideos = storedVideos.map(v => ({
+                ...v,
+                url: URL.createObjectURL(v.file) // Recreate blob URL from file object
+            }));
+            console.log(`Loaded ${uploadedVideos.length} videos from IndexedDB.`);
+        } catch (error) {
+            console.error('Could not load videos from IndexedDB:', error);
+            showModal('Không thể tải video đã lưu. Dữ liệu có thể bị mất.');
+        }
+
         ensureMpPose(); 
         renderGallery(); 
         renderVideoList(); 
