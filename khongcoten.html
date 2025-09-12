@@ -19,13 +19,40 @@
     .badge{font-size:.7rem;padding:.15rem .4rem;border-radius:.4rem}
     .section-title{font-size:1rem;font-weight:600}
     .subtle{font-size:.9rem;color:#6b7280}
+     .btn-back {
+        background-color: #008080;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: background-color 0.3s;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .btn-back:hover {
+        background-color: #006666;
+    }
   </style>
 </head>
 <body class="bg-gray-100 p-8 container-center">
 
   <div class="bg-white shadow-xl rounded-xl p-6 md:p-10 text-center max-w-lg w-full">
-    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-6">MediaPipe Pose</h1>
-    <p class="text-gray-600 mb-6">
+    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
+        <div>
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 text-left">MediaPipe Pose</h1>
+        </div>
+        <a href="athlete-dashboard.html" class="btn-back" style="white-space: nowrap;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="vertical-align: text-bottom;">
+                <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"></path>
+            </svg>
+            <span>Quay lại</span>
+        </a>
+    </div>
+    <p class="text-gray-600 mb-6 text-left">
       Nhận diện <b>Ném tạ, Nhảy cao, Xuất phát</b>, xác định <b>pha</b>, chấm <b>ĐÚNG/SAI</b>, <b>quét keyframe</b> & <b>debug</b>.
     </p>
 
@@ -889,46 +916,4 @@
 
         const LS=L(11), LE=L(13), LW=L(15), RS=L(12), RE=L(14), RW=L(16);
         const LH=L(23), LK=L(25), LA=L(27), RH=L(24), RK=L(26), RA=L(28);
-        const S={x:avg(LS.x,RS.x), y:avg(LS.y,RS.y)}, H={x:avg(LH.x,RH.x), y:avg(LH.y,RH.y)};
-
-        const elbowL=angle(LS,LE,LW), elbowR=angle(RS,RE,RW);
-        const kneeL=angle(LH,LK,LA), kneeR=angle(RH,RK,RA);
-        const torsoLineDeg=Math.abs(lineAngle(S,H)), torsoTiltFromVertical=Math.abs(90-torsoLineDeg);
-        const armLineL=Math.abs(lineAngle(LW,LS)), armLineR=Math.abs(lineAngle(RW,RS));
-
-        const nhaycao_conf = 0.6*Math.max(scoreRange(kneeL,60,80), scoreRange(kneeR,60,80))
-                           + 0.4*Math.max(scoreRange(elbowL,90,110), scoreRange(elbowR,90,110));
-        const xuatphat_conf = 0.45*Math.max(scoreRange(kneeL,80,100), scoreRange(kneeR,80,100))
-                            + 0.25*Math.max(scoreRange(kneeL,110,130), scoreRange(kneeR,110,130))
-                            + 0.30*clamp((torsoTiltFromVertical-20)/25,0,1);
-        const nemta_conf = 0.65*Math.max(scoreRange(armLineL,35,50), scoreRange(armLineR,35,50))
-                         + 0.35*Math.max(scoreRange(elbowL,165,180), scoreRange(elbowR,165,180));
-
-        const list=[{label:'Nhảy cao',conf:nhaycao_conf},{label:'Xuất phát',conf:xuatphat_conf},{label:'Ném tạ',conf:nemta_conf}]
-          .sort((a,b)=>b.conf-a.conf);
-        const best=list[0], second=list[1];
-        const sport = (best.conf>=0.45 && (best.conf-second.conf)>=0.10) ? best.label : 'Chưa xác định';
-        return { sport, conf:best.conf, metrics:{ elbowL,elbowR,kneeL,kneeR, torsoTiltFromVertical, armLineL,armLineR } };
-      }
-
-      // Monkey-patch: giữ nguyên hàm gốc, chỉ “đè” kết quả nếu EXT nhận ra môn rõ ràng
-      if (typeof window.classifySport === 'function') {
-        const origClassify = window.classifySport;
-        window.classifySport = function(lms,w,h){
-          const base = origClassify(lms,w,h);
-          try{
-            const ext = classifySport_EXT(lms,w,h); // từ ê.html  :contentReference[oaicite:2]{index=2}
-            // Nếu EXT xác định được môn (khác 'Chưa xác định') thì dùng EXT, còn lại giữ nguyên base
-            if (ext && ext.sport && ext.sport !== 'Chưa xác định') {
-              // giữ lại debug của base (nếu có) để UI debug không đổi
-              return { ...ext, debug: base && base.debug ? base.debug : undefined };
-            }
-          }catch(e){}
-          return base;
-        };
-      }
-    })();
-  </script>
-
-</body>
-</html>
+        const
