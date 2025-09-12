@@ -221,11 +221,11 @@
                     </div>
 
                     <div class="main-functions">
-                        <a href="#" class="function-button btn-blue">
+                        <a href="#" id="pose-analysis-btn" class="function-button btn-blue">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 1.5a10.5 10.5 0 1 0 0 21 10.5 10.5 0 0 0 0-21z"/><path d="M12 12a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9z"/><path d="M12 12a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/></svg>
                             <span>Phân tích tư thế</span>
                         </a>
-                        <a href="#" class="function-button btn-green">
+                        <a href="#" id="history-btn" class="function-button btn-green">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3v18h18"/><path d="m18.7 8-5.1 5.2-2.8-2.7L7 14.3"/></svg>
                             <span>Lịch sử thành tích</span>
                         </a>
@@ -358,12 +358,13 @@
                 const userDocRef = doc(db, "users", user.uid);
                 const userDoc = await getDoc(userDocRef);
                 if (userDoc.exists() && userDoc.data().role === 'athlete') {
-                    renderDashboard(userDoc.data());
+                    const userData = userDoc.data();
+                    renderDashboard(userData);
                     listenForExercises(user.uid);
                     listenForAthleteStats(user.uid);
                     listenForSensorData(user.uid);
                     
-                    const coachId = userDoc.data().managedBy;
+                    const coachId = userData.managedBy;
                     const chatBtn = document.getElementById('chat-with-coach-btn');
                     if(chatBtn) {
                         if (coachId) {
@@ -374,6 +375,16 @@
                             chatBtn.title = 'Bạn chưa được gán cho HLV nào.';
                             chatBtn.addEventListener('click', (e) => e.preventDefault());
                         }
+                    }
+
+                    const poseBtn = document.getElementById('pose-analysis-btn');
+                    if(poseBtn) {
+                        poseBtn.href = `bất lực.html?athleteId=${user.uid}&athleteName=${encodeURIComponent(userData.fullName || 'VĐV')}`;
+                    }
+                    
+                    const historyBtn = document.getElementById('history-btn');
+                    if(historyBtn) {
+                        historyBtn.href = `lichsu-thanhtich.html?athleteId=${user.uid}`;
                     }
 
                 } else {
@@ -393,3 +404,4 @@
     </script>
 </body>
 </html>
+
