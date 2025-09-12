@@ -1,1 +1,244 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cảnh báo Chấn thương - Hỗ Trợ Huấn Luyện Thể Thao</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+        
+        :root {
+            --primary-color: #008080;
+            --background-color: #f0f4f8;
+            --card-bg-color: #ffffff;
+            --text-color: #333;
+            --text-light-color: #6c757d;
+            --border-color: #e9ecef;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.07);
+            --warning-high-bg: #fffbe6;
+            --warning-high-border: #ffe58f;
+            --warning-high-text: #d46b08;
+            --warning-medium-bg: #e6f7ff;
+            --warning-medium-border: #91d5ff;
+            --warning-medium-text: #096dd9;
+        }
+
+        body { 
+            font-family: 'Roboto', sans-serif; 
+            margin: 0; 
+            background-color: var(--background-color); 
+            color: var(--text-color);
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; background-color: #fff; min-height:100vh; }
+        
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 15px 30px; background-color: var(--primary-color); color: #fff; }
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        .logo { background-color: #fff; color: var(--primary-color); font-weight: 700; padding: 10px; border-radius: 8px; }
+        .project-info h1 { font-size: 24px; margin: 0; font-weight: 700; }
+        .project-info p { font-size: 12px; margin: 0; opacity: 0.9; }
+        .user-actions { display: flex; align-items: center; gap: 12px; }
+        .user-actions a { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 9px 22px; font-size: 14px; font-weight: 500; border-radius: 50px; text-decoration: none; border: 1.5px solid #fff; transition: background-color 0.3s, color 0.3s; }
+        #logout-link { background-color: #fff; color: var(--primary-color); }
+        .navbar { display: flex; background-color: #fff; box-shadow: 0 2px 4px rgba(0,0,0,.05); padding: 0 30px; }
+        .navbar a { padding: 15px 25px; text-decoration: none; color: #333; font-weight: 500; position: relative; transition: color 0.3s ease; }
+        .navbar a.active { color: var(--primary-color); }
+        .navbar a.active::after { content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 70%; height: 3px; background-color: var(--primary-color); }
+
+        .main-content { padding: 30px; }
+        .main-content h1 { font-size: 28px; color: var(--primary-color); margin-bottom: 0;}
+        .main-content .subtitle { color: var(--text-light-color); margin-top: 4px; }
+        
+        .page-header { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; margin-bottom: 20px; }
+        .btn-back { background-color: var(--primary-color); color: #fff; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 500; transition: background-color 0.3s; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-back:hover { background-color: #006666; }
+
+        .warnings-container {
+            margin-top: 30px;
+            display: grid;
+            gap: 20px;
+        }
+        .warning-card {
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 5px solid;
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+        .warning-card.high {
+            background-color: var(--warning-high-bg);
+            border-color: var(--warning-high-text);
+        }
+        .warning-card.medium {
+            background-color: var(--warning-medium-bg);
+            border-color: var(--warning-medium-text);
+        }
+        .warning-icon {
+            flex-shrink: 0;
+            width: 24px;
+            height: 24px;
+        }
+        .warning-card.high .warning-icon { color: var(--warning-high-text); }
+        .warning-card.medium .warning-icon { color: var(--warning-medium-text); }
+
+        .warning-content h3 {
+            margin: 0 0 8px 0;
+            font-size: 16px;
+        }
+        .warning-content p {
+            margin: 0;
+            color: var(--text-light-color);
+            font-size: 14px;
+        }
+        .warning-date {
+            font-size: 12px;
+            color: var(--text-light-color);
+            margin-top: 10px;
+        }
+
+        .loader-container { text-align: center; padding: 50px; color: var(--text-light-color); }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-left">
+                <div class="logo">LOGO</div>
+                <div class="project-info"><h1>HỖ TRỢ HUẤN LUYỆN THỂ THAO</h1><p>DỰ ÁN KHOA HỌC KỸ THUẬT</p></div>
+            </div>
+            <div class="user-actions">
+                <a href="#" id="logout-link" style="display: none;">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                    <span>Đăng xuất</span>
+                </a>
+            </div>
+        </header>
+        <nav class="navbar">
+            <a href="index.html">Trang chủ</a>
+            <a href="gioithieu.html">Giới thiệu</a>
+            <a href="bangdieukhien.html" class="active">Bảng điều khiển</a>
+        </nav>
+        <main class="main-content">
+            <div class="page-header">
+                <div>
+                    <h1>Cảnh báo Chấn thương</h1>
+                    <p id="athlete-name-display" class="subtitle">Dữ liệu của vận động viên</p>
+                </div>
+                <a href="bangdieukhien.html" class="btn-back">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="vertical-align: text-bottom;">
+                        <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"></path>
+                    </svg>
+                    <span>Quay về Bảng điều khiển</span>
+                </a>
+            </div>
+            
+            <div id="warnings-container" class="warnings-container">
+                <!-- Dữ liệu cảnh báo sẽ được chèn vào đây -->
+            </div>
+            
+            <div id="loader" class="loader-container">
+                <p>Đang tải dữ liệu...</p>
+            </div>
+        </main>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc, onSnapshot, collection, query, orderBy } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyA2dXWCyjL2xgCSyeW9QQ7RvjI_O7kFHJw",
+            authDomain: "sporthealthdata.firebaseapp.com",
+            projectId: "sporthealthdata",
+            storageBucket: "sporthealthdata.appspot.com",
+            messagingSenderId: "789054240877",
+            appId: "1:789054240877:web:04a400c9ea586523a86764",
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        const logoutLink = document.getElementById('logout-link');
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                logoutLink.style.display = 'inline-flex';
+                const urlParams = new URLSearchParams(window.location.search);
+                const athleteId = urlParams.get('athleteId');
+
+                if (athleteId) {
+                    loadWarningData(athleteId);
+                } else {
+                    document.getElementById('loader').textContent = 'Không tìm thấy ID vận động viên.';
+                }
+
+            } else {
+                window.location.href = './dangnhap.html';
+            }
+        });
+
+        async function loadWarningData(athleteId) {
+            const athleteNameDisplay = document.getElementById('athlete-name-display');
+            const warningsContainer = document.getElementById('warnings-container');
+            const loader = document.getElementById('loader');
+
+            try {
+                const userDocRef = doc(db, "users", athleteId);
+                const userDocSnap = await getDoc(userDocRef);
+
+                if (userDocSnap.exists()) {
+                    athleteNameDisplay.textContent = `Dữ liệu của ${userDocSnap.data().fullName || 'Vận động viên'}`;
+                }
+
+                const warningsColRef = collection(db, "users", athleteId, "injury_warnings");
+                const q = query(warningsColRef, orderBy("date", "desc"));
+                
+                onSnapshot(q, (snapshot) => {
+                    warningsContainer.innerHTML = '';
+                    if (snapshot.empty) {
+                        loader.textContent = 'Không có cảnh báo nào được ghi nhận.';
+                    } else {
+                        loader.style.display = 'none';
+                        snapshot.forEach(doc => {
+                            const data = doc.data();
+                            const date = data.date ? new Date(data.date.seconds * 1000).toLocaleDateString('vi-VN') : 'N/A';
+                            const severity = data.severity || 'medium'; // 'high' or 'medium'
+                            const card = `
+                                <div class="warning-card ${severity.toLowerCase()}">
+                                    <div class="warning-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="m21.73 18-8-14a2 2 0 0 0-3.46 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                                        </svg>
+                                    </div>
+                                    <div class="warning-content">
+                                        <h3>${data.title || 'Cảnh báo'}</h3>
+                                        <p>${data.description || 'Không có mô tả chi tiết.'}</p>
+                                        <div class="warning-date">Ngày: ${date}</div>
+                                    </div>
+                                </div>
+                            `;
+                            warningsContainer.innerHTML += card;
+                        });
+                    }
+                });
+
+            } catch (error) {
+                console.error("Lỗi khi tải dữ liệu:", error);
+                loader.textContent = 'Đã xảy ra lỗi khi tải dữ liệu.';
+            }
+        }
+
+        if (logoutLink) {
+            logoutLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                signOut(auth).catch((error) => console.error('Lỗi khi đăng xuất:', error));
+            });
+        }
+    </script>
+</body>
+</html>
 
