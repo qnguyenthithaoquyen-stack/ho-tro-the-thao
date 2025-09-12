@@ -172,7 +172,7 @@
                     <div class="form-grid">
                         <div class="form-group">
                             <label for="eventDate">Ngày</label>
-                            <input type="date" id="eventDate" required>
+                            <input type="text" id="eventDate" placeholder="dd/mm/yyyy" required>
                         </div>
                         <div class="form-group">
                             <label for="eventName">Tên giải/Sự kiện</label>
@@ -256,20 +256,35 @@
 
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
-                const eventDate = document.getElementById('eventDate').value;
+                const eventDateStr = document.getElementById('eventDate').value;
                 const eventName = document.getElementById('eventName').value;
                 const eventResult = document.getElementById('eventResult').value;
                 const eventNotes = document.getElementById('eventNotes').value;
 
-                if (!eventDate || !eventName || !eventResult) {
+                if (!eventDateStr || !eventName || !eventResult) {
                     alert('Vui lòng điền đầy đủ các trường bắt buộc.');
                     return;
                 }
 
+                const dateParts = eventDateStr.split('/');
+                if (dateParts.length !== 3 || isNaN(parseInt(dateParts[0])) || isNaN(parseInt(dateParts[1])) || isNaN(parseInt(dateParts[2]))) {
+                    alert('Định dạng ngày không hợp lệ. Vui lòng nhập theo dạng dd/mm/yyyy.');
+                    return;
+                }
+                
+                // new Date(year, monthIndex, day)
+                const eventDate = new Date(parseInt(dateParts[2]), parseInt(dateParts[1]) - 1, parseInt(dateParts[0]));
+                
+                if (isNaN(eventDate.getTime())) {
+                    alert('Ngày không hợp lệ. Vui lòng kiểm tra lại.');
+                    return;
+                }
+
+
                 try {
                     const achievementsColRef = collection(db, "users", athleteId, "achievements");
                     await addDoc(achievementsColRef, {
-                        date: Timestamp.fromDate(new Date(eventDate)),
+                        date: Timestamp.fromDate(eventDate),
                         eventName: eventName,
                         result: eventResult,
                         notes: eventNotes
