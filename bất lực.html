@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Hỗ trợ Huấn luyện Thể Thao - Phân tích Tư thế</title>
+  <title>Hỗ trợ Huấn luyện Thể thao - Phân tích Tư thế</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     /* ==== Bảng màu và Biến (Theme Sáng với màu Teal) ==== */
@@ -385,7 +385,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, serverTimestamp, Timestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
     
     const firebaseConfig = {
         apiKey: "AIzaSyA2dXWCyjL2xgCSyeW9QQ7RvjI_O7kFHJw",
@@ -880,6 +880,29 @@
         }
     }
 
+    async function saveInjuryWarningsToFirestore(resultData, athleteId) {
+        if (!athleteId || !resultData || !resultData.chanthuong || resultData.chanthuong.length === 0) {
+            return;
+        }
+
+        try {
+            const warningsColRef = collection(db, "users", athleteId, "injury_warnings");
+            
+            for (const injury of resultData.chanthuong) {
+                await addDoc(warningsColRef, {
+                    date: serverTimestamp(),
+                    title: `Nguy cơ chấn thương: ${injury}`,
+                    description: `Phát hiện nguy cơ chấn thương vùng ${injury} trong lúc phân tích video "${resultData.name}". Đề nghị xem lại kỹ thuật.`,
+                    severity: 'medium' // Can be 'high' or 'medium'
+                });
+            }
+            console.log("Đã lưu cảnh báo chấn thương vào Firestore.");
+
+        } catch (error) {
+            console.error("Lỗi khi lưu cảnh báo chấn thương:", error);
+        }
+    }
+
 
     async function analyzeVideoUsingMediaPipe(videoFile, sport, force=false){
       const id = videoFile.id;
@@ -1021,6 +1044,7 @@
       const athleteId = urlParams.get('athleteId');
       if (athleteId) {
           saveAchievementToFirestore(resultObj, athleteId);
+          saveInjuryWarningsToFirestore(resultObj, athleteId); 
       }
 
       return resultObj;
@@ -1367,3 +1391,4 @@
   </script>
 </body>
 </html>
+
