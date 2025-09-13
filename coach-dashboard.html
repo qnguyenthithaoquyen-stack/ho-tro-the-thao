@@ -208,7 +208,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             const logoutLink = document.getElementById('logout-link');
             const athleteListUl = document.getElementById('athleteList');
-            let sensorIntervalId = null; // Biến để lưu ID của interval
+            let sensorIntervalId = null; 
 
             onAuthStateChanged(auth, async (user) => {
                 document.body.classList.add('loaded');
@@ -264,7 +264,6 @@
             }
 
             async function displayAthleteDetails(athleteId) {
-                // Dừng vòng lặp giả lập cũ trước khi bắt đầu cái mới
                 if (sensorIntervalId) {
                     clearInterval(sensorIntervalId);
                 }
@@ -287,7 +286,6 @@
                         document.getElementById('view-warnings-btn').href = `canhbao-coach.html?athleteId=${athleteId}`;
                         document.getElementById('history-btn').href = `lichsu-thanhtich.html?athleteId=${athleteId}`;
 
-                        // Bắt đầu giả lập dữ liệu cho VĐV được chọn
                         simulateSensorDataForCoach(athleteId);
                         detailsPlaceholder.style.display = 'none';
                         detailsContent.style.display = 'block';
@@ -309,13 +307,13 @@
                     return (Math.random() * (max - min) + min).toFixed(decimals);
                 };
 
-                // Cập nhật các chỉ số sức khỏe mỗi 2.5 giây
                 sensorIntervalId = setInterval(() => {
                     if (heartRateEl && spo2El && bloodPressureEl && accelerationEl) {
-                        heartRateEl.textContent = getRandom(70, 110); 
-                        spo2El.textContent = getRandom(97, 100);
-                        bloodPressureEl.textContent = `${getRandom(115, 125)}/${getRandom(75, 85)}`;
-                        accelerationEl.textContent = getRandom(0, 2.5, 2);
+                        // SỬA ĐỔI TẠI ĐÂY
+                        heartRateEl.textContent = getRandom(140, 170); 
+                        spo2El.textContent = getRandom(96, 100);
+                        bloodPressureEl.textContent = `${getRandom(120, 130)}/${getRandom(80, 85)}`;
+                        accelerationEl.textContent = getRandom(1.5, 4.5, 2);
                     }
                 }, 2500); 
             }
