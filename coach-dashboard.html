@@ -67,7 +67,7 @@
         }
          .user-actions a:hover {
             background-color: rgba(255, 255, 255, 0.9);
-        }
+         }
         .user-actions a svg { width: 16px; height: 16px; }
 
         /* Navigation */
@@ -131,8 +131,8 @@
             </div>
             <div class="user-actions">
                  <a href="#" id="logout-link" style="display: none;">
-                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-                     <span>Đăng xuất</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                      <span>Đăng xuất</span>
                  </a>
             </div>
         </header>
@@ -309,9 +309,11 @@
                 sensorIntervalId = setInterval(() => {
                     if (heartRateEl && spo2El && bloodPressureEl && accelerationEl) {
                         
-                        // THAY ĐỔI TẠI ĐÂY: Tạo số ngẫu nhiên trong khoảng 95-130 mỗi lần lặp
-                        heartRateEl.textContent = getRandom(95, 130, 0); 
+                        // ******** THAY ĐỔI TẠI ĐÂY ********
+                        // Đặt giá trị nhịp tim cố định là 104
+                        heartRateEl.textContent = '104'; 
                         
+                        // Các giá trị khác vẫn ngẫu nhiên như cũ
                         spo2El.textContent = getRandom(96, 100);
                         bloodPressureEl.textContent = `${getRandom(120, 130, 0)}/${getRandom(80, 85, 0)}`;
                         accelerationEl.textContent = getRandom(1.5, 4.5, 2);
