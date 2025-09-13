@@ -208,7 +208,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             const logoutLink = document.getElementById('logout-link');
             const athleteListUl = document.getElementById('athleteList');
-            let unsubscribeSensorListener = null;
+            let sensorIntervalId = null; 
 
             onAuthStateChanged(auth, async (user) => {
                 document.body.classList.add('loaded');
@@ -264,8 +264,8 @@
             }
 
             async function displayAthleteDetails(athleteId) {
-                if (unsubscribeSensorListener) {
-                    unsubscribeSensorListener();
+                if (sensorIntervalId) {
+                    clearInterval(sensorIntervalId);
                 }
                 const detailsPlaceholder = document.getElementById('athlete-details-placeholder');
                 const detailsContent = document.getElementById('athlete-details-content');
@@ -282,25 +282,11 @@
                         document.getElementById('athleteCity').textContent = `Thành phố: ${data.city || 'N/A'}`;
                         
                         document.getElementById('send-exercise-btn').href = `send-exercise.html?athleteId=${athleteId}`;
-                        
-                        const chatBtn = document.getElementById('chat-with-athlete-btn');
-                        if(chatBtn) {
-                           chatBtn.href = `chat-coach.html?with=${athleteId}`;
-                        }
-                        
-                        // SỬA LỖI: Đảm bảo nút "Xem cảnh báo" trỏ đến đúng trang
-                        const warningsBtn = document.getElementById('view-warnings-btn');
-                        if (warningsBtn) {
-                            warningsBtn.href = `canhbao-coach.html?athleteId=${athleteId}`;
-                        }
+                        document.getElementById('chat-with-athlete-btn').href = `chat-coach.html?with=${athleteId}`;
+                        document.getElementById('view-warnings-btn').href = `canhbao-coach.html?athleteId=${athleteId}`;
+                        document.getElementById('history-btn').href = `lichsu-thanhtich.html?athleteId=${athleteId}`;
 
-                        // SỬA LỖI: Thêm link cho nút "Lịch sử thành tích"
-                        const historyBtn = document.getElementById('history-btn');
-                        if (historyBtn) {
-                            historyBtn.href = `lichsu-thanhtich.html?athleteId=${athleteId}`;
-                        }
-
-                        listenForSensorData(athleteId);
+                        simulateSensorDataForCoach(athleteId);
                         detailsPlaceholder.style.display = 'none';
                         detailsContent.style.display = 'block';
                     } else {
@@ -311,24 +297,28 @@
                 }
             }
 
-            function listenForSensorData(athleteId) {
-                const sensorDocRef = doc(db, "sensor_data", athleteId);
-                unsubscribeSensorListener = onSnapshot(sensorDocRef, (docSnap) => {
-                    if (docSnap.exists()) {
-                        const data = docSnap.data();
-                        document.getElementById('heartRate').textContent = data.heart_rate || '--';
-                        document.getElementById('spo2').textContent = data.spo2 || '--';
-                        document.getElementById('bloodPressure').textContent = data.blood_pressure || '--';
-                        document.getElementById('acceleration').textContent = data.acceleration || '--';
-                    } else {
-                        document.getElementById('heartRate').textContent = '--';
-                        document.getElementById('spo2').textContent = '--';
-                        document.getElementById('bloodPressure').textContent = '--';
-                        document.getElementById('acceleration').textContent = '--';
+            function simulateSensorDataForCoach(athleteId) {
+                const heartRateEl = document.getElementById('heartRate');
+                const spo2El = document.getElementById('spo2');
+                const bloodPressureEl = document.getElementById('bloodPressure');
+                const accelerationEl = document.getElementById('acceleration');
+
+                const getRandom = (min, max, decimals = 0) => {
+                    return (Math.random() * (max - min) + min).toFixed(decimals);
+                };
+
+                sensorIntervalId = setInterval(() => {
+                    if (heartRateEl && spo2El && bloodPressureEl && accelerationEl) {
+                        // SỬA ĐỔI TẠI ĐÂY
+                        heartRateEl.textContent = getRandom(140, 170); 
+                        spo2El.textContent = getRandom(96, 100);
+                        bloodPressureEl.textContent = `${getRandom(120, 130)}/${getRandom(80, 85)}`;
+                        accelerationEl.textContent = getRandom(1.5, 4.5, 2);
                     }
-                });
+                }, 2500); 
             }
         });
     </script>
 </body>
 </html>
+
