@@ -147,7 +147,7 @@
         <header class="header">
             <div class="header-left">
                 <div class="logo">LOGO</div>
-                <div class="project-info"><h1>HỖ TRỢ HUẤN LUYỆN THỂ THAO</h1><p>DỰ ÁN KHOA HỌC KỸ THUẬT</p></div>
+                <div class="project-info"><h1>HỖ TRỢ HUẤN LUYỆN THỂ THAO</h1><p>TRANG DÀNH CHO VẬN ĐỘNG VIÊN</p></div>
             </div>
             <div class="user-actions">
                 <a href="#" id="logout-link" style="display: none;">
@@ -159,11 +159,11 @@
         <nav class="navbar">
             <a href="index.html">Trang chủ</a>
             <a href="gioithieu.html">Giới thiệu</a>
-            <a href="bangdieukhien.html" class="active">Bảng điều khiển</a>
+            <a href="#" class="active">Bảng điều khiển</a>
         </nav>
         <main class="main-content" id="content-area">
             <div class="loader-container">
-                <p>Đang tải dữ liệu vận động viên...</p>
+                <p>Đang tải dữ liệu của bạn...</p>
             </div>
         </main>
     </div>
@@ -186,42 +186,13 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        const logoutLink = document.getElementById('logout-link');
         const contentArea = document.getElementById('content-area');
+        const logoutLink = document.getElementById('logout-link');
        
         function renderDashboard(userData) {
             const userName = userData.fullName || "Vận động viên";
             contentArea.innerHTML = `
                 <div class="dashboard-grid">
-                    <div class="daily-goals">
-                        <div id="goals-list">
-                            <h2>Mục tiêu của <span>${userName}</span></h2>
-                        </div>
-                    </div>
-
-                    <div class="stats-container">
-                       
-                        <div class="health-metrics">
-                            <h2>Chỉ số sức khỏe</h2>
-                            <div class="stats-grid">
-                                <div class="health-stat-card"><div class="detail-icon-wrapper icon-heart"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" /></svg></div><div><span class="detail-label">Nhịp tim (bpm)</span><p id="heartRate" class="detail-value">--</p></div></div>
-                                <div class="health-stat-card"><div class="detail-icon-wrapper icon-spo2"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" /></svg></div><div><span class="detail-label">Oxi trong máu (%)</span><p id="spo2" class="detail-value">--</p></div></div>
-                                <div class="health-stat-card"><div class="detail-icon-wrapper icon-bp"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z" /></svg></div><div><span class="detail-label">Huyết áp</span><p id="bloodPressure" class="detail-value">--</p></div></div>
-                                <div class="health-stat-card"><div class="detail-icon-wrapper icon-accel"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.28m5.94 2.28-2.28 5.941" /></svg></div><div><span class="detail-label">Tốc độ (m/s)</span><p id="acceleration" class="detail-value">--</p></div></div>
-                            </div>
-                        </div>
-
-                        <div class="quick-stats">
-                            <h2>Thống kê nhanh</h2>
-                            <div class="stats-card-grid">
-                                <div class="stat-card stat-distance"><div class="stat-card-info"><h3>Tổng quãng đường (tuần)</h3><p class="value" id="stat-weekly-distance">-- km</p></div></div>
-                                <div class="stat-card stat-today-distance"><div class="stat-card-info"><h3>Tổng quãng đường (hôm nay)</h3><p class="value" id="stat-today-distance">-- km</p></div></div>
-                                <div class="stat-card stat-time"><div class="stat-card-info"><h3>Thời gian tập (tuần)</h3><p class="value" id="stat-weekly-duration">--h --m</p></div></div>
-                                <div class="stat-card stat-calories"><div class="stat-card-info"><h3>Calo tiêu thụ (hôm nay)</h3><p class="value" id="stat-today-calories">-- kcal</p></div></div>
-                            </div>
-                        </div>
-                    </div>
-
                     <div class="main-functions">
                         <a href="#" id="pose-analysis-btn" class="function-button btn-blue">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 1.5a10.5 10.5 0 1 0 0 21 10.5 10.5 0 0 0 0-21z"/><path d="M12 12a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9z"/><path d="M12 12a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/></svg>
@@ -237,14 +208,24 @@
                         </a>
                         <a href="#" id="injury-warning-btn" class="function-button btn-red">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m21.73 18-8-14a2 2 0 0 0-3.46 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                            <span>Cảnh báo chấn thương</span>
+                            <span>Xem Cảnh báo</span>
                         </a>
-                         <a href="khongcoten.html" class="function-button btn-purple">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.898 20.572L16.5 21.75l-.398-1.178a3.375 3.375 0 00-2.3-2.3L12.75 18l1.178-.398a3.375 3.375 0 002.3-2.3L16.5 14.25l.398 1.178a3.375 3.375 0 002.3 2.3l1.178.398-1.178.398a3.375 3.375 0 00-2.3 2.3z" />
-                            </svg>
-                            <span>Tính năng mới</span>
-                        </a>
+                    </div>
+                    
+                    <div class="daily-goals">
+                        <div id="goals-list">
+                            <h2>Mục tiêu hôm nay của <span>${userName}</span></h2>
+                        </div>
+                    </div>
+
+                    <div class="health-metrics">
+                        <h2>Chỉ số sức khỏe (Thời gian thực)</h2>
+                        <div class="stats-grid">
+                            <div class="health-stat-card"><div class="detail-icon-wrapper icon-heart"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" /></svg></div><div><span class="detail-label">Nhịp tim (bpm)</span><p id="heartRate" class="detail-value">--</p></div></div>
+                            <div class="health-stat-card"><div class="detail-icon-wrapper icon-spo2"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" /></svg></div><div><span class="detail-label">Oxi trong máu (%)</span><p id="spo2" class="detail-value">--</p></div></div>
+                            <div class="health-stat-card"><div class="detail-icon-wrapper icon-bp"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z" /></svg></div><div><span class="detail-label">Huyết áp</span><p id="bloodPressure" class="detail-value">--</p></div></div>
+                            <div class="health-stat-card"><div class="detail-icon-wrapper icon-accel"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.28m5.94 2.28-2.28 5.941" /></svg></div><div><span class="detail-label">Tốc độ (m/s)</span><p id="acceleration" class="detail-value">--</p></div></div>
+                        </div>
                     </div>
                 </div>`;
         }
@@ -256,107 +237,124 @@
         function listenForExercises(athleteId) {
             const goalsListContainer = document.getElementById('goals-list');
             if (!goalsListContainer) return;
-            const exercisesColRef = collection(db, "users", athleteId, "exercises");
-            const q = query(exercisesColRef, orderBy("createdAt", "desc"));
+
+            const exercisesRef = collection(db, "users", athleteId, "exercises");
+            const q = query(exercisesRef, orderBy("createdAt", "desc"));
+            
             onSnapshot(q, (snapshot) => {
                 const existingTasks = goalsListContainer.querySelectorAll('.task-item, .no-exercise-msg');
                 existingTasks.forEach(task => task.remove());
+
                 if (snapshot.empty) {
-                    const noExerciseItem = document.createElement('p');
-                    noExerciseItem.textContent = 'Bạn chưa có bài tập nào được giao.';
-                    noExerciseItem.className = 'no-exercise-msg';
-                    noExerciseItem.style.color = 'var(--text-light-color)';
-                    goalsListContainer.appendChild(noExerciseItem);
+                    const noExerciseMsg = document.createElement('p');
+                    noExerciseMsg.textContent = 'Bạn chưa có bài tập nào được giao.';
+                    noExerciseMsg.className = 'no-exercise-msg';
+                    noExerciseMsg.style.color = 'var(--text-light-color)';
+                    goalsListContainer.appendChild(noExerciseMsg);
                 } else {
                     snapshot.forEach(doc => {
                         const exercise = doc.data();
                         const exerciseId = doc.id;
                         const exerciseDiv = document.createElement('div');
                         exerciseDiv.className = 'task-item run';
-                        exerciseDiv.innerHTML = `<div class="task-info"><div class="task-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><div class="task-details"><h3>${exercise.title || 'Bài tập mới'}</h3><p>Hạn chót: ${exercise.dueDate || 'Chưa có'}</p></div></div><div class="task-action"><button>Thực hiện</button></div>`;
+                        
+                        const isCompleted = exercise.status === 'completed';
+                        
+                        exerciseDiv.innerHTML = `
+                            <div class="task-info">
+                                <div class="task-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                                </div>
+                                <div class="task-details">
+                                    <h3>${exercise.title || 'Bài tập mới'}</h3>
+                                    <p>Hạn chót: ${exercise.dueDate || 'Chưa có'}</p>
+                                </div>
+                            </div>
+                            <div class="task-action">
+                                <button ${isCompleted ? 'disabled' : ''}>
+                                    ${isCompleted ? 'Đã hoàn thành' : 'Thực hiện'}
+                                </button>
+                            </div>`;
                        
+                        if (isCompleted) {
+                            exerciseDiv.style.opacity = '0.6';
+                        }
+                        
                         goalsListContainer.appendChild(exerciseDiv);
 
-                        const executeButton = exerciseDiv.querySelector('.task-action button');
-                        if (exercise.status === 'completed') {
-                            exerciseDiv.style.opacity = '0.6';
-                            if(executeButton) {
-                                executeButton.textContent = 'Đã hoàn thành';
+                        if (!isCompleted) {
+                            const executeButton = exerciseDiv.querySelector('button');
+                            executeButton.addEventListener('click', async () => {
                                 executeButton.disabled = true;
-                            }
-                        } else {
-                            if(executeButton) {
-                                executeButton.addEventListener('click', async () => {
-                                    executeButton.disabled = true;
-                                    executeButton.textContent = 'Đang cập nhật...';
-                                    const exerciseDocRef = doc(db, "users", athleteId, "exercises", exerciseId);
-                                    try {
-                                        await updateDoc(exerciseDocRef, {
-                                            status: 'completed',
-                                            completedAt: serverTimestamp()
-                                        });
-                                    } catch (error) {
-                                        console.error("Lỗi khi cập nhật bài tập: ", error);
-                                        alert("Không thể cập nhật trạng thái. Vui lòng thử lại.");
-                                        executeButton.disabled = false;
-                                        executeButton.textContent = 'Thực hiện';
-                                    }
-                                });
-                            }
+                                executeButton.textContent = 'Đang cập nhật...';
+                                const exerciseDocRef = doc(db, "users", athleteId, "exercises", exerciseId);
+                                try {
+                                    await updateDoc(exerciseDocRef, {
+                                        status: 'completed',
+                                        completedAt: serverTimestamp()
+                                    });
+                                } catch (error) {
+                                    console.error("Lỗi khi cập nhật bài tập: ", error);
+                                    alert("Không thể cập nhật trạng thái. Vui lòng thử lại.");
+                                    executeButton.disabled = false;
+                                    executeButton.textContent = 'Thực hiện';
+                                }
+                            });
                         }
                     });
                 }
             });
         }
 
-        function listenForAthleteStats(athleteId) {
-            const weeklyDistanceEl = document.getElementById('stat-weekly-distance');
-            const todayDistanceEl = document.getElementById('stat-today-distance');
-            const weeklyDurationEl = document.getElementById('stat-weekly-duration');
-            const todayCaloriesEl = document.getElementById('stat-today-calories');
-            const statsDocRef = doc(db, "athlete_stats", athleteId);
-            onSnapshot(statsDocRef, (docSnap) => {
-                if (docSnap.exists()) {
-                    const stats = docSnap.data();
-                    weeklyDistanceEl.textContent = `${stats.weekly_distance_km ?? '--'} km`;
-                    todayDistanceEl.textContent = `${stats.today_distance_km ?? '--'} km`;
-                    todayCaloriesEl.textContent = `${stats.today_calories_kcal ?? '--'} kcal`;
-                    if (stats.weekly_duration_minutes !== undefined) {
-                        const hours = Math.floor(stats.weekly_duration_minutes / 60);
-                        const minutes = stats.weekly_duration_minutes % 60;
-                        weeklyDurationEl.textContent = `${hours}h ${minutes}m`;
-                    } else {
-                        weeklyDurationEl.textContent = '--h --m';
-                    }
-                } else {
-                    weeklyDistanceEl.textContent = '-- km';
-                    todayDistanceEl.textContent = '-- km';
-                    weeklyDurationEl.textContent = '--h --m';
-                    todayCaloriesEl.textContent = '-- kcal';
-                }
-            });
-        }
-       
         function listenForSensorData(athleteId) {
-            const heartRateEl = document.getElementById('heartRate');
-            const spo2El = document.getElementById('spo2');
-            const bloodPressureEl = document.getElementById('bloodPressure');
-            const accelerationEl = document.getElementById('acceleration');
+            const ids = ['heartRate', 'spo2', 'bloodPressure', 'acceleration'];
+            const elements = ids.reduce((acc, id) => {
+                acc[id] = document.getElementById(id);
+                return acc;
+            }, {});
+
             const sensorDocRef = doc(db, "sensor_data", athleteId);
             onSnapshot(sensorDocRef, (docSnap) => {
                 if (docSnap.exists()) {
                     const data = docSnap.data();
-                    heartRateEl.textContent = data.heart_rate || '--';
-                    spo2El.textContent = data.spo2 || '--';
-                    bloodPressureEl.textContent = data.blood_pressure || '--';
-                    accelerationEl.textContent = data.acceleration || '--';
+                    elements.heartRate.textContent = data.heart_rate || '--';
+                    elements.spo2.textContent = data.spo2 || '--';
+                    elements.bloodPressure.textContent = data.blood_pressure || '--';
+                    elements.acceleration.textContent = data.acceleration || '--';
                 } else {
-                    heartRateEl.textContent = '--';
-                    spo2El.textContent = '--';
-                    bloodPressureEl.textContent = '--';
-                    accelerationEl.textContent = '--';
+                    Object.values(elements).forEach(el => el.textContent = '--');
                 }
             });
+        }
+
+        function setupActionLinks(user, userData) {
+            const coachId = userData.managedBy;
+            const chatBtn = document.getElementById('chat-with-coach-btn');
+            if(chatBtn) {
+                if (coachId) {
+                    chatBtn.href = `chat.html?with=${coachId}`;
+                } else {
+                    chatBtn.style.opacity = '0.5';
+                    chatBtn.style.cursor = 'not-allowed';
+                    chatBtn.title = 'Bạn chưa được gán cho HLV nào.';
+                    chatBtn.addEventListener('click', (e) => e.preventDefault());
+                }
+            }
+
+            const poseBtn = document.getElementById('pose-analysis-btn');
+            if(poseBtn) {
+                poseBtn.href = `phantich-tuthe.html?athleteId=${user.uid}`;
+            }
+           
+            const historyBtn = document.getElementById('history-btn');
+            if(historyBtn) {
+                historyBtn.href = `lichsu-thanhtich.html?athleteId=${user.uid}`;
+            }
+
+            const injuryWarningBtn = document.getElementById('injury-warning-btn');
+            if (injuryWarningBtn) {
+                injuryWarningBtn.href = `xem-canhbao.html?athleteId=${user.uid}`;
+            }
         }
 
         onAuthStateChanged(auth, async (user) => {
@@ -365,43 +363,15 @@
                 logoutLink.style.display = 'inline-flex';
                 const userDocRef = doc(db, "users", user.uid);
                 const userDoc = await getDoc(userDocRef);
+
                 if (userDoc.exists() && userDoc.data().role === 'athlete') {
                     const userData = userDoc.data();
                     renderDashboard(userData);
+                    
+                    // Khởi chạy các listener và gán link sau khi dashboard được render
                     listenForExercises(user.uid);
-                    listenForAthleteStats(user.uid);
                     listenForSensorData(user.uid);
-                   
-                    const coachId = userData.managedBy;
-                    const chatBtn = document.getElementById('chat-with-coach-btn');
-                    if(chatBtn) {
-                        if (coachId) {
-                            chatBtn.href = `chat.html?with=${coachId}`;
-                        } else {
-                            chatBtn.style.opacity = '0.5';
-                            chatBtn.style.cursor = 'not-allowed';
-                            chatBtn.title = 'Bạn chưa được gán cho HLV nào.';
-                            chatBtn.addEventListener('click', (e) => e.preventDefault());
-                        }
-                    }
-
-                    const poseBtn = document.getElementById('pose-analysis-btn');
-                    if(poseBtn) {
-                        // SỬA LỖI 1: Thay "bất lực.html" bằng tên hợp lệ
-                        poseBtn.href = `phantich-tuthe.html?athleteId=${user.uid}&athleteName=${encodeURIComponent(userData.fullName || 'VĐV')}`;
-                    }
-                   
-                    const historyBtn = document.getElementById('history-btn');
-                    if(historyBtn) {
-                        historyBtn.href = `lichsu-thanhtich.html?athleteId=${user.uid}`;
-                    }
-
-                    const injuryWarningBtn = document.getElementById('injury-warning-btn');
-                    if (injuryWarningBtn) {
-                        // SỬA LỖI 2: Thay bằng trang cảnh báo dành cho VĐV
-                        injuryWarningBtn.href = `xem-canhbao.html?athleteId=${user.uid}`;
-                    }
-
+                    setupActionLinks(user, userData);
                 } else {
                     renderAccessDenied();
                 }
@@ -410,12 +380,10 @@
             }
         });
 
-        if (logoutLink) {
-            logoutLink.addEventListener('click', (e) => {
-                e.preventDefault();
-                signOut(auth).catch((error) => console.error('Lỗi khi đăng xuất:', error));
-            });
-        }
+        logoutLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            signOut(auth).catch((error) => console.error('Lỗi khi đăng xuất:', error));
+        });
     </script>
 </body>
 </html>
