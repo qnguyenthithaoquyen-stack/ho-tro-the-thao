@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cảnh báo Chấn thương - Hỗ Trợ Huấn Luyện Thể Thao</title>
+    <title>Bảng điều khiển - Huấn Luyện Viên</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
         
@@ -14,91 +14,112 @@
             --text-color: #333;
             --text-light-color: #6c757d;
             --border-color: #e9ecef;
-            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.07);
-            --warning-high-bg: #fffbe6;
-            --warning-high-border: #ffe58f;
-            --warning-high-text: #d46b08;
-            --warning-medium-bg: #e6f7ff;
-            --warning-medium-border: #91d5ff;
-            --warning-medium-text: #096dd9;
+            --shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+            --list-hover-bg: #e6f2f2;
         }
 
-        body { 
-            font-family: 'Roboto', sans-serif; 
-            margin: 0; 
-            background-color: var(--background-color); 
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            background-color: var(--background-color);
             color: var(--text-color);
+            opacity: 0; 
+            transition: opacity 0.5s ease-in-out;
+        }
+        body.loaded {
+            opacity: 1;
         }
 
-        .container { max-width: 1200px; margin: 0 auto; background-color: #fff; min-height:100vh; }
-        
-        .header { display: flex; justify-content: space-between; align-items: center; padding: 15px 30px; background-color: var(--primary-color); color: #fff; }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            background-color: var(--primary-color);
+            color: #fff;
+        }
         .header-left { display: flex; align-items: center; gap: 15px; }
         .logo { background-color: #fff; color: var(--primary-color); font-weight: 700; padding: 10px; border-radius: 8px; }
-        .project-info h1 { font-size: 24px; margin: 0; font-weight: 700; }
+        .project-info h1 { font-size: 24px; margin: 0; }
         .project-info p { font-size: 12px; margin: 0; opacity: 0.9; }
-        .user-actions { display: flex; align-items: center; gap: 12px; }
-        .user-actions a { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 9px 22px; font-size: 14px; font-weight: 500; border-radius: 50px; text-decoration: none; border: 1.5px solid #fff; transition: background-color 0.3s, color 0.3s; }
-        #logout-link { background-color: #fff; color: var(--primary-color); }
-        .navbar { display: flex; background-color: #fff; box-shadow: 0 2px 4px rgba(0,0,0,.05); padding: 0 30px; }
-        .navbar a { padding: 15px 25px; text-decoration: none; color: #333; font-weight: 500; position: relative; transition: color 0.3s ease; }
-        .navbar a.active { color: var(--primary-color); }
-        .navbar a.active::after { content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 70%; height: 3px; background-color: var(--primary-color); }
-
-        .main-content { padding: 30px; }
-        .main-content h1 { font-size: 28px; color: var(--primary-color); margin-bottom: 0;}
-        .main-content .subtitle { color: var(--text-light-color); margin-top: 4px; }
         
-        .page-header { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; margin-bottom: 20px; }
-        .btn-back { background-color: var(--primary-color); color: #fff; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 500; transition: background-color 0.3s; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
-        .btn-back:hover { background-color: #006666; }
-
-        .warnings-container {
-            margin-top: 30px;
-            display: grid;
-            gap: 20px;
-        }
-        .warning-card {
-            padding: 20px;
-            border-radius: 12px;
-            border-left: 5px solid;
-            display: flex;
-            align-items: flex-start;
-            gap: 15px;
-        }
-        .warning-card.high {
-            background-color: var(--warning-high-bg);
-            border-color: var(--warning-high-text);
-        }
-        .warning-card.medium {
-            background-color: var(--warning-medium-bg);
-            border-color: var(--warning-medium-text);
-        }
-        .warning-icon {
-            flex-shrink: 0;
-            width: 24px;
-            height: 24px;
-        }
-        .warning-card.high .warning-icon { color: var(--warning-high-text); }
-        .warning-card.medium .warning-icon { color: var(--warning-medium-text); }
-
-        .warning-content h3 {
-            margin: 0 0 8px 0;
-            font-size: 16px;
-        }
-        .warning-content p {
-            margin: 0;
-            color: var(--text-light-color);
+        .user-actions { display:flex; align-items:center; gap: 12px; }
+        .user-actions a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 9px 22px;
             font-size: 14px;
+            font-weight: 500;
+            border-radius: 50px;
+            text-decoration: none;
+            border: 1.5px solid #fff;
+            transition: background-color 0.3s, color 0.3s;
+            background-color: #fff; 
+            color: var(--primary-color);
         }
-        .warning-date {
-            font-size: 12px;
-            color: var(--text-light-color);
-            margin-top: 10px;
+         .user-actions a:hover {
+            background-color: rgba(255, 255, 255, 0.9);
         }
+        .user-actions a svg { width: 16px; height: 16px; }
 
-        .loader-container { text-align: center; padding: 50px; color: var(--text-light-color); }
+        /* Navigation */
+        .navbar { display: flex; background-color: var(--card-bg-color); box-shadow: 0 2px 4px rgba(0,0,0,.05); padding: 0 30px; }
+        .navbar a { padding: 15px 25px; text-decoration: none; color: var(--text-light-color); font-weight: 500; border-bottom: 3px solid transparent; transition: all 0.3s; }
+        .navbar a.active, .navbar a:hover { color: var(--primary-color); border-bottom-color: var(--primary-color); }
 
+        /* Main Content */
+        .main-content { padding: 30px; display: grid; grid-template-columns: 320px 1fr; gap: 30px; align-items: flex-start; }
+        .dashboard-card { background-color: var(--card-bg-color); border-radius: 16px; box-shadow: var(--shadow); padding: 25px; }
+        
+        .card-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; padding-bottom: 15px; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); }
+        .card-header h2 { font-size: 22px; color: var(--text-color); margin: 0; }
+        .add-athlete-btn { background-color: var(--primary-color); color: #fff; border: none; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 14px; text-decoration: none; transition: background-color .3s; }
+        .add-athlete-btn:hover { background-color: #006666; }
+
+        .athlete-list { list-style: none; padding: 0; margin: 0; max-height: 500px; overflow-y: auto; }
+        .athlete-item { display: flex; align-items: center; gap: 15px; padding: 12px; border-radius: 10px; margin-bottom: 10px; cursor: pointer; transition: all .2s ease-in-out; border: 1px solid var(--border-color); border-left: 4px solid transparent; }
+        .athlete-item:hover, .athlete-item.selected { background-color: var(--list-hover-bg); transform: translateX(4px); border-left-color: var(--primary-color); }
+        .athlete-avatar { width: 40px; height: 40px; border-radius: 50%; background-color: var(--primary-color); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0; }
+        
+        #athlete-details-placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; min-height: 400px; color: var(--text-light-color); text-align: center; }
+        #athlete-details-placeholder svg { width: 60px; height: 60px; margin-bottom: 20px; }
+
+        .details-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; padding-bottom: 20px; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); }
+        #athleteName { font-size: 28px; font-weight: 700; color: var(--text-color); margin: 0; line-height: 1.2; }
+        .personal-info { display: flex; flex-direction: column; gap: 10px; text-align: right; font-size: 14px; color: var(--text-light-color); flex-shrink: 0; }
+        .personal-info span { font-weight: 500; }
+        
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+        .stat-card { display: flex; align-items: center; gap: 15px; background-color: #f8f9fa; border-radius: 12px; padding: 15px; border: 1px solid var(--border-color); transition: all 0.3s ease; }
+        .stat-card:hover { transform: translateY(-5px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); background-color: var(--card-bg-color); }
+        .detail-label { font-size: 13px; color: var(--text-light-color); margin-bottom: 2px; display: block; }
+        .detail-value { font-size: 22px; font-weight: 700; margin: 0; word-wrap: break-word; }
+        .detail-icon-wrapper { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .detail-icon-wrapper svg { width: 24px; height: 24px; stroke-width: 1.5; }
+        .icon-heart { background-color: #ffebee; color: #e53935; }
+        .icon-spo2 { background-color: #e3f2fd; color: #1e88e5; }
+        .icon-bp { background-color: #f3e5f5; color: #8e24aa; }
+        .icon-accel { background-color: #e8f5e9; color: #43a047; }
+
+        .action-buttons { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 30px; }
+        .action-btn { color: #fff; border: none; padding: 20px; border-radius: 12px; cursor: pointer; font-weight: 700; font-size: 16px; text-decoration: none; text-align: center; transition: all .3s ease; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; background-size: cover; background-position: center; position: relative; overflow: hidden; }
+        .action-btn::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.4); z-index: 1; transition: background-color 0.3s; }
+        .action-btn:hover::before { background-color: rgba(0,0,0,0.55); }
+        .action-btn > * { z-index: 2; }
+        .action-btn:hover { transform: translateY(-5px); box-shadow: 0 6px 12px rgba(0,0,0,.2); }
+        .action-btn svg { width: 24px; height: 24px; }
+        .btn-send-exercise { background-image: url('https://images.pexels.com/photos/4397840/pexels-photo-4397840.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'); }
+        .btn-view-warnings { background-image: url('https://images.pexels.com/photos/7579831/pexels-photo-7579831.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'); }
+        .btn-chat { background-image: url('https://images.pexels.com/photos/863988/pexels-photo-863988.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'); }
+        .btn-history { background-image: url('https://images.pexels.com/photos/248547/pexels-photo-248547.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'); }
     </style>
 </head>
 <body>
@@ -106,48 +127,70 @@
         <header class="header">
             <div class="header-left">
                 <div class="logo">LOGO</div>
-                <div class="project-info"><h1>HỖ TRỢ HUẤN LUYỆN THỂ THAO</h1><p>DỰ ÁN KHOA HỌC KỸ THUẬT</p></div>
+                <div class="project-info"><h1>HỖ TRỢ HUẤN LUYỆN THỂ THAO</h1><p>TRANG QUẢN LÝ CỦA HUẤN LUYỆN VIÊN</p></div>
             </div>
             <div class="user-actions">
-                <a href="#" id="logout-link" style="display: none;">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-                    <span>Đăng xuất</span>
-                </a>
+                 <a href="#" id="logout-link" style="display: none;">
+                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                     <span>Đăng xuất</span>
+                 </a>
             </div>
         </header>
         <nav class="navbar">
             <a href="index.html">Trang chủ</a>
             <a href="gioithieu.html">Giới thiệu</a>
-            <a href="bangdieukhien.html" class="active">Bảng điều khiển</a>
+            <a href="bangdieukhien.html" class="active">Bảng điều khiển VĐV</a>
+            <a href="phantich-coach.html">Tự Phân Tích</a>
         </nav>
         <main class="main-content">
-            <div class="page-header">
-                <div>
-                    <h1>Cảnh báo Chấn thương</h1>
-                    <p id="athlete-name-display" class="subtitle">Dữ liệu của vận động viên</p>
+            <section class="athlete-list-section dashboard-card">
+                <div class="card-header">
+                    <h2>Danh sách VĐV</h2>
+                    <a href="add-athlete.html" class="add-athlete-btn">+ Thêm VĐV</a>
                 </div>
-                <a href="bangdieukhien.html" class="btn-back">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="vertical-align: text-bottom;">
-                        <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"></path>
+                <ul id="athleteList" class="athlete-list">
+                    <!-- Danh sách VĐV sẽ được tải vào đây -->
+                </ul>
+            </section>
+            <section class="athlete-details-section dashboard-card">
+                <div id="athlete-details-placeholder">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-2.278 1.125 1.125 0 0 0 0-1.585 13.464 13.464 0 0 1-1.15-1.04 1.125 1.125 0 0 0-1.585 0 13.464 13.464 0 0 1-1.04 1.15 1.125 1.125 0 0 0 0 1.585 9.337 9.337 0 0 0-2.278 4.121 9.38 9.38 0 0 0 .372 2.625M16.5 12.062A4.5 4.5 0 0 1 12 16.5a4.5 4.5 0 0 1-4.5-4.5 4.5 4.5 0 0 1 4.5-4.5 4.5 4.5 0 0 1 4.5 4.5M12 6.75a5.25 5.25 0 1 0 0 10.5 5.25 5.25 0 0 0 0-10.5" />
                     </svg>
-                    <span>Quay về Bảng điều khiển</span>
-                </a>
-            </div>
-            
-            <div id="warnings-container" class="warnings-container">
-                <!-- Dữ liệu cảnh báo sẽ được chèn vào đây -->
-            </div>
-            
-            <div id="loader" class="loader-container">
-                <p>Đang tải dữ liệu...</p>
-            </div>
+                    <p>Chọn một vận động viên từ danh sách để xem chi tiết.</p>
+                </div>
+                <div id="athlete-details-content" style="display: none;">
+                    <div class="details-header">
+                        <h2 id="athleteName"></h2>
+                        <div class="personal-info">
+                            <span id="athleteEmail"></span>
+                            <span id="athleteDob"></span>
+                            <span id="athleteCity"></span>
+                        </div>
+                    </div>
+                    <div class="details-body">
+                        <div class="stats-grid">
+                            <div class="stat-card"><div class="detail-icon-wrapper icon-heart"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" /></svg></div><div><span class="detail-label">Nhịp tim (bpm)</span><p id="heartRate" class="detail-value">--</p></div></div>
+                            <div class="stat-card"><div class="detail-icon-wrapper icon-spo2"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" /></svg></div><div><span class="detail-label">Oxi trong máu (%)</span><p id="spo2" class="detail-value">--</p></div></div>
+                            <div class="stat-card"><div class="detail-icon-wrapper icon-bp"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z" /></svg></div><div><span class="detail-label">Huyết áp</span><p id="bloodPressure" class="detail-value">--</p></div></div>
+                            <div class="stat-card"><div class="detail-icon-wrapper icon-accel"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.28m5.94 2.28-2.28 5.941" /></svg></div><div><span class="detail-label">Tốc độ (m/s)</span><p id="acceleration" class="detail-value">--</p></div></div>
+                        </div>
+                        <div class="action-buttons">
+                            <a href="#" id="send-exercise-btn" class="action-btn btn-send-exercise"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" /></svg><span>Gửi bài tập</span></a>
+                            <a href="#" id="view-warnings-btn" class="action-btn btn-view-warnings"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" /></svg><span>Xem cảnh báo</span></a>
+                            <a href="#" id="chat-with-athlete-btn" class="action-btn btn-chat"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.76c.243.244.526.438.83.611A48.201 48.201 0 0 1 12 15c2.25 0 4.406-.299 6.48-1.08a.75.75 0 0 1 .83.612v3.635a3 3 0 0 1-3 3H6.375a3 3 0 0 1-3-3V13.372a.75.75 0 0 1 .83-.611Z M4.5 12.446 3.375 7.5a3 3 0 0 1 3-3h13.25a3 3 0 0 1 3 3v4.946l-1.125 4.946A48.455 48.455 0 0 1 12 15a48.455 48.455 0 0 1-7.5-2.554Z" /></svg><span>Chat với VĐV</span></a>
+                            <a href="#" class="action-btn btn-history"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 0 0 6 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0 1 18 16.5h-2.25m-7.5 0h7.5m-7.5 0-1 3m8.5-3 1 3m0 0 .5 1.5m-.5-1.5h-9.5m0 0-.5 1.5M9 11.25v1.5M12 9v3.75m3-6v6" /></svg><span>Lịch sử thành tích</span></a>
+                        </div>
+                    </div>
+                </div>
+            </section>
         </main>
     </div>
-
+    
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc, onSnapshot, collection, query, orderBy } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+        import { getFirestore, collection, doc, onSnapshot, getDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyA2dXWCyjL2xgCSyeW9QQ7RvjI_O7kFHJw",
@@ -162,83 +205,125 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        const logoutLink = document.getElementById('logout-link');
+        document.addEventListener('DOMContentLoaded', () => {
+            const logoutLink = document.getElementById('logout-link');
+            const athleteListUl = document.getElementById('athleteList');
+            let unsubscribeSensorListener = null;
 
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                logoutLink.style.display = 'inline-flex';
-                const urlParams = new URLSearchParams(window.location.search);
-                const athleteId = urlParams.get('athleteId');
+            onAuthStateChanged(auth, async (user) => {
+                document.body.classList.add('loaded');
+                if (user) {
+                    logoutLink.style.display = 'inline-flex';
+                    const userDocRef = doc(db, "users", user.uid);
+                    const userDocSnap = await getDoc(userDocRef);
 
-                if (athleteId) {
-                    loadWarningData(athleteId);
-                } else {
-                    document.getElementById('loader').textContent = 'Không tìm thấy ID vận động viên.';
-                }
-
-            } else {
-                window.location.href = './dangnhap.html';
-            }
-        });
-
-        async function loadWarningData(athleteId) {
-            const athleteNameDisplay = document.getElementById('athlete-name-display');
-            const warningsContainer = document.getElementById('warnings-container');
-            const loader = document.getElementById('loader');
-
-            try {
-                const userDocRef = doc(db, "users", athleteId);
-                const userDocSnap = await getDoc(userDocRef);
-
-                if (userDocSnap.exists()) {
-                    athleteNameDisplay.textContent = `Dữ liệu của ${userDocSnap.data().fullName || 'Vận động viên'}`;
-                }
-
-                const warningsColRef = collection(db, "users", athleteId, "injury_warnings");
-                const q = query(warningsColRef, orderBy("date", "desc"));
-                
-                onSnapshot(q, (snapshot) => {
-                    warningsContainer.innerHTML = '';
-                    if (snapshot.empty) {
-                        loader.textContent = 'Không có cảnh báo nào được ghi nhận.';
+                    if (userDocSnap.exists() && userDocSnap.data().role === 'coach') {
+                        initializeDashboard(user.uid);
                     } else {
-                        loader.style.display = 'none';
-                        snapshot.forEach(doc => {
-                            const data = doc.data();
-                            const date = data.date ? new Date(data.date.seconds * 1000).toLocaleDateString('vi-VN') : 'N/A';
-                            const severity = data.severity || 'medium'; // 'high' or 'medium'
-                            const card = `
-                                <div class="warning-card ${severity.toLowerCase()}">
-                                    <div class="warning-icon">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="m21.73 18-8-14a2 2 0 0 0-3.46 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
-                                        </svg>
-                                    </div>
-                                    <div class="warning-content">
-                                        <h3>${data.title || 'Cảnh báo'}</h3>
-                                        <p>${data.description || 'Không có mô tả chi tiết.'}</p>
-                                        <div class="warning-date">Ngày: ${date}</div>
-                                    </div>
-                                </div>
-                            `;
-                            warningsContainer.innerHTML += card;
+                        alert("Bạn không có quyền truy cập trang này.");
+                        window.location.href = './dangnhap.html';
+                    }
+                } else {
+                    window.location.href = './dangnhap.html';
+                }
+            });
+
+            function initializeDashboard(coachId) {
+                logoutLink.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    signOut(auth).catch(error => console.error("Lỗi khi đăng xuất:", error));
+                });
+                listenForManagedAthletes(coachId);
+            }
+
+            function listenForManagedAthletes(coachId) {
+                const managedAthletesColRef = collection(db, "users", coachId, "managed_athletes");
+                onSnapshot(managedAthletesColRef, (snapshot) => {
+                    athleteListUl.innerHTML = '';
+                    if (snapshot.empty) {
+                        athleteListUl.innerHTML = '<p style="padding: 12px; color: var(--text-light-color);">Chưa có VĐV nào.</p>';
+                        return;
+                    }
+                    snapshot.forEach((athleteDoc) => {
+                        const athleteData = athleteDoc.data();
+                        const athleteId = athleteDoc.id;
+                        const li = document.createElement('li');
+                        li.className = 'athlete-item';
+                        li.dataset.athleteId = athleteId;
+                        const name = athleteData.fullName || "Chưa có tên";
+                        const avatarChar = name.charAt(0).toUpperCase();
+                        li.innerHTML = `<div class="athlete-avatar">${avatarChar}</div><span>${name}</span>`;
+                        li.addEventListener('click', () => {
+                            document.querySelectorAll('.athlete-item').forEach(item => item.classList.remove('selected'));
+                            li.classList.add('selected');
+                            displayAthleteDetails(athleteId);
                         });
+                        athleteListUl.appendChild(li);
+                    });
+                });
+            }
+
+            async function displayAthleteDetails(athleteId) {
+                if (unsubscribeSensorListener) {
+                    unsubscribeSensorListener();
+                }
+                const detailsPlaceholder = document.getElementById('athlete-details-placeholder');
+                const detailsContent = document.getElementById('athlete-details-content');
+
+                try {
+                    const athleteDocRef = doc(db, "users", athleteId);
+                    const athleteDocSnap = await getDoc(athleteDocRef);
+
+                    if (athleteDocSnap.exists()) {
+                        const data = athleteDocSnap.data();
+                        document.getElementById('athleteName').textContent = data.fullName || 'Chưa có tên';
+                        document.getElementById('athleteEmail').textContent = data.email || 'Chưa có email';
+                        document.getElementById('athleteDob').textContent = `Ngày sinh: ${data.dateOfBirth || 'N/A'}`;
+                        document.getElementById('athleteCity').textContent = `Thành phố: ${data.city || 'N/A'}`;
+                        
+                        document.getElementById('send-exercise-btn').href = `send-exercise.html?athleteId=${athleteId}`;
+                        
+                        const chatBtn = document.getElementById('chat-with-athlete-btn');
+                        if(chatBtn) {
+                           chatBtn.href = `chat-coach.html?with=${athleteId}`;
+                        }
+                        
+                        const warningsBtn = document.getElementById('view-warnings-btn');
+                        if (warningsBtn) {
+                            warningsBtn.href = `canhbao-coach.html?athleteId=${athleteId}`;
+                        }
+
+                        listenForSensorData(athleteId);
+                        detailsPlaceholder.style.display = 'none';
+                        detailsContent.style.display = 'block';
+                    } else {
+                        console.error("Không tìm thấy thông tin của VĐV với ID:", athleteId);
+                    }
+                } catch(error) {
+                    console.error("Lỗi khi lấy thông tin chi tiết VĐV:", error);
+                }
+            }
+
+            function listenForSensorData(athleteId) {
+                const sensorDocRef = doc(db, "sensor_data", athleteId);
+                unsubscribeSensorListener = onSnapshot(sensorDocRef, (docSnap) => {
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+                        document.getElementById('heartRate').textContent = data.heart_rate || '--';
+                        document.getElementById('spo2').textContent = data.spo2 || '--';
+                        document.getElementById('bloodPressure').textContent = data.blood_pressure || '--';
+                        document.getElementById('acceleration').textContent = data.acceleration || '--';
+                    } else {
+                        document.getElementById('heartRate').textContent = '--';
+                        document.getElementById('spo2').textContent = '--';
+                        document.getElementById('bloodPressure').textContent = '--';
+                        document.getElementById('acceleration').textContent = '--';
                     }
                 });
-
-            } catch (error) {
-                console.error("Lỗi khi tải dữ liệu:", error);
-                loader.textContent = 'Đã xảy ra lỗi khi tải dữ liệu.';
             }
-        }
-
-        if (logoutLink) {
-            logoutLink.addEventListener('click', (e) => {
-                e.preventDefault();
-                signOut(auth).catch((error) => console.error('Lỗi khi đăng xuất:', error));
-            });
-        }
+        });
     </script>
 </body>
 </html>
+tôi muốn tạo file athlete-dashboard.html
 
