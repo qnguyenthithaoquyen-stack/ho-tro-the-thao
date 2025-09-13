@@ -149,8 +149,7 @@
                     <a href="add-athlete.html" class="add-athlete-btn">+ Thêm VĐV</a>
                 </div>
                 <ul id="athleteList" class="athlete-list">
-                    <!-- Danh sách VĐV sẽ được tải vào đây -->
-                </ul>
+                    </ul>
             </section>
             <section class="athlete-details-section dashboard-card">
                 <div id="athlete-details-placeholder">
@@ -307,27 +306,14 @@
                     return (Math.random() * (max - min) + min).toFixed(decimals);
                 };
                 
-                let currentHeartRate = 95;
-                let heartRateDirection = 1; // 1 for increasing, -1 for decreasing
-
                 sensorIntervalId = setInterval(() => {
                     if (heartRateEl && spo2El && bloodPressureEl && accelerationEl) {
                         
-                        const step = Math.random() * 2;
-                        currentHeartRate += step * heartRateDirection;
-
-                        if (currentHeartRate > 130) {
-                            currentHeartRate = 130;
-                            heartRateDirection = -1;
-                        } else if (currentHeartRate < 95) {
-                            currentHeartRate = 95;
-                            heartRateDirection = 1;
-                        }
-                        
-                        heartRateEl.textContent = Math.round(currentHeartRate); 
+                        // THAY ĐỔI TẠI ĐÂY: Tạo số ngẫu nhiên trong khoảng 95-130 mỗi lần lặp
+                        heartRateEl.textContent = getRandom(95, 130, 0); 
                         
                         spo2El.textContent = getRandom(96, 100);
-                        bloodPressureEl.textContent = `${getRandom(120, 130)}/${getRandom(80, 85)}`;
+                        bloodPressureEl.textContent = `${getRandom(120, 130, 0)}/${getRandom(80, 85, 0)}`;
                         accelerationEl.textContent = getRandom(1.5, 4.5, 2);
                     }
                 }, 1500); 
@@ -336,4 +322,3 @@
     </script>
 </body>
 </html>
-
