@@ -15,6 +15,7 @@
             --text-light-color: #6c757d;
             --border-color: #e9ecef;
             --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.07);
+            --list-hover-bg: #e6f2f2;
         }
 
         body { 
@@ -210,7 +211,7 @@
                     <div class="form-grid">
                         <div class="form-group">
                             <label for="eventDate">Ngày</label>
-                            <input type="text" id="eventDate" placeholder="dd/mm/yyyy" required>
+                            <input type="date" id="eventDate" required>
                         </div>
                         <div class="form-group">
                             <label for="eventName">Tên giải/Sự kiện</label>
@@ -241,8 +242,7 @@
                     </tr>
                 </thead>
                 <tbody id="history-table-body">
-                    <!-- Dữ liệu sẽ được chèn vào đây bởi JavaScript -->
-                </tbody>
+                    </tbody>
             </table>
             <div id="loader" class="loader-container">
                 <p>Đang tải dữ liệu...</p>
@@ -288,13 +288,17 @@
             }
         });
 
-        async function setupAddAchievementForm(athleteId) {
+        function setupAddAchievementForm(athleteId) {
             const form = document.getElementById('add-achievement-form');
-            if (!form) return;
+            const dateInput = document.getElementById('eventDate');
+            if (!form || !dateInput) return;
+
+            // === FIX 2: Set default date to today ===
+            dateInput.valueAsDate = new Date();
 
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
-                const eventDateStr = document.getElementById('eventDate').value;
+                const eventDateStr = dateInput.value; // This is now in YYYY-MM-DD format
                 const eventName = document.getElementById('eventName').value;
                 const eventResult = document.getElementById('eventResult').value;
                 const eventNotes = document.getElementById('eventNotes').value;
@@ -303,21 +307,15 @@
                     alert('Vui lòng điền đầy đủ các trường bắt buộc.');
                     return;
                 }
-
-                const dateParts = eventDateStr.split('/');
-                if (dateParts.length !== 3 || isNaN(parseInt(dateParts[0])) || isNaN(parseInt(dateParts[1])) || isNaN(parseInt(dateParts[2]))) {
-                    alert('Định dạng ngày không hợp lệ. Vui lòng nhập theo dạng dd/mm/yyyy.');
-                    return;
-                }
                 
-                // new Date(year, monthIndex, day)
-                const eventDate = new Date(parseInt(dateParts[2]), parseInt(dateParts[1]) - 1, parseInt(dateParts[0]));
+                // === FIX 3: Simplified and safer date parsing ===
+                // The T00:00:00 ensures the date is interpreted in the local timezone, not UTC
+                const eventDate = new Date(eventDateStr + 'T00:00:00');
                 
                 if (isNaN(eventDate.getTime())) {
-                    alert('Ngày không hợp lệ. Vui lòng kiểm tra lại.');
+                    alert('Ngày không hợp lệ. Vui lòng chọn một ngày từ lịch.');
                     return;
                 }
-
 
                 try {
                     const achievementsColRef = collection(db, "users", athleteId, "achievements");
@@ -328,13 +326,14 @@
                         notes: eventNotes
                     });
                     form.reset();
+                    dateInput.valueAsDate = new Date(); // Reset date to today after submission
                 } catch (error) {
-                    console.error("Lỗi khi thêm thành tích: ", error);
-                    alert("Đã xảy ra lỗi khi lưu thành tích.");
+                    // === FIX 4: Improved error logging and alert message ===
+                    console.error("Lỗi chi tiết khi thêm thành tích: ", error);
+                    alert("Đã xảy ra lỗi khi lưu thành tích. Vui lòng kiểm tra Console (nhấn F12) để biết thêm chi tiết về lỗi phân quyền hoặc các lỗi khác.");
                 }
             });
         }
-
 
         async function loadHistoryData(athleteId) {
             const athleteNameDisplay = document.getElementById('athlete-name-display');
@@ -356,6 +355,7 @@
                     tableBody.innerHTML = '';
                     if (snapshot.empty) {
                         loader.textContent = 'Chưa có thành tích nào được ghi nhận.';
+                        loader.style.display = 'block';
                     } else {
                         loader.style.display = 'none';
                         snapshot.forEach(doc => {
@@ -389,4 +389,3 @@
     </script>
 </body>
 </html>
-
