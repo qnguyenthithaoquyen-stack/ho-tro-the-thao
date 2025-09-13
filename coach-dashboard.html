@@ -139,7 +139,7 @@
         <nav class="navbar">
             <a href="index.html">Trang chủ</a>
             <a href="gioithieu.html">Giới thiệu</a>
-            <a href="bangdieukhien.html" class="active">Bảng điều khiển VĐV</a>
+            <a href="coach-dashboard.html" class="active">Quản lý VĐV</a>
             <a href="phantich-coach.html">Tự Phân Tích</a>
         </nav>
         <main class="main-content">
@@ -179,7 +179,7 @@
                             <a href="#" id="send-exercise-btn" class="action-btn btn-send-exercise"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" /></svg><span>Gửi bài tập</span></a>
                             <a href="#" id="view-warnings-btn" class="action-btn btn-view-warnings"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" /></svg><span>Xem cảnh báo</span></a>
                             <a href="#" id="chat-with-athlete-btn" class="action-btn btn-chat"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.76c.243.244.526.438.83.611A48.201 48.201 0 0 1 12 15c2.25 0 4.406-.299 6.48-1.08a.75.75 0 0 1 .83.612v3.635a3 3 0 0 1-3 3H6.375a3 3 0 0 1-3-3V13.372a.75.75 0 0 1 .83-.611Z M4.5 12.446 3.375 7.5a3 3 0 0 1 3-3h13.25a3 3 0 0 1 3 3v4.946l-1.125 4.946A48.455 48.455 0 0 1 12 15a48.455 48.455 0 0 1-7.5-2.554Z" /></svg><span>Chat với VĐV</span></a>
-                            <a href="#" class="action-btn btn-history"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 0 0 6 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0 1 18 16.5h-2.25m-7.5 0h7.5m-7.5 0-1 3m8.5-3 1 3m0 0 .5 1.5m-.5-1.5h-9.5m0 0-.5 1.5M9 11.25v1.5M12 9v3.75m3-6v6" /></svg><span>Lịch sử thành tích</span></a>
+                            <a href="#" id="history-btn" class="action-btn btn-history"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 0 0 6 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0 1 18 16.5h-2.25m-7.5 0h7.5m-7.5 0-1 3m8.5-3 1 3m0 0 .5 1.5m-.5-1.5h-9.5m0 0-.5 1.5M9 11.25v1.5M12 9v3.75m3-6v6" /></svg><span>Lịch sử thành tích</span></a>
                         </div>
                     </div>
                 </div>
@@ -288,9 +288,16 @@
                            chatBtn.href = `chat-coach.html?with=${athleteId}`;
                         }
                         
+                        // SỬA LỖI: Đảm bảo nút "Xem cảnh báo" trỏ đến đúng trang
                         const warningsBtn = document.getElementById('view-warnings-btn');
                         if (warningsBtn) {
                             warningsBtn.href = `canhbao-coach.html?athleteId=${athleteId}`;
+                        }
+
+                        // SỬA LỖI: Thêm link cho nút "Lịch sử thành tích"
+                        const historyBtn = document.getElementById('history-btn');
+                        if (historyBtn) {
+                            historyBtn.href = `lichsu-thanhtich.html?athleteId=${athleteId}`;
                         }
 
                         listenForSensorData(athleteId);
@@ -325,4 +332,3 @@
     </script>
 </body>
 </html>
-
