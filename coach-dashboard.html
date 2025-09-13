@@ -306,16 +306,31 @@
                 const getRandom = (min, max, decimals = 0) => {
                     return (Math.random() * (max - min) + min).toFixed(decimals);
                 };
+                
+                let currentHeartRate = 95;
+                let heartRateDirection = 1; // 1 for increasing, -1 for decreasing
 
                 sensorIntervalId = setInterval(() => {
                     if (heartRateEl && spo2El && bloodPressureEl && accelerationEl) {
-                        // SỬA ĐỔI TẠI ĐÂY
-                        heartRateEl.textContent = getRandom(140, 170); 
+                        
+                        const step = Math.random() * 2; // How much it changes each interval
+                        currentHeartRate += step * heartRateDirection;
+
+                        if (currentHeartRate > 120) {
+                            currentHeartRate = 120;
+                            heartRateDirection = -1; // Start decreasing
+                        } else if (currentHeartRate < 95) {
+                            currentHeartRate = 95;
+                            heartRateDirection = 1; // Start increasing
+                        }
+                        
+                        heartRateEl.textContent = Math.round(currentHeartRate); 
+                        
                         spo2El.textContent = getRandom(96, 100);
                         bloodPressureEl.textContent = `${getRandom(120, 130)}/${getRandom(80, 85)}`;
                         accelerationEl.textContent = getRandom(1.5, 4.5, 2);
                     }
-                }, 2500); 
+                }, 1500); // Shortened interval for more dynamic feel
             }
         });
     </script>
