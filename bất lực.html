@@ -174,6 +174,7 @@
     .info-list li { margin-bottom: 6px; }
 
     .gallery { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+    .gallery-item { position: relative; }
     .gallery-item img { width: 120px; height: 80px; object-fit: cover; border-radius: 6px; display: block; border: 1px solid var(--border-color); }
     .gallery .del-btn {
       position: absolute; right: 4px; top: 4px;
@@ -182,7 +183,9 @@
       border-radius: 50%; cursor: pointer; display: flex; align-items: center;
       justify-content: center; font-size: 12px; line-height: 1;
       transition: background-color .2s ease;
+      opacity: 0;
     }
+    .gallery-item:hover .del-btn { opacity: 1; }
     .gallery .del-btn:hover { background-color: var(--accent-red); }
 
     .dash-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
@@ -200,6 +203,13 @@
       justify-content: center;
       z-index: 1000;
       backdrop-filter: blur(4px);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity .2s ease, visibility .2s ease;
+    }
+    .modal-overlay.visible {
+        opacity: 1;
+        visibility: visible;
     }
     .modal-content {
       background-color: var(--card-bg);
@@ -209,6 +219,11 @@
       text-align: center;
       max-width: 400px;
       border: 1px solid var(--border-color);
+      transform: scale(0.95);
+      transition: transform .2s ease;
+    }
+    .modal-overlay.visible .modal-content {
+        transform: scale(1);
     }
     .modal-content p {
       margin: 0 0 16px 0;
@@ -221,13 +236,34 @@
       gap: 1rem;
     }
 
+    .header-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        padding-top: 1rem;
+        margin-bottom: -1rem; 
+    }
+    .header-container > div {
+        margin-bottom: 12px;
+    }
+
     @media (max-width: 992px) {
         .main-area { grid-template-columns: 1fr; }
     }
     @media (max-width: 768px) {
-        body { padding: 16px; }
-        .container { padding: 0; }
+        body { padding: 0; }
+        .container { padding: 16px; }
         .flex { flex-direction: column; align-items: stretch; gap: 12px; }
+        .header-container {
+            flex-direction: column-reverse;
+            align-items: stretch;
+            gap: 16px;
+            margin-bottom: 0;
+            padding-top: 0;
+        }
+        .header-container .btn {
+            text-align: center;
+        }
     }
 
   </style>
@@ -235,12 +271,13 @@
 <body>
 
   <div class="container"> 
-    <div style="padding-top: 1rem;">
+    <div class="header-container">
+      <div>
         <h2>Bảng điều khiển Phân tích Tư thế</h2>
         <p class="text-muted">Tải lên video và bắt đầu phân tích kỹ thuật thể thao của bạn.</p>
+      </div>
+      <a href="athlete-dashboard.html" class="btn">Quay về Bảng điều khiển &rarr;</a>
     </div>
-
-    <a href="athlete-dashboard.html" class="btn" style="margin-bottom: 16px; display: inline-block;">← Quay về Bảng điều khiển</a>
 
     <div class="card">
       <h3>Tải lên & Chọn Video</h3>
@@ -267,7 +304,7 @@
 
         <div>
           <label for="videoUpload">Tải video (.mp4):</label>
-          <input id="videoUpload" type="file" accept="video/*" multiple />
+          <input id="videoUpload" type="file" accept="video/mp4,video/quicktime,video/*" multiple />
         </div>
 
         <div>
@@ -283,7 +320,7 @@
       <hr>
       
       <div>
-        <label>Danh sách video (lọc theo môn đã chọn)</label>
+        <label>Lịch sử video (lọc theo môn đã chọn)</label>
         <div class="video-list" id="videoList"></div>
       </div>
     </div>
@@ -353,11 +390,11 @@
 
     <div class="card">
       <h3>Ghi chú kỹ thuật</h3>
-      <div class="small">Bản chuyển đổi từ mã Python gốc: dữ liệu mẫu (loi, chanthuong, goiy) được giữ nguyên. Phân tích không dùng random: tỉ lệ đúng/sai được tính dựa trên số khung hình đạt điều kiện kỹ thuật (đo được khớp và thỏa ngưỡng góc). Kết quả được lưu localStorage dưới khóa "thethaott_results".</div>
+      <div class="small">Bản chuyển đổi từ mã Python gốc: dữ liệu mẫu (loi, chanthuong, goiy) được giữ nguyên. Phân tích không dùng random: tỉ lệ đúng/sai được tính dựa trên số khung hình đạt điều kiện kỹ thuật (đo được khớp và thỏa ngưỡng góc). Kết quả được lưu localStorage dưới khóa "thethaott_results". Video được lưu vào IndexedDB để giữ lại lịch sử.</div>
     </div>
   </div>
   
-  <div id="customModal" class="modal-overlay" style="display:none;">
+  <div id="customModal" class="modal-overlay">
     <div class="modal-content">
       <p id="modalText"></p>
       <div id="modalActions">
@@ -373,33 +410,25 @@
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.17.0/dist/tf.min.js"></script>
 
   <script>
+    'use strict';
+    
     // ==== Modal Functions ====
     function showModal(message, isConfirm = false, onConfirm = null) {
         const modal = document.getElementById('customModal');
         const modalText = document.getElementById('modalText');
         const actionContainer = document.getElementById('modalActions');
-        
         if (!modal || !modalText || !actionContainer) return;
-
         modalText.textContent = message;
-        
-        // Clear previous buttons
         actionContainer.innerHTML = '';
-
         if (isConfirm) {
             const confirmBtn = document.createElement('button');
             confirmBtn.textContent = 'Xác nhận';
             confirmBtn.className = 'btn btn-primary';
-            confirmBtn.onclick = () => {
-            if (onConfirm) onConfirm();
-            hideModal();
-            };
-
+            confirmBtn.onclick = () => { if (onConfirm) onConfirm(); hideModal(); };
             const cancelBtn = document.createElement('button');
             cancelBtn.textContent = 'Hủy';
             cancelBtn.className = 'btn';
             cancelBtn.onclick = hideModal;
-            
             actionContainer.appendChild(cancelBtn);
             actionContainer.appendChild(confirmBtn);
         } else {
@@ -409,892 +438,218 @@
             closeBtn.onclick = hideModal;
             actionContainer.appendChild(closeBtn);
         }
-
-        modal.style.display = 'flex';
+        modal.classList.add('visible');
     }
-
     function hideModal() {
-        const modal = document.getElementById('customModal');
-        if(modal) modal.style.display = 'none';
-    }
-    
-    // ==== Dữ liệu mẫu (giữ nguyên từ mã Python) ====
-    const DU_LIEU = {
-      xuatphat: {
-        loi: ["Gập gối chưa đúng góc", "Tay chống chưa vững", "Thân người hơi nghiêng về trước"],
-        chanthuong: ["Cổ tay", "Gối", "Vai"],
-        goiy: ["Tập giữ thân người thẳng khi xuất phát", "Rèn phản xạ bật người bằng gối và mũi chân", "Bài tập: Xuất phát tại chỗ – giữ thăng bằng 5 giây"]
-      },
-      nhaycao: {
-        loi: ["Bước chạy đà chưa đủ tốc độ", "Gối không nâng cao khi bật nhảy", "Không kiểm soát độ cong của lưng khi qua xà"],
-        chanthuong: ["Gối", "Cột sống thắt lưng"],
-        goiy: ["Tập chạy đà kết hợp nhảy 1 chân", "Tăng dẻo dai cột sống qua bài kéo giãn", "Bài tập: Bật nhảy nâng cao gối tại chỗ"]
-      },
-      nemta: {
-        loi: ["Hạ thấp vai khi xoay người", "Chưa tối ưu lực đẩy từ chân"],
-        chanthuong: ["Cổ tay", "Vai", "Lưng"],
-        goiy: ["Tăng sức mạnh cơ bụng xoay", "Tập kỹ thuật phối hợp chân-trục-đẩy tạ", "Bài tập: Xoay người chậm và giữ vai cố định"]
-      }
-    };
-
-    // ==== Khung xương chuẩn theo môn (góc mong muốn ± dung sai) ====
-    const KHUNG_CHUAN = {
-      xuatphat: [
-        {name:'Gối (trái hoặc phải)', joints:['kneeL','kneeR'], want:100, tol:20, anySide:true},
-        {name:'Hông (trái hoặc phải)', joints:['hipL','hipR'], want:120, tol:25, anySide:true},
-        {name:'Thân (nghiêng so với ngang)', joints:['torsoIncline'], want:45, tol:15},
-        {name:'Khuỷu tay (trụ)', joints:['elbowL','elbowR'], want:90, tol:25, anySide:true}
-      ],
-      nhaycao: [
-        {name:'Gối chân giậm (L/R)', joints:['kneeL','kneeR'], want:150, tol:20, anySide:true},
-        {name:'Hông mở (L/R)', joints:['hipL','hipR'], want:160, tol:20, anySide:true},
-        {name:'Thân (nghiêng so với ngang)', joints:['torsoIncline'], want:20, tol:15},
-        {name:'Vai (góc cánh tay)', joints:['shoulderL','shoulderR'], want:160, tol:25, anySide:true}
-      ],
-      nemta: [
-        {name:'Gối (L/R)', joints:['kneeL','kneeR'], want:100, tol:25, anySide:true},
-        {name:'Hông (L/R)', joints:['hipL','hipR'], want:120, tol:25, anySide:true},
-        {name:'Khuỷu tay (L/R)', joints:['elbowL','elbowR'], want:100, tol:25, anySide:true},
-        {name:'Vai (L/R)', joints:['shoulderL','shoulderR'], want:90, tol:25, anySide:true},
-        {name:'Thân (nghiêng so với ngang)', joints:['torsoIncline'], want:30, tol:15}
-      ]
-    };
-
-    const KHUNG_CHUAN_GOC = {
-      xuatphat: {
-        front: KHUNG_CHUAN.xuatphat,
-        back:  KHUNG_CHUAN.xuatphat,
-        left:  [
-          {name:'Gối (bên gần camera)', joints:['kneeL','kneeR'], want:100, tol:22, anySide:true},
-          {name:'Hông (bên gần camera)', joints:['hipL','hipR'], want:120, tol:28, anySide:true},
-          {name:'Thân (nghiêng ngang)', joints:['torsoIncline'], want:45, tol:18}
-        ],
-        right: [
-          {name:'Gối (bên gần camera)', joints:['kneeL','kneeR'], want:100, tol:22, anySide:true},
-          {name:'Hông (bên gần camera)', joints:['hipL','hipR'], want:120, tol:28, anySide:true},
-          {name:'Thân (nghiêng ngang)', joints:['torsoIncline'], want:45, tol:18}
-        ]
-      },
-      nhaycao: {
-        front: KHUNG_CHUAN.nhaycao,
-        back:  KHUNG_CHUAN.nhaycao,
-        left:  [
-          {name:'Gối giậm (bên gần camera)', joints:['kneeL','kneeR'], want:150, tol:22, anySide:true},
-          {name:'Hông mở', joints:['hipL','hipR'], want:160, tol:22, anySide:true},
-          {name:'Thân (nghiêng ngang)', joints:['torsoIncline'], want:20, tol:18}
-        ],
-        right: [
-          {name:'Gối giậm (bên gần camera)', joints:['kneeL','kneeR'], want:150, tol:22, anySide:true},
-          {name:'Hông mở', joints:['hipL','hipR'], want:160, tol:22, anySide:true},
-          {name:'Thân (nghiêng ngang)', joints:['torsoIncline'], want:20, tol:18}
-        ]
-      },
-      nemta: {
-        front: KHUNG_CHUAN.nemta,
-        back:  KHUNG_CHUAN.nemta,
-        left:  [
-          {name:'Hông (bên gần camera)', joints:['hipL','hipR'], want:120, tol:28, anySide:true},
-          {name:'Vai (bên gần camera)', joints:['shoulderL','shoulderR'], want:90, tol:28, anySide:true},
-          {name:'Khuỷu tay (bên gần camera)', joints:['elbowL','elbowR'], want:100, tol:28, anySide:true},
-          {name:'Thân (nghiêng ngang)', joints:['torsoIncline'], want:30, tol:18}
-        ],
-        right: [
-          {name:'Hông (bên gần camera)', joints:['hipL','hipR'], want:120, tol:28, anySide:true},
-          {name:'Vai (bên gần camera)', joints:['shoulderL','shoulderR'], want:90, tol:28, anySide:true},
-          {name:'Khuỷu tay (bên gần camera)', joints:['elbowL','elbowR'], want:100, tol:28, anySide:true},
-          {name:'Thân (nghiêng ngang)', joints:['torsoIncline'], want:30, tol:18}
-        ]
-      }
-    };
-
-    const PER_FRAME_THRESH = { xuatphat:0.6, nhaycao:0.5, nemta:0.6 };
-
-    const sportSel = document.getElementById('sport');
-    const viewSel  = document.getElementById('viewSel');
-    const videoUpload = document.getElementById('videoUpload');
-    const imgUpload = document.getElementById('imgUpload');
-    const videoListEl = document.getElementById('videoList');
-    const player = document.getElementById('player');
-    const overlay = document.getElementById('overlay');
-    const analyzeBtn = document.getElementById('analyzeBtn');
-    const forceAnalyzeBtn = document.getElementById('forceAnalyzeBtn');
-    const analysisPanel = document.getElementById('analysisPanel');
-    const chartCanvas = document.getElementById('chartCanvas');
-    const gallery = document.getElementById('gallery');
-    const clearStorageBtn = document.getElementById('clearStorage');
-    const progressRow = document.getElementById('progressRow');
-    const progressBar = document.getElementById('progressBar');
-    const progressText = document.getElementById('progressText');
-    const liveBadge = document.getElementById('liveBadge');
-    const exportBtn = document.getElementById('exportReportBtn');
-    const dashCard = document.getElementById('dashboardCard');
-    const toggleDashboardBtn = document.getElementById('toggleDashboardBtn');
-    const angleChartEl = document.getElementById('angleChart');
-    const velChartEl = document.getElementById('velChart');
-    const romChartEl = document.getElementById('romChart');
-    const aiAlertsEl = document.getElementById('aiAlerts');
-    const aiStatusPill = document.getElementById('aiStatusPill');
-    const exportFeaturesBtn = document.getElementById('exportFeaturesBtn');
-    const exportFeaturesCsvBtn = document.getElementById('exportFeaturesCsvBtn');
-    const runModelBtn = document.getElementById('runModelBtn');
-
-    let uploadedVideos = []; 
-    let results = JSON.parse(localStorage.getItem('thethaott_results')||'{}');
-    let currentVideo = null;
-    let mpPose = null;
-    let mpPoseDrawingCallback = null;
-    let chart = null;
-    let lastPoseLandmarks = null;
-    let overlayPass = null;
-    let featTime = [];
-    let featAngles = [];
-    let featVel = [];
-    let featROM = {};
-    let aiModel = null;
-    let aiAvailable = false;
-    let viewCounts = {front:0,left:0,right:0,back:0};
-
-    function saveResults(){ localStorage.setItem('thethaott_results', JSON.stringify(results)); renderChart(); }
-    function uidFromName(name){
-      let h=2166136261;
-      for(let i=0;i<name.length;i++){h ^= name.charCodeAt(i);h += (h<<1)+(h<<4)+(h<<7)+(h<<8)+(h<<24);} return 'v_'+(h>>>0);
-    }
-    function setProgress(pct, text){
-      progressRow.style.display = 'flex';
-      progressBar.style.width = Math.max(0, Math.min(100, pct)) + '%';
-      progressText.textContent = (text ?? Math.round(pct)+'%');
-      if(pct>=100){ setTimeout(()=>{ progressRow.style.display = 'none'; }, 400); }
+        document.getElementById('customModal').classList.remove('visible');
     }
 
-    function ensureMpPose(){
-      if(typeof Pose === 'undefined'){
-        console.error('MediaPipe Pose library not loaded.');
-        return null;
-      }
-      if(!mpPose){
-        mpPose = new Pose({locateFile: (f)=>`https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5/${f}`});
-        mpPose.setOptions({modelComplexity:1, smoothLandmarks:true, enableSegmentation:false, minDetectionConfidence:0.45, minTrackingConfidence:0.45});
-        mpPose.onResults((resultsPose)=>{
-          if(resultsPose && resultsPose.poseLandmarks && resultsPose.poseLandmarks.length) lastPoseLandmarks = resultsPose.poseLandmarks;
-        });
-      }
-      return mpPose;
-    }
+    // ==== IndexedDB Helper Functions ====
+    const DB_NAME = 'thethaoVideoDB';
+    const DB_VERSION = 1;
+    const STORE_NAME = 'videos';
 
-    async function tryLoadAIModel(){
-      try{
-        aiStatusPill.textContent = 'AI: đang tải...';
-        aiModel = await tf.loadLayersModel('model/model.json');
-        aiAvailable = true;
-        aiStatusPill.textContent = 'AI: sẵn sàng';
-      }catch(e){
-        aiModel = null; aiAvailable = false;
-        aiStatusPill.textContent = 'AI: chưa có model';
-      }
-    }
-    tryLoadAIModel();
-
-    function renderVideoList(){
-      const sport = sportSel.value;
-      videoListEl.innerHTML='';
-      const filtered = uploadedVideos.filter(v=>{
-        if(v.sportTag === sport) return true;
-        const ln = (v.name||'').toLowerCase();
-        return ln.includes(sport) || ln.includes(sport === 'xuatphat' ? 'xuat' : (sport === 'nhaycao' ? 'nhay' : 'nem'));
-      });
-      if(filtered.length===0){ videoListEl.innerHTML='<div class="small">Chưa có video cho môn này. Hãy tải lên.</div>'; return }
-      filtered.forEach((v)=>{
-        const div = document.createElement('div'); div.className='video-item';
-        div.innerHTML = `<div><strong>${v.name}</strong><div class="small">${v.sportTag || ''}</div></div>`;
-        const btnWrap = document.createElement('div');
-        const openBtn = document.createElement('button'); openBtn.textContent='Mở'; openBtn.className='btn';
-        openBtn.onclick = ()=>{ openVideo(v) };
-        const analyze = document.createElement('button'); analyze.textContent='Phân tích'; analyze.className='btn btn-primary';
-        analyze.onclick = ()=>{ openVideo(v); setTimeout(()=>runAnalysisIfNeeded(v,false),200) };
-        btnWrap.appendChild(openBtn); btnWrap.appendChild(analyze);
-        div.appendChild(btnWrap);
-        videoListEl.appendChild(div);
-      });
-    }
-
-    function renderGallery(){
-      gallery.innerHTML='';
-      const imgs = JSON.parse(localStorage.getItem('thethaott_gallery')||'[]');
-      imgs.forEach((src, idx)=>{
-        const wrap = document.createElement('div'); wrap.className = 'gallery-item';
-        const img = document.createElement('img'); img.src = src;
-        const del = document.createElement('button'); del.className='del-btn'; del.textContent='✕';
-        del.title = 'Xóa ảnh này';
-        del.onclick = ()=>{ 
-            showModal('Bạn có chắc muốn xóa ảnh này?', true, () => removeGalleryImage(idx));
-        };
-        wrap.appendChild(img); wrap.appendChild(del);
-        gallery.appendChild(wrap);
-      });
-    }
-    function removeGalleryImage(index){
-      const imgs = JSON.parse(localStorage.getItem('thethaott_gallery')||'[]');
-      if(index<0 || index>=imgs.length) return;
-      imgs.splice(index,1);
-      localStorage.setItem('thethaott_gallery', JSON.stringify(imgs));
-      renderGallery();
-    }
-
-    function renderChart(){
-      const sport = sportSel.value;
-      const keys = Object.keys(results).filter(k=>results[k].sport===sport);
-      const labels = keys.map(k=>results[k].name);
-      const data = keys.map(k=>results[k].tile);
-      if(chart) chart.destroy();
-      chart = new Chart(chartCanvas.getContext('2d'),{
-          type:'bar',
-          data:{
-              labels, 
-              datasets:[{
-                  label:'Tỉ lệ đúng (%)',
-                  data,
-                  backgroundColor: 'rgba(0, 150, 136, 0.7)',
-                  borderColor: 'rgba(0, 150, 136, 1)',
-                  borderWidth: 1,
-                  borderRadius: 4
-                }]
-            }, 
-            options:{
-                indexAxis:'y',
-                scales:{
-                    x:{min:0,max:110, ticks:{color: 'var(--text-muted)'}, grid:{color: 'var(--border-color)'}},
-                    y:{ticks:{color: 'var(--text-dark)'}, grid:{display: false}}
-                },
-                plugins: { legend: { display: false } }
-            }
+    function openDB() {
+        return new Promise((resolve, reject) => {
+            const request = indexedDB.open(DB_NAME, DB_VERSION);
+            request.onupgradeneeded = (event) => {
+                const db = event.target.result;
+                if (!db.objectStoreNames.contains(STORE_NAME)) {
+                    db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+                }
+            };
+            request.onsuccess = (event) => resolve(event.target.result);
+            request.onerror = (event) => reject(event.target.error);
         });
     }
 
-    function showAnalysisPanel(res){
-      if(!res){ analysisPanel.innerHTML='Chưa có phân tích.'; return }
-      let html = `<strong>${res.name}</strong><br>`;
-      html += `Góc quay áp dụng: <em style="color:var(--primary-blue);">${(res.view||'auto').toUpperCase()}</em><br>`;
-      html += `Tỉ lệ đúng: <strong>${res.tile}%</strong> (Đúng: ${res.dung} | Sai: ${res.sai})<br>`;
-      html += `Xếp loại: <strong>${res.xeploai}</strong> – ${res.ketluan}<br>`;
-      if(res.tile<100){
-        html += '<hr><div><strong>❌ Lỗi tư thế:</strong><ul>'; res.loi.forEach(l=>html+=`<li>${l}</li>`); html += '</ul></div>';
-        html += '<div><strong>⚠️ Nguy cơ chấn thương:</strong><ul>'; res.chanthuong.forEach(c=>html+=`<li>${c}</li>`); html += '</ul></div>';
-        html += '<div><strong>💡 Gợi ý:</strong><ul>'; res.goiy.forEach(g=>html+=`<li>${g}</li>`); html += '</ul></div>';
-      }
-      html += `<hr><div><strong>💬 Động viên:</strong> ${res.dongvien}</div>`;
-      if(res.khungChuan){
-        html += '<hr><div><strong>📏 Khung xương chuẩn đã áp dụng:</strong><ul>';
-        res.khungChuan.forEach(rule=>{
-          const target = `${rule.want}° ± ${rule.tol}°`;
-          const jointsText = rule.anySide ? `${rule.name} (bên bất kỳ)` : rule.name;
-          html += `<li>${jointsText}: ${target}</li>`;
-        });
-        html += '</ul></div>';
-      }
-      analysisPanel.innerHTML = html;
+    async function saveVideoToDB(videoData) {
+        const db = await openDB();
+        const tx = db.transaction(STORE_NAME, 'readwrite');
+        const store = tx.objectStore(STORE_NAME);
+        store.put(videoData);
+        return tx.complete;
     }
 
-    function deterministicClassification(tile, sport){
-      const bo = DU_LIEU[sport];
-      let loi, chanthuong, goiy, xeploai, dongvien, ketluan;
-      if(tile===100){ loi=[]; chanthuong=[]; goiy=[]; xeploai='HOÀN HẢO'; dongvien='🌟 Xuất sắc! Không phát hiện lỗi nào.'; ketluan='Giữ vững phong độ'; }
-      else if(tile>=90){ loi = bo.loi.slice(0,1); chanthuong = bo.chanthuong.slice(0,1); goiy = bo.goiy.slice(0,1); xeploai='TỐT'; dongvien='🔥 Rất tốt! Hãy tiếp tục duy trì.'; ketluan='Giữ vững phong độ'; }
-      else if(tile>=70){ loi = bo.loi.slice(0,2); chanthuong = bo.chanthuong.slice(0,2); goiy = bo.goiy.slice(0,2); xeploai='KHÁ'; dongvien='👍 Khá tốt, hãy luyện thêm để hoàn thiện.'; ketluan='Cần cải thiện vài điểm'; }
-      else{ loi = bo.loi; chanthuong = bo.chanthuong; goiy = bo.goiy; xeploai='TRUNG BÌNH'; dongvien='⚠️ Cần cố gắng hơn! Tập trung vào các lỗi thường gặp.'; ketluan='Tập trung luyện thêm'; }
-      return {loi, chanthuong, goiy, xeploai, dongvien, ketluan};
-    }
-
-    function degBetween(a,b,c){
-      const abx = a.x - b.x, aby = a.y - b.y;
-      const cbx = c.x - b.x, cby = c.y - b.y;
-      const dot = abx*cbx + aby*cby;
-      const mag = Math.sqrt((abx*abx+aby*aby)*(cbx*cbx+cby*cby));
-      if(!mag) return 0;
-      let cos = dot / mag; cos = Math.max(-1, Math.min(1, cos));
-      return Math.acos(cos) * 180 / Math.PI;
-    }
-    function torsoInclineDeg(lm){
-      const lShoulder = lm[11], rShoulder = lm[12], lHip = lm[23], rHip = lm[24];
-      if(!lShoulder || !rShoulder || !lHip || !rHip) return 0;
-      const s = {x:(lShoulder.x+rShoulder.x)/2, y:(lShoulder.y+rShoulder.y)/2};
-      const h = {x:(lHip.x+rHip.x)/2, y:(lHip.y+rHip.y)/2};
-      const dx = s.x - h.x, dy = s.y - h.y;
-      const ang = Math.atan2(Math.abs(dy), Math.abs(dx)) * 180/Math.PI;
-      return ang;
-    }
-    function extractAngles(lm){
-      const ang = {};
-      if(lm[23]&&lm[25]&&lm[27]) ang.kneeL = degBetween(lm[23], lm[25], lm[27]);
-      if(lm[24]&&lm[26]&&lm[28]) ang.kneeR = degBetween(lm[24], lm[26], lm[28]);
-      if(lm[11]&&lm[23]&&lm[25]) ang.hipL  = degBetween(lm[11], lm[23], lm[25]);
-      if(lm[12]&&lm[24]&&lm[26]) ang.hipR  = degBetween(lm[12], lm[24], lm[26]);
-      if(lm[11]&&lm[13]&&lm[15]) ang.elbowL= degBetween(lm[11], lm[13], lm[15]);
-      if(lm[12]&&lm[14]&&lm[16]) ang.elbowR= degBetween(lm[12], lm[14], lm[16]);
-      if(lm[13]&&lm[11]&&lm[23]) ang.shoulderL = degBetween(lm[13], lm[11], lm[23]);
-      if(lm[14]&&lm[12]&&lm[24]) ang.shoulderR = degBetween(lm[14], lm[12], lm[24]);
-      ang.torsoIncline = torsoInclineDeg(lm);
-      return ang;
-    }
-
-    function detectView2D(lm){
-      const lS=lm[11], rS=lm[12], lH=lm[23], rH=lm[24];
-      if(!(lS&&rS&&lH&&rH)) return 'front';
-      const sMid={x:(lS.x+rS.x)/2,y:(lS.y+rS.y)/2};
-      const hMid={x:(lH.x+rH.x)/2,y:(lH.y+rH.y)/2};
-      const torso = Math.hypot(sMid.x-hMid.x, sMid.y-hMid.y);
-      const shoulderW = Math.abs(rS.x-lS.x);
-      const ratio = shoulderW / (torso||1);
-      if(ratio < 0.55){
-        return (rS.x > lS.x) ? 'right' : 'left';
-      }
-      return 'front';
-    }
-
-    function getRulesByView(sport, view){
-      const g = KHUNG_CHUAN_GOC[sport];
-      if(!g) return KHUNG_CHUAN[sport]||[];
-      return g[view] || KHUNG_CHUAN[sport] || [];
-    }
-
-    function checkAgainstStandard(angles, sport, view){
-      const rules = getRulesByView(sport, view);
-      let okCount = 0, totalRules = rules.length;
-      for(const r of rules){
-        let within = false;
-        if(r.anySide){
-          for(const key of r.joints){
-            const v = angles[key];
-            if(typeof v === 'number' && Math.abs(v - r.want) <= r.tol){ within = true; break; }
-          }
-        } else {
-          const key = r.joints[0];
-          const v = angles[key];
-          if(typeof v === 'number' && Math.abs(v - r.want) <= r.tol) within = true;
-        }
-        if(within) okCount++;
-      }
-      const score = (totalRules>0) ? okCount/totalRules : 0;
-      const pass  = score >= (PER_FRAME_THRESH[sport] ?? 0.6);
-      return {pass, score, okCount, totalRules, rules};
-    }
-
-    function angleVelocity(prev, curr, dt){
-      const out = {};
-      const keys = new Set([...Object.keys(prev||{}), ...Object.keys(curr||{})]);
-      keys.forEach(k=>{
-        const a = (curr&&typeof curr[k]==='number')?curr[k]:null;
-        const b = (prev&&typeof prev[k]==='number')?prev[k]:null;
-        out[k] = (a!=null && b!=null && dt>0) ? (a - b)/dt : 0;
-      });
-      return out;
-    }
-
-    function computeROM(series){
-      const keys = new Set(); series.forEach(a=>Object.keys(a).forEach(k=>keys.add(k)));
-      const rom = {};
-      keys.forEach(k=>{
-        let min=+Infinity, max=-Infinity;
-        series.forEach(a=>{
-          const v=a[k]; if(typeof v==='number'){ if(v<min)min=v; if(v>max)max=v; }
-        });
-        if(min<+Infinity && max>-Infinity) rom[k]={min,max,range:max-min};
-      });
-      return rom;
-    }
-
-    function summarizeFeatures(){
-      const keys = new Set(); featAngles.forEach(a=>Object.keys(a).forEach(k=>keys.add(k)));
-      const sum={}, sumSq={}, n=featAngles.length;
-      keys.forEach(k=>{sum[k]=0; sumSq[k]=0;});
-      featAngles.forEach(a=>{
-        keys.forEach(k=>{
-          const v = typeof a[k]==='number' ? a[k] : 0;
-          sum[k]+=v; sumSq[k]+=v*v;
-        });
-      });
-      const mean={}, std={};
-      keys.forEach(k=>{
-        mean[k]= n? (sum[k]/n):0;
-        std[k]= n? Math.sqrt(Math.max(0,sumSq[k]/n - mean[k]*mean[k])):0;
-      });
-      const rom = computeROM(featAngles);
-
-      const vKeys = new Set(); featVel.forEach(a=>Object.keys(a).forEach(k=>vKeys.add(k)));
-      const vsum={}, vsumSq={}; vKeys.forEach(k=>{vsum[k]=0; vsumSq[k]=0;});
-      const vn = featVel.length;
-      featVel.forEach(a=>{
-        vKeys.forEach(k=>{
-          const v = typeof a[k]==='number' ? a[k] : 0;
-          vsum[k]+=v; vsumSq[k]+=v*v;
-        });
-      });
-      const vmean={}, vstd={};
-      vKeys.forEach(k=>{
-        vmean[k]= vn? (vsum[k]/vn):0;
-        vstd[k]= vn? Math.sqrt(Math.max(0,vsumSq[k]/vn - vmean[k]*vmean[k])):0;
-      });
-
-      return {mean,std,rom,vmean,vstd, nFrames:n, duration: featTime.length? featTime[featTime.length-1]-featTime[0]:0};
-    }
-
-    async function analyzeVideoUsingMediaPipe(videoFile, sport, force=false){
-      const id = videoFile.id;
-      if(results[id] && !force) return results[id];
-
-      if(!ensureMpPose()){ 
-        showModal('Lỗi: Không thể khởi tạo thư viện MediaPipe Pose.');
-        return null; 
-      }
-
-      featTime=[]; featAngles=[]; featVel=[]; featROM={};
-      viewCounts = {front:0,left:0,right:0,back:0};
-
-      player.src = videoFile.url;
-      player.muted = true;
-      player.crossOrigin = 'anonymous';
-      await new Promise(r => {
-        if(player.readyState >= 1) return r();
-        const onMeta = ()=>{ player.removeEventListener('loadedmetadata', onMeta); r(); };
-        player.addEventListener('loadedmetadata', onMeta);
-        setTimeout(()=>{ try{ player.removeEventListener('loadedmetadata', onMeta); }catch(e){}; r(); }, 1500);
-      });
-      player.pause();
-
-      const totalToSample = 60;
-      const duration = player.duration || (videoFile.file && videoFile.file.duration) || 3;
-      const stepSec = Math.max(0.08, duration / totalToSample);
-
-      let sampled = 0, validFrames = 0;
-      let prevAngles = null;
-
-      const prevCb = mpPoseDrawingCallback || (r=>{ if(r && r.poseLandmarks) lastPoseLandmarks = r.poseLandmarks; });
-      setProgress(0, '0%');
-      
-      const chosenView = viewSel.value;
-
-      for(let i=0;i<totalToSample;i++){
-        const t = Math.min(i*stepSec, Math.max(0, (player.duration || duration) - 0.05));
-        await new Promise((resolve) => {
-          const tmpCb = (resPose) => {
-            sampled++;
-            let passFrame = false;
-            if(resPose && resPose.poseLandmarks && resPose.poseLandmarks.length){
-              const w = player.videoWidth || overlay.width || 640;
-              const h = player.videoHeight || overlay.height || 360;
-              const lm = resPose.poseLandmarks.map(l=>({x: l.x * w, y: l.y * h}));
-
-              const autoView = detectView2D(lm);
-              if(autoView && viewCounts[autoView]!=null) viewCounts[autoView]++;
-              const useView = (chosenView==='auto') ? autoView : chosenView;
-
-              const nose = lm[0] || {x:w/2,y:h/2};
-              const nearCenter = Math.abs(nose.x - w/2) < w*0.60;
-              if(nearCenter){
-                const ang = extractAngles(lm);
-                const chk = checkAgainstStandard(ang, sport, useView);
-                passFrame = chk.pass;
-                overlayPass = passFrame ? 'pass' : 'fail';
-
-                const dt = featTime.length? (t - featTime[featTime.length-1]) : stepSec;
-                const vel = angleVelocity(prevAngles||ang, ang, dt);
-                featTime.push(t);
-                featAngles.push(ang);
-                featVel.push(vel);
-                prevAngles = ang;
-              }
-            } else if(lastPoseLandmarks && lastPoseLandmarks.length>0){
-              const w = player.videoWidth || overlay.width || 640;
-              const h = player.videoHeight || overlay.height || 360;
-              const lm = lastPoseLandmarks.map(l=>({x: l.x * w, y: l.y * h}));
-              const autoView = detectView2D(lm);
-              if(autoView && viewCounts[autoView]!=null) viewCounts[autoView]++;
-              const useView = (chosenView==='auto') ? autoView : chosenView;
-              const ang = extractAngles(lm);
-              const chk = checkAgainstStandard(ang, sport, useView);
-              passFrame = chk.pass;
-              overlayPass = passFrame ? 'pass' : 'fail';
-              const dt = featTime.length? (t - featTime[featTime.length-1]) : stepSec;
-              const vel = angleVelocity(prevAngles||ang, ang, dt);
-              featTime.push(t);
-              featAngles.push(ang);
-              featVel.push(vel);
-              prevAngles = ang;
-            }
-
-            if(passFrame) validFrames++;
-            
-            mpPose.onResults(()=>{ if(arguments[0] && arguments[0].poseLandmarks) lastPoseLandmarks = arguments[0].poseLandmarks; });
-            const pct = Math.round(((i+1)/totalToSample)*100);
-            setProgress(pct, pct+'%');
-            setTimeout(resolve, 8);
-          };
-
-          mpPose.onResults(tmpCb);
-
-          const onSeeked = async () => {
-            player.removeEventListener('seeked', onSeeked);
-            try{ await mpPose.send({image: player}); }catch(e){}
-          };
-          player.addEventListener('seeked', onSeeked);
-          try{ player.currentTime = t; } catch(e){ player.removeEventListener('seeked', onSeeked); mpPose.onResults(prevCb); resolve(); }
-          setTimeout(()=>{ try{ mpPose.onResults(prevCb); }catch(e){}; resolve(); }, 3000);
-        });
-      }
-
-      mpPose.onResults(prevCb);
-
-      const total = Math.max(sampled,1);
-      const ratioPassFrames = validFrames / total;
-      if(ratioPassFrames < 0.25){
-        setProgress(100, 'Xong');
-        showModal('Không chấp nhận video này — có thể không phải video thuộc môn thể thao đã chọn.');
-        return null;
-      }
-
-      let decidedView = viewSel.value;
-      if(decidedView==='auto'){
-        decidedView = Object.entries(viewCounts).sort((a,b)=>b[1]-a[1])[0]?.[0] || 'front';
-      }
-
-      const summary = summarizeFeatures();
-      featROM = summary.rom;
-
-      const tile = Math.round(ratioPassFrames * 100);
-      const sai  = Math.max(0, Math.round(total - validFrames));
-      const dung = Math.max(0, Math.round(validFrames));
-      const extra = deterministicClassification(tile, sport);
-
-      const resultObj = { id: videoFile.id, name: videoFile.name, sport,
-        sai, dung, tile, view: decidedView,
-        khungChuan: getRulesByView(sport, decidedView),
-        features: summary, ...extra };
-
-      results[videoFile.id] = resultObj; saveResults();
-      setProgress(100, 'Xong');
-      return resultObj;
-    }
-
-    async function openVideo(v){
-      currentVideo = v;
-      player.src = v.url;
-      player.muted = false;
-      player.crossOrigin = 'anonymous';
-      player.playsInline = true;
-
-      await new Promise(r=>{ if(player.readyState>=1) return r(); const onmeta=()=>{player.removeEventListener('loadedmetadata',onmeta); r();}; player.addEventListener('loadedmetadata',onmeta); setTimeout(r,1000); });
-      player.pause();
-
-      function resizeOverlay(){
-        const rect = player.getBoundingClientRect();
-        const dpr = window.devicePixelRatio || 1;
-        overlay.style.width = rect.width + 'px';
-        overlay.style.height = rect.height + 'px';
-        overlay.style.left = '0px';
-        overlay.style.top = '0px';
-        const w = Math.max(1, player.videoWidth || rect.width || 640);
-        const h = Math.max(1, player.videoHeight || rect.height || 360);
-        overlay.width = Math.round(w * dpr);
-        overlay.height = Math.round(h * dpr);
-        const ctx = overlay.getContext('2d');
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      }
-      resizeOverlay();
-      window.addEventListener('resize', resizeOverlay);
-
-      showAnalysisPanel(results[v.id]); renderChart();
-      ensureMpPose();
-
-      const ctx = overlay.getContext('2d');
-
-      mpPoseDrawingCallback = (resultsPose)=>{
-        if(resultsPose && resultsPose.poseLandmarks && resultsPose.poseLandmarks.length) lastPoseLandmarks = resultsPose.poseLandmarks;
-        const displayW = player.videoWidth || overlay.width || 640;
-        const displayH = player.videoHeight || overlay.height || 360;
-        ctx.clearRect(0,0,overlay.width,overlay.height);
-        if(lastPoseLandmarks && lastPoseLandmarks.length){
-          const landmarks = lastPoseLandmarks.map(l => ({x: l.x * displayW, y: l.y * displayH}));
-          const conns = (typeof POSE_CONNECTIONS !== 'undefined') ? POSE_CONNECTIONS : (Pose && Pose.POSE_CONNECTIONS ? Pose.POSE_CONNECTIONS : null);
-
-          if(currentVideo){
-            const ang = extractAngles(landmarks);
-            const spt = currentVideo.sportTag || sportSel.value;
-            const vUse = (viewSel.value==='auto') ? detectView2D(landmarks) : viewSel.value;
-            const chk = checkAgainstStandard(ang, spt, vUse);
-            overlayPass = chk.pass ? 'pass' : 'fail';
-            liveBadge.style.display = 'block';
-            liveBadge.textContent = (vUse?`[${vUse}] `:'') + (chk.pass ? '✅ Đạt' : '⚠️ Lỗi');
-          } else {
-            liveBadge.style.display = 'none';
-          }
-
-          if(conns){
-            ctx.strokeStyle = overlayPass === 'pass' ? 'var(--accent-green)' : 'var(--accent-red)';
-            ctx.lineWidth = 2.5;
-            conns.forEach(conn=>{
-              const a = landmarks[conn[0]]; const b = landmarks[conn[1]];
-              if(a && b){ ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke(); }
+    async function loadVideosFromDB() {
+        try {
+            const db = await openDB();
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(STORE_NAME, 'readonly');
+                const store = tx.objectStore(STORE_NAME);
+                const request = store.getAll();
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = (event) => reject(event.target.error);
             });
-          }
-          landmarks.forEach(p=>{
-            ctx.fillStyle = overlayPass === 'pass' ? '#14b8a6' : '#f43f5e';
-            ctx.beginPath(); ctx.arc(p.x, p.y, 4, 0, Math.PI*2); ctx.fill();
-          });
+        } catch (error) {
+            console.error("Không thể tải video từ IndexedDB:", error);
+            return [];
         }
-      };
-
-      mpPose.onResults(mpPoseDrawingCallback);
-
-      let rafId = null; let lastSend = 0; const minInterval = 45;
-      async function frameLoop(){
-        if(player.paused || player.ended){ if(rafId) cancelAnimationFrame(rafId); return; }
-        const now = performance.now();
-        if(now - lastSend > minInterval){
-          try{ await mpPose.send({image: player}); }catch(e){}
-          lastSend = now;
-        }
-        rafId = requestAnimationFrame(frameLoop);
-      }
-
-      player.onplay = ()=>{ frameLoop(); };
-      player.onended = ()=>{ if(rafId) cancelAnimationFrame(rafId); liveBadge.style.display='none'; };
-
-      showAnalysisPanel(results[v.id]);
     }
 
-    async function runAnalysisIfNeeded(v, force=false){
-      analysisPanel.innerHTML = '<div class="small">Đang phân tích... Vui lòng chờ.</div>';
-      setProgress(0, '0%');
-      const res = await analyzeVideoUsingMediaPipe(v, v.sportTag||sportSel.value, force);
-      if(res){
-        showAnalysisPanel(res); renderChart();
-        renderDashboard(res);
-        showModal('Phân tích hoàn tất và đã lưu.');
-      } else {
-        analysisPanel.innerHTML = '<div class="small">Phân tích thất bại. Video có thể không phù hợp.</div>';
-      }
+    async function clearVideosFromDB() {
+        const db = await openDB();
+        const tx = db.transaction(STORE_NAME, 'readwrite');
+        const store = tx.objectStore(STORE_NAME);
+        store.clear();
+        return tx.complete;
     }
 
-    exportBtn.addEventListener('click', ()=>{
-      if(!currentVideo || !results[currentVideo.id]){ showModal('Chưa có kết quả để xuất.'); return; }
-      const data = results[currentVideo.id];
-      const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = `${data.name.replace(/\.[^/.]+$/,'')}_report.json`;
-      document.body.appendChild(a); a.click(); a.remove();
-      setTimeout(()=>URL.revokeObjectURL(url), 800);
-    });
+    // ==== Data and Constants ====
+    const DU_LIEU={"xuatphat":{loi:["Gập gối chưa đúng góc","Tay chống chưa vững","Thân người hơi nghiêng về trước"],chanthuong:["Cổ tay","Gối","Vai"],goiy:["Tập giữ thân người thẳng khi xuất phát","Rèn phản xạ bật người bằng gối và mũi chân","Bài tập: Xuất phát tại chỗ – giữ thăng bằng 5 giây"]},"nhaycao":{loi:["Bước chạy đà chưa đủ tốc độ","Gối không nâng cao khi bật nhảy","Không kiểm soát độ cong của lưng khi qua xà"],chanthuong:["Gối","Cột sống thắt lưng"],goiy:["Tập chạy đà kết hợp nhảy 1 chân","Tăng dẻo dai cột sống qua bài kéo giãn","Bài tập: Bật nhảy nâng cao gối tại chỗ"]},"nemta":{loi:["Hạ thấp vai khi xoay người","Chưa tối ưu lực đẩy từ chân"],chanthuong:["Cổ tay","Vai","Lưng"],goiy:["Tăng sức mạnh cơ bụng xoay","Tập kỹ thuật phối hợp chân-trục-đẩy tạ","Bài tập: Xoay người chậm và giữ vai cố định"]}};
+    const KHUNG_CHUAN={"xuatphat":[{name:"Gối (trái hoặc phải)",joints:["kneeL","kneeR"],want:100,tol:20,anySide:true},{name:"Hông (trái hoặc phải)",joints:["hipL","hipR"],want:120,tol:25,anySide:true},{name:"Thân (nghiêng so với ngang)",joints:["torsoIncline"],want:45,tol:15},{name:"Khuỷu tay (trụ)",joints:["elbowL","elbowR"],want:90,tol:25,anySide:true}],"nhaycao":[{name:"Gối chân giậm (L/R)",joints:["kneeL","kneeR"],want:150,tol:20,anySide:true},{name:"Hông mở (L/R)",joints:["hipL","hipR"],want:160,tol:20,anySide:true},{name:"Thân (nghiêng so với ngang)",joints:["torsoIncline"],want:20,tol:15},{name:"Vai (góc cánh tay)",joints:["shoulderL","shoulderR"],want:160,tol:25,anySide:true}],"nemta":[{name:"Gối (L/R)",joints:["kneeL","kneeR"],want:100,tol:25,anySide:true},{name:"Hông (L/R)",joints:["hipL","hipR"],want:120,tol:25,anySide:true},{name:"Khuỷu tay (L/R)",joints:["elbowL","elbowR"],want:100,tol:25,anySide:true},{name:"Vai (L/R)",joints:["shoulderL","shoulderR"],want:90,tol:25,anySide:true},{name:"Thân (nghiêng so với ngang)",joints:["torsoIncline"],want:30,tol:15}]};
+    const KHUNG_CHUAN_GOC={"xuatphat":{front:KHUNG_CHUAN.xuatphat,back:KHUNG_CHUAN.xuatphat,left:[{name:"Gối (bên gần camera)",joints:["kneeL","kneeR"],want:100,tol:22,anySide:true},{name:"Hông (bên gần camera)",joints:["hipL","hipR"],want:120,tol:28,anySide:true},{name:"Thân (nghiêng ngang)",joints:["torsoIncline"],want:45,tol:18}],right:[{name:"Gối (bên gần camera)",joints:["kneeL","kneeR"],want:100,tol:22,anySide:true},{name:"Hông (bên gần camera)",joints:["hipL","hipR"],want:120,tol:28,anySide:true},{name:"Thân (nghiêng ngang)",joints:["torsoIncline"],want:45,tol:18}]},"nhaycao":{front:KHUNG_CHUAN.nhaycao,back:KHUNG_CHUAN.nhaycao,left:[{name:"Gối giậm (bên gần camera)",joints:["kneeL","kneeR"],want:150,tol:22,anySide:true},{name:"Hông mở",joints:["hipL","hipR"],want:160,tol:22,anySide:true},{name:"Thân (nghiêng ngang)",joints:["torsoIncline"],want:20,tol:18}],right:[{name:"Gối giậm (bên gần camera)",joints:["kneeL","kneeR"],want:150,tol:22,anySide:true},{name:"Hông mở",joints:["hipL","hipR"],want:160,tol:22,anySide:true},{name:"Thân (nghiêng ngang)",joints:["torsoIncline"],want:20,tol:18}]},"nemta":{front:KHUNG_CHUAN.nemta,back:KHUNG_CHUAN.nemta,left:[{name:"Hông (bên gần camera)",joints:["hipL","hipR"],want:120,tol:28,anySide:true},{name:"Vai (bên gần camera)",joints:["shoulderL","shoulderR"],want:90,tol:28,anySide:true},{name:"Khuỷu tay (bên gần camera)",joints:["elbowL","elbowR"],want:100,tol:28,anySide:true},{name:"Thân (nghiêng ngang)",joints:["torsoIncline"],want:30,tol:18}],right:[{name:"Hông (bên gần camera)",joints:["hipL","hipR"],want:120,tol:28,anySide:true},{name:"Vai (bên gần camera)",joints:["shoulderL","shoulderR"],want:90,tol:28,anySide:true},{name:"Khuỷu tay (bên gần camera)",joints:["elbowL","elbowR"],want:100,tol:28,anySide:true},{name:"Thân (nghiêng ngang)",joints:["torsoIncline"],want:30,tol:18}]}};
+    const PER_FRAME_THRESH={xuatphat:0.6,nhaycao:0.5,nemta:0.6};
 
-    toggleDashboardBtn.addEventListener('click', ()=>{
-      dashCard.style.display = dashCard.style.display==='none' ? 'block' : 'none';
-      if(dashCard.style.display==='block' && currentVideo && results[currentVideo.id]){
-        renderDashboard(results[currentVideo.id]);
-      }
-    });
+    // DOM Elements
+    const sportSel=document.getElementById("sport"),viewSel=document.getElementById("viewSel"),videoUpload=document.getElementById("videoUpload"),imgUpload=document.getElementById("imgUpload"),videoListEl=document.getElementById("videoList"),player=document.getElementById("player"),overlay=document.getElementById("overlay"),analyzeBtn=document.getElementById("analyzeBtn"),forceAnalyzeBtn=document.getElementById("forceAnalyzeBtn"),analysisPanel=document.getElementById("analysisPanel"),chartCanvas=document.getElementById("chartCanvas"),gallery=document.getElementById("gallery"),clearStorageBtn=document.getElementById("clearStorage"),progressRow=document.getElementById("progressRow"),progressBar=document.getElementById("progressBar"),progressText=document.getElementById("progressText"),liveBadge=document.getElementById("liveBadge"),exportBtn=document.getElementById("exportReportBtn"),dashCard=document.getElementById("dashboardCard"),toggleDashboardBtn=document.getElementById("toggleDashboardBtn"),angleChartEl=document.getElementById("angleChart"),velChartEl=document.getElementById("velChart"),romChartEl=document.getElementById("romChart"),aiAlertsEl=document.getElementById("aiAlerts"),aiStatusPill=document.getElementById("aiStatusPill"),exportFeaturesBtn=document.getElementById("exportFeaturesBtn"),exportFeaturesCsvBtn=document.getElementById("exportFeaturesCsvBtn"),runModelBtn=document.getElementById("runModelBtn");
 
-    function renderDashboard(res){
-      const t = featTime;
-      const pick = (arr, key)=>arr.map(a=> (typeof a[key]==='number')?a[key]:0 );
+    // State Variables
+    let uploadedVideos = [];
+    let results = JSON.parse(localStorage.getItem('thethaott_results') || '{}');
+    let currentVideo = null, mpPose = null, mpPoseDrawingCallback = null, chart = null, lastPoseLandmarks = null, overlayPass = null, aiModel = null, aiAvailable = false;
+    let featTime = [], featAngles = [], featVel = [], featROM = {}, viewCounts = { front: 0, left: 0, right: 0, back: 0 };
 
-      const knee = pick(featAngles,'kneeL').map((v,i)=> Math.max(v, pick(featAngles,'kneeR')[i]||v));
-      const hip  = pick(featAngles,'hipL').map((v,i)=> Math.max(v, pick(featAngles,'hipR')[i]||v));
-      const torso= pick(featAngles,'torsoIncline');
-      const velKnee = pick(featVel,'kneeL').map((v,i)=> Math.abs(Math.max(v, pick(featVel,'kneeR')[i]||v)));
-      const velHip  = pick(featVel,'hipL').map((v,i)=> Math.abs(Math.max(v, pick(featVel,'hipR')[i]||v)));
+    // ==== Core Application Logic ====
+    function saveResults(){localStorage.setItem("thethaott_results",JSON.stringify(results));renderChart()}
+    function uidFromName(name){let h=2166136261;for(let i=0;i<name.length;i++){h^=name.charCodeAt(i);h+=(h<<1)+(h<<4)+(h<<7)+(h<<8)+(h<<24)}return"v_"+(h>>>0)}
+    function setProgress(pct,text){progressRow.style.display="flex";progressBar.style.width=Math.max(0,Math.min(100,pct))+"%";progressText.textContent=text??Math.round(pct)+"%";if(pct>=100){setTimeout(()=>{progressRow.style.display="none"},400)}}
+    function ensureMpPose(){if(typeof Pose==="undefined"){console.error("MediaPipe Pose library not loaded.");return null}if(!mpPose){mpPose=new Pose({locateFile:f=>`https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5/${f}`});mpPose.setOptions({modelComplexity:1,smoothLandmarks:true,enableSegmentation:false,minDetectionConfidence:.45,minTrackingConfidence:.45});mpPose.onResults(resultsPose=>{if(resultsPose&&resultsPose.poseLandmarks&&resultsPose.poseLandmarks.length)lastPoseLandmarks=resultsPose.poseLandmarks})}return mpPose}
+    async function tryLoadAIModel(){try{aiStatusPill.textContent="AI: đang tải...";aiModel=await tf.loadLayersModel("model/model.json");aiAvailable=true;aiStatusPill.textContent="AI: sẵn sàng"}catch(e){aiModel=null;aiAvailable=false;aiStatusPill.textContent="AI: chưa có model"}}
+    function renderVideoList(){const sport=sportSel.value;videoListEl.innerHTML="";const filtered=uploadedVideos.filter(v=>{if(v.sportTag===sport)return true;const ln=(v.name||"").toLowerCase();return ln.includes(sport)||ln.includes(sport==="xuatphat"?"xuat":sport==="nhaycao"?"nhay":"nem")});if(filtered.length===0){videoListEl.innerHTML='<div class="small">Chưa có video cho môn này. Hãy tải lên.</div>';return}filtered.forEach(v=>{const div=document.createElement("div");div.className="video-item";div.innerHTML=`<div><strong>${v.name}</strong><div class="small">${v.sportTag||""}</div></div>`;const btnWrap=document.createElement("div");const openBtn=document.createElement("button");openBtn.textContent="Mở";openBtn.className="btn";openBtn.onclick=()=>{openVideo(v)};const analyze=document.createElement("button");analyze.textContent="Phân tích";analyze.className="btn btn-primary";analyze.onclick=()=>{openVideo(v);setTimeout(()=>runAnalysisIfNeeded(v,false),200)};btnWrap.appendChild(openBtn);btnWrap.appendChild(analyze);div.appendChild(btnWrap);videoListEl.appendChild(div)})}
+    function renderGallery(){gallery.innerHTML="";const imgs=JSON.parse(localStorage.getItem("thethaott_gallery")||"[]");imgs.forEach((src,idx)=>{const wrap=document.createElement("div");wrap.className="gallery-item";const img=document.createElement("img");img.src=src;const del=document.createElement("button");del.className="del-btn";del.textContent="✕";del.title="Xóa ảnh này";del.onclick=()=>{showModal("Bạn có chắc muốn xóa ảnh này?",true,()=>removeGalleryImage(idx))};wrap.appendChild(img);wrap.appendChild(del);gallery.appendChild(wrap)})}
+    function removeGalleryImage(index){const imgs=JSON.parse(localStorage.getItem("thethaott_gallery")||"[]");if(index<0||index>=imgs.length)return;imgs.splice(index,1);localStorage.setItem("thethaott_gallery",JSON.stringify(imgs));renderGallery()}
+    function renderChart(){const sport=sportSel.value;const keys=Object.keys(results).filter(k=>results[k].sport===sport);const labels=keys.map(k=>results[k].name);const data=keys.map(k=>results[k].tile);if(chart)chart.destroy();chart=new Chart(chartCanvas.getContext("2d"),{type:"bar",data:{labels,datasets:[{label:"Tỉ lệ đúng (%)",data,backgroundColor:"rgba(0, 150, 136, 0.7)",borderColor:"rgba(0, 150, 136, 1)",borderWidth:1,borderRadius:4}]},options:{indexAxis:"y",scales:{x:{min:0,max:110,ticks:{color:"var(--text-muted)"},grid:{color:"var(--border-color)"}},y:{ticks:{color:"var(--text-dark)"},grid:{display:false}}},plugins:{legend:{display:false}}}})}
+    function showAnalysisPanel(res){if(!res){analysisPanel.innerHTML="Chưa có phân tích.";return}let html=`<strong>${res.name}</strong><br>`;html+=`Góc quay áp dụng: <em style="color:var(--primary-blue);">${(res.view||"auto").toUpperCase()}</em><br>`;html+=`Tỉ lệ đúng: <strong>${res.tile}%</strong> (Đúng: ${res.dung} | Sai: ${res.sai})<br>`;html+=`Xếp loại: <strong>${res.xeploai}</strong> – ${res.ketluan}<br>`;if(res.tile<100){html+='<hr><div><strong>❌ Lỗi tư thế:</strong><ul>';res.loi.forEach(l=>html+=`<li>${l}</li>`);html+="</ul></div>";html+='<div><strong>⚠️ Nguy cơ chấn thương:</strong><ul>';res.chanthuong.forEach(c=>html+=`<li>${c}</li>`);html+="</ul></div>";html+='<div><strong>💡 Gợi ý:</strong><ul>';res.goiy.forEach(g=>html+=`<li>${g}</li>`);html+="</ul></div>"}html+=`<hr><div><strong>💬 Động viên:</strong> ${res.dongvien}</div>`;if(res.khungChuan){html+='<hr><div><strong>📏 Khung xương chuẩn đã áp dụng:</strong><ul>';res.khungChuan.forEach(rule=>{const target=`${rule.want}° ± ${rule.tol}°`;const jointsText=rule.anySide?`${rule.name} (bên bất kỳ)`:rule.name;html+=`<li>${jointsText}: ${target}</li>`});html+="</ul></div>"}analysisPanel.innerHTML=html}
+    function deterministicClassification(tile,sport){const bo=DU_LIEU[sport];let loi,chanthuong,goiy,xeploai,dongvien,ketluan;if(tile===100){loi=[];chanthuong=[];goiy=[];xeploai="HOÀN HẢO";dongvien="🌟 Xuất sắc! Không phát hiện lỗi nào.";ketluan="Giữ vững phong độ"}else if(tile>=90){loi=bo.loi.slice(0,1);chanthuong=bo.chanthuong.slice(0,1);goiy=bo.goiy.slice(0,1);xeploai="TỐT";dongvien="🔥 Rất tốt! Hãy tiếp tục duy trì.";ketluan="Giữ vững phong độ"}else if(tile>=70){loi=bo.loi.slice(0,2);chanthuong=bo.chanthuong.slice(0,2);goiy=bo.goiy.slice(0,2);xeploai="KHÁ";dongvien="👍 Khá tốt, hãy luyện thêm để hoàn thiện.";ketluan="Cần cải thiện vài điểm"}else{loi=bo.loi;chanthuong=bo.chanthuong;goiy=bo.goiy;xeploai="TRUNG BÌNH";dongvien="⚠️ Cần cố gắng hơn! Tập trung vào các lỗi thường gặp.";ketluan="Tập trung luyện thêm"}return{loi,chanthuong,goiy,xeploai,dongvien,ketluan}}
+    function degBetween(a,b,c){const abx=a.x-b.x,aby=a.y-b.y;const cbx=c.x-b.x,cby=c.y-b.y;const dot=abx*cbx+aby*cby;const mag=Math.sqrt((abx*abx+aby*aby)*(cbx*cbx+cby*cby));if(!mag)return 0;let cos=dot/mag;cos=Math.max(-1,Math.min(1,cos));return Math.acos(cos)*180/Math.PI}
+    function torsoInclineDeg(lm){const lShoulder=lm[11],rShoulder=lm[12],lHip=lm[23],rHip=lm[24];if(!lShoulder||!rShoulder||!lHip||!rHip)return 0;const s={x:(lShoulder.x+rShoulder.x)/2,y:(lShoulder.y+rShoulder.y)/2};const h={x:(lHip.x+rHip.x)/2,y:(lHip.y+rHip.y)/2};const dx=s.x-h.x,dy=s.y-h.y;const ang=Math.atan2(Math.abs(dy),Math.abs(dx))*180/Math.PI;return ang}
+    function extractAngles(lm){const ang={};if(lm[23]&&lm[25]&&lm[27])ang.kneeL=degBetween(lm[23],lm[25],lm[27]);if(lm[24]&&lm[26]&&lm[28])ang.kneeR=degBetween(lm[24],lm[26],lm[28]);if(lm[11]&&lm[23]&&lm[25])ang.hipL=degBetween(lm[11],lm[23],lm[25]);if(lm[12]&&lm[24]&&lm[26])ang.hipR=degBetween(lm[12],lm[24],lm[26]);if(lm[11]&&lm[13]&&lm[15])ang.elbowL=degBetween(lm[11],lm[13],lm[15]);if(lm[12]&&lm[14]&&lm[16])ang.elbowR=degBetween(lm[12],lm[14],lm[16]);if(lm[13]&&lm[11]&&lm[23])ang.shoulderL=degBetween(lm[13],lm[11],lm[23]);if(lm[14]&&lm[12]&&lm[24])ang.shoulderR=degBetween(lm[14],lm[12],lm[24]);ang.torsoIncline=torsoInclineDeg(lm);return ang}
+    function detectView2D(lm){const lS=lm[11],rS=lm[12],lH=lm[23],rH=lm[24];if(!(lS&&rS&&lH&&rH))return"front";const sMid={x:(lS.x+rS.x)/2,y:(lS.y+rS.y)/2};const hMid={x:(lH.x+rH.x)/2,y:(lH.y+rH.y)/2};const torso=Math.hypot(sMid.x-hMid.x,sMid.y-hMid.y);const shoulderW=Math.abs(rS.x-lS.x);const ratio=shoulderW/(torso||1);if(ratio<.55){return rS.x>lS.x?"right":"left"}return"front"}
+    function getRulesByView(sport,view){const g=KHUNG_CHUAN_GOC[sport];if(!g)return KHUNG_CHUAN[sport]||[];return g[view]||KHUNG_CHUAN[sport]||[]}
+    function checkAgainstStandard(angles,sport,view){const rules=getRulesByView(sport,view);let okCount=0,totalRules=rules.length;for(const r of rules){let within=false;if(r.anySide){for(const key of r.joints){const v=angles[key];if(typeof v==="number"&&Math.abs(v-r.want)<=r.tol){within=true;break}}}else{const key=r.joints[0];const v=angles[key];if(typeof v==="number"&&Math.abs(v-r.want)<=r.tol)within=true}if(within)okCount++}const score=totalRules>0?okCount/totalRules:0;const pass=score>=(PER_FRAME_THRESH[sport]??.6);return{pass,score,okCount,totalRules,rules}}
+    function angleVelocity(prev,curr,dt){const out={};const keys=new Set([...Object.keys(prev||{}),...Object.keys(curr||{})]);keys.forEach(k=>{const a=curr&&typeof curr[k]==="number"?curr[k]:null;const b=prev&&typeof prev[k]==="number"?prev[k]:null;out[k]=a!=null&&b!=null&&dt>0?(a-b)/dt:0});return out}
+    function computeROM(series){const keys=new Set;series.forEach(a=>Object.keys(a).forEach(k=>keys.add(k)));const rom={};keys.forEach(k=>{let min=Infinity,max=-Infinity;series.forEach(a=>{const v=a[k];if(typeof v==="number"){if(v<min)min=v;if(v>max)max=v}});if(min<Infinity&&max>-Infinity)rom[k]={min,max,range:max-min}});return rom}
+    function summarizeFeatures(){const keys=new Set;featAngles.forEach(a=>Object.keys(a).forEach(k=>keys.add(k)));const sum={},sumSq={},n=featAngles.length;keys.forEach(k=>{sum[k]=0;sumSq[k]=0});featAngles.forEach(a=>{keys.forEach(k=>{const v=typeof a[k]==="number"?a[k]:0;sum[k]+=v;sumSq[k]+=v*v})});const mean={},std={};keys.forEach(k=>{mean[k]=n?sum[k]/n:0;std[k]=n?Math.sqrt(Math.max(0,sumSq[k]/n-mean[k]*mean[k])):0});const rom=computeROM(featAngles);const vKeys=new Set;featVel.forEach(a=>Object.keys(a).forEach(k=>vKeys.add(k)));const vsum={},vsumSq={};vKeys.forEach(k=>{vsum[k]=0;vsumSq[k]=0});const vn=featVel.length;featVel.forEach(a=>{vKeys.forEach(k=>{const v=typeof a[k]==="number"?a[k]:0;vsum[k]+=v;vsumSq[k]+=v*v})});const vmean={},vstd={};vKeys.forEach(k=>{vmean[k]=vn?vsum[k]/vn:0;vstd[k]=vn?Math.sqrt(Math.max(0,vsumSq[k]/vn-vmean[k]*vmean[k])):0});return{mean,std,rom,vmean,vstd,nFrames:n,duration:featTime.length?featTime[featTime.length-1]-featTime[0]:0}}
+    async function analyzeVideoUsingMediaPipe(videoFile,sport,force=false){const id=videoFile.id;if(results[id]&&!force)return results[id];if(!ensureMpPose()){showModal("Lỗi: Không thể khởi tạo thư viện MediaPipe Pose.");return null}featTime=[];featAngles=[];featVel=[];featROM={};viewCounts={front:0,left:0,right:0,back:0};player.src=videoFile.url;player.muted=true;player.crossOrigin="anonymous";await new Promise(r=>{if(player.readyState>=1)return r;const onMeta=()=>{player.removeEventListener("loadedmetadata",onMeta);r()};player.addEventListener("loadedmetadata",onMeta);setTimeout(()=>{try{player.removeEventListener("loadedmetadata",onMeta)}catch(e){}r()},1500)});player.pause();const totalToSample=60;const duration=player.duration||videoFile.file&&videoFile.file.duration||3;const stepSec=Math.max(.08,duration/totalToSample);let sampled=0,validFrames=0;let prevAngles=null;const prevCb=mpPoseDrawingCallback||(r=>{if(r&&r.poseLandmarks)lastPoseLandmarks=r.poseLandmarks});setProgress(0,"0%");const chosenView=viewSel.value;for(let i=0;i<totalToSample;i++){const t=Math.min(i*stepSec,Math.max(0,(player.duration||duration)-.05));await new Promise(resolve=>{const tmpCb=resPose=>{sampled++;let passFrame=false;if(resPose&&resPose.poseLandmarks&&resPose.poseLandmarks.length){const w=player.videoWidth||overlay.width||640;const h=player.videoHeight||overlay.height||360;const lm=resPose.poseLandmarks.map(l=>({x:l.x*w,y:l.y*h}));const autoView=detectView2D(lm);if(autoView&&viewCounts[autoView]!=null)viewCounts[autoView]++;const useView=chosenView==="auto"?autoView:chosenView;const nose=lm[0]||{x:w/2,y:h/2};const nearCenter=Math.abs(nose.x-w/2)<w*.6;if(nearCenter){const ang=extractAngles(lm);const chk=checkAgainstStandard(ang,sport,useView);passFrame=chk.pass;overlayPass=passFrame?"pass":"fail";const dt=featTime.length?t-featTime[featTime.length-1]:stepSec;const vel=angleVelocity(prevAngles||ang,ang,dt);featTime.push(t);featAngles.push(ang);featVel.push(vel);prevAngles=ang}}else if(lastPoseLandmarks&&lastPoseLandmarks.length>0){const w=player.videoWidth||overlay.width||640;const h=player.videoHeight||overlay.height||360;const lm=lastPoseLandmarks.map(l=>({x:l.x*w,y:l.y*h}));const autoView=detectView2D(lm);if(autoView&&viewCounts[autoView]!=null)viewCounts[autoView]++;const useView=chosenView==="auto"?autoView:chosenView;const ang=extractAngles(lm);const chk=checkAgainstStandard(ang,sport,useView);passFrame=chk.pass;overlayPass=passFrame?"pass":"fail";const dt=featTime.length?t-featTime[featTime.length-1]:stepSec;const vel=angleVelocity(prevAngles||ang,ang,dt);featTime.push(t);featAngles.push(ang);featVel.push(vel);prevAngles=ang}if(passFrame)validFrames++;mpPose.onResults(()=>{if(arguments[0]&&arguments[0].poseLandmarks)lastPoseLandmarks=arguments[0].poseLandmarks});const pct=Math.round((i+1)/totalToSample*100);setProgress(pct,pct+"%");setTimeout(resolve,8)};mpPose.onResults(tmpCb);const onSeeked=async()=>{player.removeEventListener("seeked",onSeeked);try{await mpPose.send({image:player})}catch(e){}};player.addEventListener("seeked",onSeeked);try{player.currentTime=t}catch(e){player.removeEventListener("seeked",onSeeked);mpPose.onResults(prevCb);resolve()}setTimeout(()=>{try{mpPose.onResults(prevCb)}catch(e){}resolve()},3e3)})}mpPose.onResults(prevCb);const total=Math.max(sampled,1);const ratioPassFrames=validFrames/total;if(ratioPassFrames<.25){setProgress(100,"Xong");showModal("Không chấp nhận video này — có thể không phải video thuộc môn thể thao đã chọn.");return null}let decidedView=viewSel.value;if(decidedView==="auto"){decidedView=Object.entries(viewCounts).sort((a,b)=>b[1]-a[1])[0]?.[0]||"front"}const summary=summarizeFeatures();featROM=summary.rom;const tile=Math.round(ratioPassFrames*100);const sai=Math.max(0,Math.round(total-validFrames));const dung=Math.max(0,Math.round(validFrames));const extra=deterministicClassification(tile,sport);const resultObj={id:videoFile.id,name:videoFile.name,sport,sai,dung,tile,view:decidedView,khungChuan:getRulesByView(sport,decidedView),features:summary,...extra};results[videoFile.id]=resultObj;saveResults();setProgress(100,"Xong");return resultObj}
+    async function openVideo(v){currentVideo=v;player.src=v.url;player.muted=false;player.crossOrigin="anonymous";player.playsInline=true;await new Promise(r=>{if(player.readyState>=1)return r;const onmeta=()=>{player.removeEventListener("loadedmetadata",onmeta);r()};player.addEventListener("loadedmetadata",onmeta);setTimeout(r,1e3)});player.pause();function resizeOverlay(){const rect=player.getBoundingClientRect();const dpr=window.devicePixelRatio||1;overlay.style.width=rect.width+"px";overlay.style.height=rect.height+"px";overlay.style.left="0px";overlay.style.top="0px";const w=Math.max(1,player.videoWidth||rect.width||640);const h=Math.max(1,player.videoHeight||rect.height||360);overlay.width=Math.round(w*dpr);overlay.height=Math.round(h*dpr);const ctx=overlay.getContext("2d");ctx.setTransform(dpr,0,0,dpr,0,0)}resizeOverlay();window.addEventListener("resize",resizeOverlay);showAnalysisPanel(results[v.id]);renderChart();ensureMpPose();const ctx=overlay.getContext("2d");mpPoseDrawingCallback=resultsPose=>{if(resultsPose&&resultsPose.poseLandmarks&&resultsPose.poseLandmarks.length)lastPoseLandmarks=resultsPose.poseLandmarks;const displayW=player.videoWidth||overlay.width||640;const displayH=player.videoHeight||overlay.height||360;ctx.clearRect(0,0,overlay.width,overlay.height);if(lastPoseLandmarks&&lastPoseLandmarks.length){const landmarks=lastPoseLandmarks.map(l=>({x:l.x*displayW,y:l.y*displayH}));const conns=typeof POSE_CONNECTIONS!=="undefined"?POSE_CONNECTIONS:Pose&&Pose.POSE_CONNECTIONS?Pose.POSE_CONNECTIONS:null;if(currentVideo){const ang=extractAngles(landmarks);const spt=currentVideo.sportTag||sportSel.value;const vUse=viewSel.value==="auto"?detectView2D(landmarks):viewSel.value;const chk=checkAgainstStandard(ang,spt,vUse);overlayPass=chk.pass?"pass":"fail";liveBadge.style.display="block";liveBadge.textContent=(vUse?`[${vUse}] `:"")+(chk.pass?"✅ Đạt":"⚠️ Lỗi")}else{liveBadge.style.display="none"}if(conns){ctx.strokeStyle=overlayPass==="pass"?"var(--accent-green)":"var(--accent-red)";ctx.lineWidth=2.5;conns.forEach(conn=>{const a=landmarks[conn[0]];const b=landmarks[conn[1]];if(a&&b){ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke()}})}landmarks.forEach(p=>{ctx.fillStyle=overlayPass==="pass"?"#14b8a6":"#f43f5e";ctx.beginPath();ctx.arc(p.x,p.y,4,0,Math.PI*2);ctx.fill()})}};mpPose.onResults(mpPoseDrawingCallback);let rafId=null;let lastSend=0;const minInterval=45;async function frameLoop(){if(player.paused||player.ended){if(rafId)cancelAnimationFrame(rafId);return}const now=performance.now();if(now-lastSend>minInterval){try{await mpPose.send({image:player})}catch(e){}lastSend=now}rafId=requestAnimationFrame(frameLoop)}player.onplay=()=>{frameLoop()};player.onended=()=>{if(rafId)cancelAnimationFrame(rafId);liveBadge.style.display="none"};showAnalysisPanel(results[v.id])}
+    async function runAnalysisIfNeeded(v,force=false){analysisPanel.innerHTML='<div class="small">Đang phân tích... Vui lòng chờ.</div>';setProgress(0,"0%");const res=await analyzeVideoUsingMediaPipe(v,v.sportTag||sportSel.value,force);if(res){showAnalysisPanel(res);renderChart();renderDashboard(res);showModal("Phân tích hoàn tất và đã lưu.")}else{analysisPanel.innerHTML='<div class="small">Phân tích thất bại. Video có thể không phù hợp.</div>'}}
+    function renderDashboard(res){const t=featTime;const pick=(arr,key)=>arr.map(a=>typeof a[key]==="number"?a[key]:0);const knee=pick(featAngles,"kneeL").map((v,i)=>Math.max(v,pick(featAngles,"kneeR")[i]||v));const hip=pick(featAngles,"hipL").map((v,i)=>Math.max(v,pick(featAngles,"hipR")[i]||v));const torso=pick(featAngles,"torsoIncline");const velKnee=pick(featVel,"kneeL").map((v,i)=>Math.abs(Math.max(v,pick(featVel,"kneeR")[i]||v)));const velHip=pick(featVel,"hipL").map((v,i)=>Math.abs(Math.max(v,pick(featVel,"hipR")[i]||v)));if(window._angleChart)window._angleChart.destroy();if(window._velChart)window._velChart.destroy();if(window._romChart)window._romChart.destroy();const chartOptions={responsive:true,maintainAspectRatio:false,interaction:{mode:"index",intersect:false},scales:{x:{title:{display:true,text:"t (s)",color:"var(--text-muted)"},ticks:{color:"var(--text-muted)"},grid:{color:"var(--border-color)"}},y:{title:{display:true,text:"Góc (°)",color:"var(--text-muted)"},ticks:{color:"var(--text-muted)"},grid:{color:"var(--border-color)"}}},plugins:{legend:{labels:{color:"var(--text-dark)"}}}};window._angleChart=new Chart(angleChartEl.getContext("2d"),{type:"line",data:{labels:t,datasets:[{label:"Gối",data:knee,borderColor:"#009688",tension:.1,fill:false},{label:"Hông",data:hip,borderColor:"#6f42c1",tension:.1,fill:false},{label:"Thân",data:torso,borderColor:"#fd7e14",tension:.1,fill:false}]},options:chartOptions});window._velChart=new Chart(velChartEl.getContext("2d"),{type:"line",data:{labels:t,datasets:[{label:"|v| Gối",data:velKnee,borderColor:"#198754",tension:.1,fill:false},{label:"|v| Hông",data:velHip,borderColor:"#dc3545",tension:.1,fill:false}]},options:{...chartOptions,scales:{...chartOptions.scales,y:{...chartOptions.scales.y,title:{display:true,text:"°/s",color:"var(--text-muted)"}}}}});const rom=res.features?.rom||{};const romLabels=Object.keys(rom);const romData=romLabels.map(k=>rom[k].range);window._romChart=new Chart(romChartEl.getContext("2d"),{type:"bar",data:{labels:romLabels,datasets:[{label:"ROM (°)",data:romData,backgroundColor:"rgba(220, 53, 69, 0.7)"}]},options:{...chartOptions,indexAxis:"y",scales:{...chartOptions.scales,x:{ticks:{color:"var(--text-muted)"},grid:{color:"var(--border-color)"}},y:{...chartOptions.scales.y,title:{display:false},ticks:{color:"var(--text-dark)"},grid:{display:false}}}}});aiAlertsEl.innerHTML='<span class="muted">Ấn "Chạy mô hình AI" để dự đoán.</span>'}
+    function heuristicAlerts(summary,sport){const a=[];const rom=summary.rom||{},vmean=summary.vmean||{};const kneeROM=Math.max(rom.kneeL?.range||0,rom.kneeR?.range||0);const hipROM=Math.max(rom.hipL?.range||0,rom.hipR?.range||0);const torsoROM=rom.torsoIncline?.range||0;const kneeV=Math.max(Math.abs(vmean.kneeL||0),Math.abs(vmean.kneeR||0));if(sport==="nhaycao"){if(kneeROM<35)a.push("Biên độ gối thấp (ROM < 35°) — có thể thiếu lực giậm.");if(hipROM<30)a.push("Biên độ hông thấp — hạn chế mở hông khi bật.");if(torsoROM>50)a.push("Thân nghiêng biến thiên lớn — kiểm soát thân chưa ổn.")}if(sport==="xuatphat"){if(kneeV<20)a.push("Vận tốc gối thấp — phản xạ/bật người chưa nhanh.")}if(sport==="nemta"){if(hipROM<25)a.push("Biên độ hông thấp — thiếu xoay thân khi ném.");if(Math.abs(vmean.shoulderR||0)<10&&Math.abs(vmean.shoulderL||0)<10)a.push("Vai vung chậm — lực đẩy tay yếu.")}if(a.length===0)a.push("Không phát hiện cảnh báo rõ ràng.");return a}
 
-      if(window._angleChart) window._angleChart.destroy();
-      if(window._velChart) window._velChart.destroy();
-      if(window._romChart) window._romChart.destroy();
-      
-      const chartOptions = {
-        responsive:true, maintainAspectRatio: false, interaction:{mode:'index', intersect:false},
-        scales:{
-            x:{title:{display:true,text:'t (s)', color: 'var(--text-muted)'}, ticks:{color: 'var(--text-muted)'}, grid:{color: 'var(--border-color)'}}, 
-            y:{title:{display:true,text:'Góc (°)', color: 'var(--text-muted)'}, ticks:{color: 'var(--text-muted)'}, grid:{color: 'var(--border-color)'}}
-        },
-        plugins: { legend: { labels: { color: 'var(--text-dark)' } } }
-      };
+    // ==== Event Listeners ====
+    videoUpload.addEventListener('change', async (e) => {
+        const files = Array.from(e.target.files);
+        let lastSportTag = null;
+        let lastUploadedVideo = null;
 
-      window._angleChart = new Chart(angleChartEl.getContext('2d'), {
-        type:'line',
-        data:{labels:t, datasets:[
-          {label:'Gối', data:knee, borderColor: '#009688', tension: 0.1, fill: false},
-          {label:'Hông', data:hip, borderColor: '#6f42c1', tension: 0.1, fill: false},
-          {label:'Thân', data:torso, borderColor: '#fd7e14', tension: 0.1, fill: false}
-        ]},
-        options: chartOptions
-      });
+        for (const f of files) {
+            const id = uidFromName(f.name + '_' + f.lastModified);
+            let tag = '';
+            const ln = f.name.toLowerCase();
+            if (ln.includes('xuat') || ln.includes('xuatphat')) tag = 'xuatphat';
+            else if (ln.includes('nhay') || ln.includes('nhaycao')) tag = 'nhaycao';
+            else if (ln.includes('nem') || ln.includes('nemta')) tag = 'nemta';
+            if (!tag) tag = sportSel.value || 'xuatphat';
+            
+            lastSportTag = tag;
 
-      window._velChart = new Chart(velChartEl.getContext('2d'), {
-        type:'line',
-        data:{labels:t, datasets:[
-          {label:'|v| Gối', data:velKnee, borderColor:'#198754', tension: 0.1, fill: false},
-          {label:'|v| Hông', data:velHip, borderColor:'#dc3545', tension: 0.1, fill: false}
-        ]},
-        options: {...chartOptions, scales: {...chartOptions.scales, y: {...chartOptions.scales.y, title: {display:true, text:'°/s', color:'var(--text-muted)'}}}}
-      });
+            // We store the file object itself in IndexedDB.
+            const videoData = { id, name: f.name, sportTag: tag, file: f };
+            await saveVideoToDB(videoData);
+            
+            // Create a temporary URL for immediate display
+            const url = URL.createObjectURL(f);
+            lastUploadedVideo = { ...videoData, url };
+            uploadedVideos.push(lastUploadedVideo);
+        };
 
-      const rom = res.features?.rom || {};
-      const romLabels = Object.keys(rom);
-      const romData = romLabels.map(k=>rom[k].range);
-      window._romChart = new Chart(romChartEl.getContext('2d'), {
-        type:'bar',
-        data:{labels:romLabels, datasets:[{
-            label:'ROM (°)', 
-            data:romData,
-            backgroundColor: 'rgba(220, 53, 69, 0.7)',
-        }]},
-        options: {...chartOptions, indexAxis: 'y', scales: { ...chartOptions.scales, x: {ticks:{color: 'var(--text-muted)'}, grid:{color: 'var(--border-color)'}}, y: {...chartOptions.scales.y, title: {display:false}, ticks:{color:'var(--text-dark)'}, grid:{display:false}}}}
-      });
-
-      aiAlertsEl.innerHTML = '<span class="muted">Ấn "Chạy mô hình AI" để dự đoán.</span>';
-    }
-
-    exportFeaturesBtn.addEventListener('click', ()=>{
-      if(!currentVideo){ showModal('Chưa có video.'); return; }
-      const summary = results[currentVideo.id]?.features || summarizeFeatures();
-      const payload = {
-        meta:{videoId:currentVideo.id, name:currentVideo.name, sport:currentVideo.sportTag||sportSel.value},
-        time: featTime, angles: featAngles, velocity: featVel, summary
-      };
-      const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = `${currentVideo.name.replace(/\.[^/.]+$/,'')}_features.json`;
-      document.body.appendChild(a); a.click(); a.remove();
-      setTimeout(()=>URL.revokeObjectURL(url), 800);
-    });
-
-    exportFeaturesCsvBtn.addEventListener('click', ()=>{
-      if(!currentVideo){ showModal('Chưa có video.'); return; }
-      const keys = ['kneeL','kneeR','hipL','hipR','elbowL','elbowR','shoulderL','shoulderR','torsoIncline'];
-      const header = ['t',...keys, ...keys.map(k=>'v_'+k)];
-      const rows = [header.join(',')];
-      for(let i=0;i<featTime.length;i++){
-        const a = featAngles[i]||{}, v = featVel[i]||{};
-        const row = [featTime[i].toFixed(3), ...keys.map(k=>(a[k]??'').toString()), ...keys.map(k=>(v[k]??'').toString())];
-        rows.push(row.join(','));
-      }
-      const blob = new Blob([rows.join('\n')], {type:'text/csv'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = `${currentVideo.name.replace(/\.[^/.]+$/,'')}_features.csv`;
-      document.body.appendChild(a); a.click(); a.remove();
-      setTimeout(()=>URL.revokeObjectURL(url), 800);
-    });
-
-    runModelBtn.addEventListener('click', async ()=>{
-      if(!currentVideo){ showModal('Chưa có video.'); return; }
-      const summary = results[currentVideo.id]?.features || summarizeFeatures();
-      
-      function flat(obj, keys){ return keys.map(k=> (typeof obj[k]==='number')?obj[k]:0 ); }
-      const angleKeys=['kneeL','kneeR','hipL','hipR','elbowL','elbowR','shoulderL','shoulderR','torsoIncline'];
-      const romRanges = angleKeys.map(k=> summary.rom[k]?.range ?? 0);
-      const inputVec = [ ...flat(summary.mean, angleKeys), ...flat(summary.std, angleKeys), ...romRanges, ...flat(summary.vmean, angleKeys), ...flat(summary.vstd, angleKeys) ];
-      let alerts = [];
-
-      if(aiAvailable && aiModel){
-        try{
-          const inp = tf.tensor2d([inputVec]);
-          const out = aiModel.predict(inp);
-          const y = (Array.isArray(out)? out[0]: out).dataSync();
-          const scores = Array.from(y);
-          const labels = ['Sai kỹ thuật','Tư thế rủi ro','Bất thường động tác'];
-          alerts = scores.map((s,i)=> `${labels[i]||('mục '+i)}: ${(s*100).toFixed(1)}%`);
-          aiAlertsEl.innerHTML = `<ul>${alerts.map(a=>`<li>${a}</li>`).join('')}</ul>`;
-          inp.dispose(); if(!Array.isArray(out)) out.dispose?.();
-        }catch(e){
-          aiAlertsEl.innerHTML = '<span class="muted">Model lỗi. Dùng heuristic thay thế.</span>';
-          alerts = heuristicAlerts(summary, sportSel.value);
-          aiAlertsEl.innerHTML += `<ul>${alerts.map(a=>`<li>${a}</li>`).join('')}</ul>`;
+        // If videos were uploaded, switch the filter to the last video's sport
+        if (lastSportTag) {
+            sportSel.value = lastSportTag;
         }
-      } else {
-        alerts = heuristicAlerts(summary, sportSel.value);
-        aiAlertsEl.innerHTML = `<ul>${alerts.map(a=>`<li>${a}</li>`).join('')}</ul>`;
-      }
+
+        // Re-render the list and chart with the correct filter
+        renderVideoList(); 
+        renderChart(); 
+
+        // If a video player isn't active, open the last uploaded video
+        if (!currentVideo && lastUploadedVideo) {
+            openVideo(lastUploadedVideo);
+        }
+        
+        videoUpload.value = ''; // Reset input
     });
 
-    function heuristicAlerts(summary, sport){
-      const a = [];
-      const rom = summary.rom||{}, vmean=summary.vmean||{};
-      const kneeROM = Math.max(rom.kneeL?.range||0, rom.kneeR?.range||0);
-      const hipROM  = Math.max(rom.hipL?.range||0,  rom.hipR?.range||0);
-      const torsoROM= rom.torsoIncline?.range||0;
-      const kneeV   = Math.max(Math.abs(vmean.kneeL||0), Math.abs(vmean.kneeR||0));
-      if(sport==='nhaycao'){
-        if(kneeROM<35) a.push('Biên độ gối thấp (ROM < 35°) — có thể thiếu lực giậm.');
-        if(hipROM<30)  a.push('Biên độ hông thấp — hạn chế mở hông khi bật.');
-        if(torsoROM>50) a.push('Thân nghiêng biến thiên lớn — kiểm soát thân chưa ổn.');
-      }
-      if(sport==='xuatphat'){
-        if(kneeV<20) a.push('Vận tốc gối thấp — phản xạ/bật người chưa nhanh.');
-      }
-      if(sport==='nemta'){
-        if(hipROM<25) a.push('Biên độ hông thấp — thiếu xoay thân khi ném.');
-        if(Math.abs(vmean.shoulderR||0)<10 && Math.abs(vmean.shoulderL||0)<10) a.push('Vai vung chậm — lực đẩy tay yếu.');
-      }
-      if(a.length===0) a.push('Không phát hiện cảnh báo rõ ràng.');
-      return a;
+    imgUpload.addEventListener("change",e=>{const files=Array.from(e.target.files);const existing=JSON.parse(localStorage.getItem("thethaott_gallery")||"[]");let arr=existing.slice();files.forEach(f=>{const reader=new FileReader;reader.onload=()=>{arr.push(reader.result);localStorage.setItem("thethaott_gallery",JSON.stringify(arr));renderGallery()};reader.readAsDataURL(f)})});
+    sportSel.addEventListener("change",()=>{renderVideoList();renderChart()});
+    viewSel.addEventListener("change",()=>{});
+    analyzeBtn.addEventListener("click",async()=>{if(!currentVideo){showModal("Chưa chọn video.");return}await runAnalysisIfNeeded(currentVideo,false)});
+    forceAnalyzeBtn.addEventListener("click",async()=>{if(!currentVideo){showModal("Chưa chọn video.");return}await runAnalysisIfNeeded(currentVideo,true)});
+    
+    clearStorageBtn.addEventListener('click', () => {
+        showModal(
+            'Bạn có chắc muốn xóa toàn bộ dữ liệu (video và kết quả phân tích)?',
+            true,
+            async () => {
+                await clearVideosFromDB();
+                localStorage.removeItem('thethaott_results');
+                localStorage.removeItem('thethaott_gallery');
+                
+                results = {};
+                uploadedVideos.forEach(v => URL.revokeObjectURL(v.url));
+                uploadedVideos = [];
+                currentVideo = null;
+                player.src = '';
+
+                renderGallery();
+                renderChart();
+                renderVideoList();
+                showAnalysisPanel(null);
+                showModal('Đã xóa toàn bộ dữ liệu thành công.');
+            }
+        );
+    });
+    
+    exportBtn.addEventListener("click",()=>{if(!currentVideo||!results[currentVideo.id]){showModal("Chưa có kết quả để xuất.");return}const data=results[currentVideo.id];const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download=`${data.name.replace(/\.[^/.]+$/,"")}_report.json`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),800)});
+    toggleDashboardBtn.addEventListener("click",()=>{dashCard.style.display=dashCard.style.display==="none"?"block":"none";if(dashCard.style.display==="block"&&currentVideo&&results[currentVideo.id]){renderDashboard(results[currentVideo.id])}});
+    exportFeaturesBtn.addEventListener("click",()=>{if(!currentVideo){showModal("Chưa có video.");return}const summary=results[currentVideo.id]?.features||summarizeFeatures();const payload={meta:{videoId:currentVideo.id,name:currentVideo.name,sport:currentVideo.sportTag||sportSel.value},time:featTime,angles:featAngles,velocity:featVel,summary};const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download=`${currentVideo.name.replace(/\.[^/.]+$/,"")}_features.json`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),800)});
+    exportFeaturesCsvBtn.addEventListener("click",()=>{if(!currentVideo){showModal("Chưa có video.");return}const keys=["kneeL","kneeR","hipL","hipR","elbowL","elbowR","shoulderL","shoulderR","torsoIncline"];const header=["t",...keys,...keys.map(k=>"v_"+k)];const rows=[header.join(",")];for(let i=0;i<featTime.length;i++){const a=featAngles[i]||{},v=featVel[i]||{};const row=[featTime[i].toFixed(3),...keys.map(k=>(a[k]??"").toString()),...keys.map(k=>(v[k]??"").toString())];rows.push(row.join(","))}const blob=new Blob([rows.join("\n")],{type:"text/csv"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download=`${currentVideo.name.replace(/\.[^/.]+$/,"")}_features.csv`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),800)});
+    runModelBtn.addEventListener("click",async()=>{if(!currentVideo){showModal("Chưa có video.");return}const summary=results[currentVideo.id]?.features||summarizeFeatures();function flat(obj,keys){return keys.map(k=>typeof obj[k]==="number"?obj[k]:0)}const angleKeys=["kneeL","kneeR","hipL","hipR","elbowL","elbowR","shoulderL","shoulderR","torsoIncline"];const romRanges=angleKeys.map(k=>summary.rom[k]?.range??0);const inputVec=[...flat(summary.mean,angleKeys),...flat(summary.std,angleKeys),...romRanges,...flat(summary.vmean,angleKeys),...flat(summary.vstd,angleKeys)];let alerts=[];if(aiAvailable&&aiModel){try{const inp=tf.tensor2d([inputVec]);const out=aiModel.predict(inp);const y=(Array.isArray(out)?out[0]:out).dataSync();const scores=Array.from(y);const labels=["Sai kỹ thuật","Tư thế rủi ro","Bất thường động tác"];alerts=scores.map((s,i)=>`${labels[i]||"mục "+i}: ${(s*100).toFixed(1)}%`);aiAlertsEl.innerHTML=`<ul>${alerts.map(a=>`<li>${a}</li>`).join("")}</ul>`;inp.dispose();if(!Array.isArray(out))out.dispose?.()}catch(e){aiAlertsEl.innerHTML='<span class="muted">Model lỗi. Dùng heuristic thay thế.</span>';alerts=heuristicAlerts(summary,sportSel.value);aiAlertsEl.innerHTML+=`<ul>${alerts.map(a=>`<li>${a}</li>`).join("")}</ul>`}}else{alerts=heuristicAlerts(summary,sportSel.value);aiAlertsEl.innerHTML=`<ul>${alerts.map(a=>`<li>${a}</li>`).join("")}</ul>`}});
+
+    // ==== Initialization ====
+    async function initializeApp() {
+        const storedVideos = await loadVideosFromDB();
+        uploadedVideos = storedVideos.map(videoData => {
+            const url = URL.createObjectURL(videoData.file);
+            return { ...videoData, url };
+        });
+
+        ensureMpPose();
+        tryLoadAIModel();
+        renderGallery();
+        renderVideoList();
+        renderChart();
+
+        if(uploadedVideos.length > 0) {
+            openVideo(uploadedVideos[uploadedVideos.length - 1]);
+        }
     }
 
-    videoUpload.addEventListener('change', (e)=>{
-      const files = Array.from(e.target.files);
-      files.forEach(f=>{
-        const id = uidFromName(f.name + '_' + Date.now());
-        const url = URL.createObjectURL(f);
-        let tag = '';
-        const ln = f.name.toLowerCase();
-        if(ln.includes('xuat')||ln.includes('xuatphat')) tag='xuatphat';
-        else if(ln.includes('nhay')||ln.includes('xax')||ln.includes('nhaycao')) tag='nhaycao';
-        else if(ln.includes('nem')||ln.includes('nemta')) tag='nemta';
-        if(!tag) tag = sportSel.value || 'xuatphat';
-        uploadedVideos.push({id,name:f.name,url,sportTag:tag, file: f});
-      });
-      renderVideoList();
-      if(uploadedVideos.length>0 && !currentVideo){
-        openVideo(uploadedVideos[uploadedVideos.length-1]);
-      }
+    // Clean up object URLs on page exit
+    window.addEventListener('beforeunload', () => {
+        uploadedVideos.forEach(v => {
+            if (v.url) {
+                try { URL.revokeObjectURL(v.url); } catch (e) {}
+            }
+        });
     });
 
-    imgUpload.addEventListener('change', (e)=>{
-      const files = Array.from(e.target.files);
-      const existing = JSON.parse(localStorage.getItem('thethaott_gallery')||'[]');
-      let arr = existing.slice();
-      files.forEach(f=>{
-        const reader = new FileReader();
-        reader.onload = ()=>{ arr.push(reader.result); localStorage.setItem('thethaott_gallery', JSON.stringify(arr)); renderGallery(); };
-        reader.readAsDataURL(f);
-      });
-    });
+    // Start the application
+    initializeApp();
 
-    sportSel.addEventListener('change', ()=>{ renderVideoList(); renderChart(); });
-    viewSel.addEventListener('change', ()=>{});
-
-    analyzeBtn.addEventListener('click', async ()=>{
-      if(!currentVideo){ showModal('Chưa chọn video.'); return }
-      await runAnalysisIfNeeded(currentVideo,false);
-    });
-    forceAnalyzeBtn.addEventListener('click', async ()=>{ if(!currentVideo){ showModal('Chưa chọn video.'); return } await runAnalysisIfNeeded(currentVideo,true); });
-
-    clearStorageBtn.addEventListener('click', ()=>{ 
-      showModal(
-        'Bạn có chắc muốn xóa toàn bộ dữ liệu?',
-        true, // isConfirm
-        () => { // onConfirm
-          localStorage.removeItem('thethaott_results'); 
-          localStorage.removeItem('thethaott_gallery'); 
-          results={}; 
-          renderGallery(); 
-          renderChart(); 
-          showAnalysisPanel(null);
-          showModal('Đã xóa dữ liệu thành công.');
-        }
-      );
-    });
-
-    ensureMpPose(); renderGallery(); renderVideoList(); renderChart();
-
-    window.addEventListener('beforeunload', ()=>{ uploadedVideos.forEach(v=>{ try{ URL.revokeObjectURL(v.url);}catch(e){} }); });
   </script>
 </body>
 </html>
+
+
