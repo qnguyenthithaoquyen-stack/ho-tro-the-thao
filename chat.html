@@ -1,57 +1,49 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Chat - Hỗ Trợ Huấn Luyện</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
-    :root {
-      --primary-color: #008080;
-      --background-color: #f0f4f8;
-      --card-bg-color: #ffffff;
-      --text-color: #333;
-      --text-light-color: #6c757d;
-      --border-color: #e9ecef;
-      --sender-bg: #e6f2f2;
-      --receiver-bg: var(--primary-color);
-      --ai-receiver-bg: #4A5568;
+    :root{
+      --primary-color:#008080;
+      --background-color:#f0f4f8;
+      --card-bg-color:#ffffff;
+      --text-color:#333;
+      --text-light-color:#6c757d;
+      --border-color:#e9ecef;
+      --sender-bg:#e6f2f2;
+      --receiver-bg:var(--primary-color);
+      --ai-receiver-bg:#4A5568;
     }
-    body { font-family: 'Roboto', sans-serif; margin: 0; background-color: var(--background-color); }
-    .container { max-width: 1200px; margin: 0 auto; }
-    .header { display: flex; justify-content: space-between; align-items: center; padding: 15px 30px; background-color: var(--primary-color); color: #fff; }
-    .header-left { display: flex; align-items: center; gap: 15px; }
-    .logo { background-color: #fff; color: var(--primary-color); font-weight: 700; padding: 10px; border-radius: 8px; }
-    .project-info h1 { font-size: 24px; margin: 0; }
-    .navbar { display: flex; background-color: var(--card-bg-color); box-shadow: 0 2px 4px rgba(0,0,0,.05); padding: 0 30px; }
-    .navbar a { padding: 15px 25px; text-decoration: none; color: var(--text-light-color); font-weight: 500; }
+    body{font-family:'Roboto',sans-serif;margin:0;background-color:var(--background-color)}
+    .container{max-width:1200px;margin:0 auto}
+    .header{display:flex;justify-content:space-between;align-items:center;padding:15px 30px;background-color:var(--primary-color);color:#fff}
+    .header-left{display:flex;align-items:center;gap:15px}
+    .logo{background-color:#fff;color:var(--primary-color);font-weight:700;padding:10px;border-radius:8px}
+    .project-info h1{font-size:24px;margin:0}
+    .navbar{display:flex;background-color:var(--card-bg-color);box-shadow:0 2px 4px rgba(0,0,0,.05);padding:0 30px}
+    .navbar a{padding:15px 25px;text-decoration:none;color:var(--text-light-color);font-weight:500}
 
-    .chat-container {
-      display: flex; flex-direction: column;
-      height: calc(100vh - 140px);
-      max-width: 800px; margin: 20px auto;
-      background-color: var(--card-bg-color);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      border-radius: 16px; overflow: hidden;
-    }
-    .chat-header { padding: 15px 20px; border-bottom: 1px solid var(--border-color); background-color: #f8f9fa; display: flex; justify-content: space-between; align-items: center; }
-    .chat-header h2 { margin: 0; font-size: 18px; color: var(--text-color); }
-    .chat-header a { color: var(--primary-color); text-decoration: none; font-size: 14px; }
+    .chat-container{display:flex;flex-direction:column;height:calc(100vh - 140px);max-width:800px;margin:20px auto;background-color:var(--card-bg-color);box-shadow:0 4px 12px rgba(0,0,0,0.1);border-radius:16px;overflow:hidden}
+    .chat-header{padding:15px 20px;border-bottom:1px solid var(--border-color);background-color:#f8f9fa;display:flex;justify-content:space-between;align-items:center}
+    .chat-header h2{margin:0;font-size:18px;color:var(--text-color)}
+    .chat-header a{color:var(--primary-color);text-decoration:none;font-size:14px}
 
-    .chat-messages { flex-grow: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; }
-    .message { max-width: 80%; padding: 10px 15px; border-radius: 18px; margin-bottom: 10px; line-height: 1.4; word-wrap: break-word; }
-    .message.sent { background-color: var(--sender-bg); color: var(--text-color); align-self: flex-end; border-bottom-right-radius: 4px; }
-    .message.received { background-color: var(--receiver-bg); color: white; align-self: flex-start; border-bottom-left-radius: 4px; }
-    .message.ai-received { background-color: var(--ai-receiver-bg); color: white; align-self: flex-start; border-bottom-left-radius: 4px; }
-    .message .timestamp { font-size: 11px; color: var(--text-light-color); margin-top: 5px; display: block; text-align: right; }
-    .message.received .timestamp, .message.ai-received .timestamp { color: rgba(255,255,255,0.7); }
-    .typing-indicator { align-self: flex-start; color: var(--text-light-color); font-style: italic; }
+    .error{color:#b00020;padding:10px 20px;display:none}
+    .chat-messages{flex-grow:1;padding:20px;overflow-y:auto;display:flex;flex-direction:column}
+    .message{max-width:80%;padding:10px 15px;border-radius:18px;margin-bottom:10px;line-height:1.4;word-wrap:break-word}
+    .message.sent{background-color:var(--sender-bg);color:var(--text-color);align-self:flex-end;border-bottom-right-radius:4px}
+    .message.received{background-color:var(--receiver-bg);color:#fff;align-self:flex-start;border-bottom-left-radius:4px}
+    .message.ai-received{background-color:var(--ai-receiver-bg);color:#fff;align-self:flex-start;border-bottom-left-radius:4px}
+    .message .timestamp{font-size:11px;color:var(--text-light-color);margin-top:5px;display:block;text-align:right}
+    .message.received .timestamp,.message.ai-received .timestamp{color:rgba(255,255,255,0.7)}
+    .typing-indicator{align-self:flex-start;color:var(--text-light-color);font-style:italic}
 
-    .chat-input { display: flex; padding: 15px; border-top: 1px solid var(--border-color); background-color: #f8f9fa; }
-    .chat-input input { flex-grow: 1; border: 1px solid var(--border-color); border-radius: 20px; padding: 10px 15px; font-size: 16px; outline: none; }
-    .chat-input button { background-color: var(--primary-color); border: none; color: white; border-radius: 50%; width: 40px; height: 40px; margin-left: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-
-    .error { color:#b00020; padding: 10px 20px; display:none; }
+    .chat-input{display:flex;padding:15px;border-top:1px solid var(--border-color);background-color:#f8f9fa}
+    .chat-input input{flex-grow:1;border:1px solid var(--border-color);border-radius:20px;padding:10px 15px;font-size:16px;outline:none}
+    .chat-input button{background-color:var(--primary-color);border:none;color:#fff;border-radius:50%;width:40px;height:40px;margin-left:10px;cursor:pointer;display:flex;align-items:center;justify-content:center}
   </style>
 </head>
 <body>
@@ -73,13 +65,13 @@
         <h2 id="chatWithTitle">Đang tải...</h2>
         <a href="#" id="backButton">&larr; Quay lại</a>
       </div>
-      <div class="error" id="errorBox"></div>
 
-      <div class="chat-messages" id="chatMessages">
-        <!-- Tin nhắn -->
-      </div>
+      <div class="error" id="errorBox">Đang khởi tạo...</div>
+
+      <div class="chat-messages" id="chatMessages"></div>
+
       <form class="chat-input" id="messageForm">
-        <input type="text" id="messageInput" placeholder="Nhập tin nhắn..." autocomplete="off">
+        <input type="text" id="messageInput" placeholder="Nhập tin nhắn..." autocomplete="off" />
         <button type="submit" aria-label="Gửi">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
         </button>
@@ -88,7 +80,7 @@
   </div>
 
   <script type="module">
-    /* Firebase v9.15 (theo file gốc của bạn) */
+    // Firebase v9.15 (giữ theo file gốc của bạn)
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
     import {
@@ -96,7 +88,7 @@
       collection, addDoc, serverTimestamp, query, orderBy, onSnapshot
     } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
-    /* ==== CẤU HÌNH FIREBASE CỦA BẠN ==== */
+    // ---- Cấu hình Firebase của bạn ----
     const firebaseConfig = {
       apiKey: "AIzaSyA2dXWCyjL2xgCSyeW9QQ7RvjI_O7kFHJw",
       authDomain: "sporthealthdata.firebaseapp.com",
@@ -106,198 +98,169 @@
       appId: "1:789054240877:web:04a400c9ea586523a86764",
     };
 
-    /* ==== KHỞI TẠO ==== */
-    const app = initializeApp(firebaseConfig);
+    // ---- Khởi tạo ----
+    const app  = initializeApp(firebaseConfig);
     const auth = getAuth(app);
-    const db = getFirestore(app);
+    const db   = getFirestore(app);
 
-    /* ==== DOM ==== */
+    // ---- DOM ----
     const chatWithTitle = document.getElementById('chatWithTitle');
-    const chatMessages = document.getElementById('chatMessages');
-    const messageForm = document.getElementById('messageForm');
-    const messageInput = document.getElementById('messageInput');
-    const backButton = document.getElementById('backButton');
-    const errorBox = document.getElementById('errorBox');
+    const chatMessages  = document.getElementById('chatMessages');
+    const messageForm   = document.getElementById('messageForm');
+    const messageInput  = document.getElementById('messageInput');
+    const backButton    = document.getElementById('backButton');
+    const errorBox      = document.getElementById('errorBox');
 
-    /* ==== TIỆN ÍCH ==== */
-    function showErr(msg){
-      errorBox.textContent = msg;
-      errorBox.style.display = 'block';
-    }
-    function displayMessage(data, isTyping = false) {
-      if (isTyping) {
-        const typingDiv = document.createElement('div');
-        typingDiv.classList.add('typing-indicator');
-        typingDiv.textContent = 'Trợ lý AI đang trả lời...';
-        typingDiv.id = 'typing-indicator';
-        chatMessages.appendChild(typingDiv);
+    function showErr(msg){ errorBox.textContent = msg; errorBox.style.display='block'; }
+    function hideErr(){ errorBox.style.display='none'; }
+
+    function displayMessage(data, isTyping=false){
+      if(isTyping){
+        const t = document.createElement('div');
+        t.classList.add('typing-indicator');
+        t.textContent = 'Trợ lý AI đang trả lời...';
+        t.id = 'typing-indicator';
+        chatMessages.appendChild(t);
         return;
       }
-      const messageDiv = document.createElement('div');
-      messageDiv.classList.add('message');
-
-      const senderIsCurrentUser = data.senderId === currentUser.uid;
-      if (senderIsCurrentUser) messageDiv.classList.add('sent');
-      else messageDiv.classList.add(data.senderId === 'ai' ? 'ai-received' : 'received');
+      const div = document.createElement('div');
+      div.classList.add('message');
+      const mine = data.senderId === currentUser.uid;
+      div.classList.add(mine ? 'sent' : (data.senderId==='ai' ? 'ai-received' : 'received'));
 
       const text = document.createElement('span');
       text.textContent = data.text;
 
-      const timestamp = document.createElement('span');
-      timestamp.classList.add('timestamp');
-      timestamp.textContent = data.createdAt?.seconds
-        ? new Date(data.createdAt.seconds * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      const ts = document.createElement('span');
+      ts.classList.add('timestamp');
+      ts.textContent = data.createdAt?.seconds
+        ? new Date(data.createdAt.seconds*1000).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})
         : '';
 
-      messageDiv.appendChild(text);
-      messageDiv.appendChild(timestamp);
-      chatMessages.appendChild(messageDiv);
+      div.appendChild(text); div.appendChild(ts);
+      chatMessages.appendChild(div);
     }
-    function pairConvId(a, b){ return [a,b].sort().join('__'); }
 
-    /* ==== STATE ==== */
-    let currentUser, otherUserId, convId;
-    let isAIChat = false; // Không lưu AI vào Firestore theo rules hiện tại
+    // ---- Helpers ----
+    function pairConvId(a,b){ return [a,b].sort().join('__'); }
 
-    /* ==== MAIN ==== */
-    onAuthStateChanged(auth, async (user) => {
-      try {
-        if (!user) { window.location.href = './dangnhap.html'; return; }
-        currentUser = user;
-
-        const params = new URLSearchParams(window.location.search);
-        otherUserId = params.get('with'); // bắt buộc
-
-        if (!otherUserId) {
-          alert('Không tìm thấy người nhận tin nhắn (with=...).');
-          window.location.href = './bangdieukhien.html';
-          return;
-        }
-
-        // (Tuỳ chọn) Chat AI -> chỉ hiển thị UI, không ghi Firestore
-        if (otherUserId === 'ai') {
-          isAIChat = true;
-          convId = null; // không dùng convId
-          chatWithTitle.textContent = 'Chat với Trợ lý AI';
-        } else {
-          isAIChat = false;
-          // Tạo/đảm bảo hội thoại tồn tại trong "conversations/{convId}"
-          convId = await ensureConversationExists(db, currentUser.uid, otherUserId);
-
-          // Hiển thị tiêu đề
-          const otherUserDoc = await getDoc(doc(db, "users", otherUserId));
-          if (otherUserDoc.exists()) chatWithTitle.textContent = `Chat với ${otherUserDoc.data().fullName}`;
-          else chatWithTitle.textContent = 'Chat';
-
-          // Gán back link theo role
-          const currentUserDoc = await getDoc(doc(db, "users", currentUser.uid));
-          const backUrl = currentUserDoc.data()?.role === 'coach' ? './coach-dashboard.html' : './athlete-dashboard.html';
-          backButton.href = backUrl;
-
-          // Bắt đầu lắng nghe tin nhắn
-          listenForMessages();
-        }
-
-        // Bind form gửi
-        messageForm.addEventListener('submit', handleMessageSubmit);
-      } catch (e) {
-        console.error(e);
-        showErr('Lỗi khởi tạo: ' + e.message);
-      }
-    });
-
-    /* ==== Tạo/Lấy hội thoại trong conversations ==== */
-    async function ensureConversationExists(db, myUid, peerUid) {
-      const id = pairConvId(myUid, peerUid);
+    // Không đọc trước; TẠO thẳng. Nếu đã tồn tại -> setDoc sẽ bị từ chối (update),
+    // ta bỏ qua lỗi đó để tiếp tục dùng convId.
+    async function ensureConversation(db, myUid, peerUid){
+      const id  = pairConvId(myUid, peerUid);
       const ref = doc(db, "conversations", id);
-      const snap = await getDoc(ref);
-      if (!snap.exists()) {
+      try{
         await setDoc(ref, {
-          participants: [myUid, peerUid],        // BẮT BUỘC: đúng 2 UID
+          participants: [myUid, peerUid],
           lastMessage: null,
           updatedAt: serverTimestamp(),
-        });
+        }, { merge:false });
+      }catch(e){
+        // Nếu tài liệu đã tồn tại, update participants không được phép -> ignore.
       }
       return id;
     }
 
-    /* ==== Lắng nghe tin nhắn (conversations/{convId}/messages) ==== */
-    function listenForMessages() {
-      const messagesColRef = collection(db, "conversations", convId, "messages");
-      const qy = query(messagesColRef, orderBy("createdAt"));
+    // ---- State ----
+    let currentUser, otherUserId, convId;
+    let isAIChat = false; // với rules hiện tại, không ghi AI vào Firestore
 
-      onSnapshot(qy,
-        (snapshot) => {
-          chatMessages.innerHTML = '';
-          snapshot.forEach(docSnap => displayMessage(docSnap.data()));
-          chatMessages.scrollTop = chatMessages.scrollHeight;
-        },
-        (error) => {
-          console.error("Lỗi khi lắng nghe tin nhắn: ", error);
-          showErr(/insufficient permissions/i.test(error.message)
-            ? "Thiếu quyền đọc phòng chat. Kiểm tra rules và participants của hội thoại."
-            : ("Không thể tải tin nhắn. Lỗi: " + error.message));
+    onAuthStateChanged(auth, async (user)=>{
+      try{
+        if(!user){ window.location.href='./dangnhap.html'; return; }
+        currentUser = user;
+
+        const params = new URLSearchParams(location.search);
+        otherUserId = params.get('with'); // yêu cầu: ?with=<UID đối tác>
+
+        if(!otherUserId){
+          showErr('Thiếu tham số with=UID đối tác trên URL.');
+          chatWithTitle.textContent = 'Đang tải...';
+          return;
         }
-      );
-    }
 
-    /* ==== Gọi Gemini (chỉ hiển thị UI, KHÔNG ghi Firestore) ==== */
-    async function callGeminiAPI(prompt) {
-      const systemPrompt = "Bạn là một trợ lý ảo chuyên nghiệp trong lĩnh vực huấn luyện thể thao. Hãy đưa ra lời khuyên ngắn gọn, hữu ích và an toàn cho các vận động viên. Luôn trả lời bằng tiếng Việt.";
-      const apiKey = ""; // điền nếu bạn muốn gọi API
-      if (!apiKey) return "Bạn chưa cấu hình API key cho Gemini.";
-      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-      const payload = { contents: [{ parts: [{ text: prompt }] }], systemInstruction: { parts: [{ text: systemPrompt }] } };
-      try {
-        const res = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-        const result = await res.json();
-        return result.candidates?.[0]?.content?.parts?.[0]?.text || "Tôi chưa thể trả lời câu hỏi này. Vui lòng thử lại.";
-      } catch (e) {
-        console.error("Lỗi gọi Gemini API:", e);
-        return "Đã có lỗi kết nối. Vui lòng kiểm tra lại.";
+        if(otherUserId === 'ai'){
+          isAIChat = true; convId = null;
+          chatWithTitle.textContent = 'Chat với Trợ lý AI';
+          hideErr();
+        }else{
+          isAIChat = false;
+
+          // TẠO phòng (nếu chưa có) mà không đọc trước
+          convId = await ensureConversation(db, currentUser.uid, otherUserId);
+
+          // Tiêu đề: đọc users/<otherUserId> (rules cho phép read nếu đã đăng nhập)
+          try{
+            const otherDoc = await getDoc(doc(db, "users", otherUserId));
+            chatWithTitle.textContent = otherDoc.exists()
+              ? `Chat với ${otherDoc.data().fullName}`
+              : 'Chat';
+          }catch{ chatWithTitle.textContent='Chat'; }
+
+          // Back theo role
+          try{
+            const meDoc = await getDoc(doc(db, "users", currentUser.uid));
+            const backUrl = meDoc.data()?.role === 'coach' ? './coach-dashboard.html' : './athlete-dashboard.html';
+            backButton.href = backUrl;
+          }catch{}
+
+          // Lắng nghe tin nhắn
+          listenForMessages();
+          hideErr();
+        }
+
+        // Bind gửi
+        messageForm.addEventListener('submit', handleMessageSubmit);
+      }catch(e){
+        showErr('Lỗi khởi tạo: ' + (e?.message || e));
       }
+    });
+
+    function listenForMessages(){
+      const messagesColRef = collection(db, "conversations", convId, "messages");
+      const q = query(messagesColRef, orderBy("createdAt"));
+      onSnapshot(q, (snap)=>{
+        chatMessages.innerHTML='';
+        snap.forEach(docSnap => displayMessage(docSnap.data()));
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }, (err)=>{
+        showErr(/insufficient permissions/i.test(err.message)
+          ? 'Thiếu quyền đọc phòng chat. Hãy chắc chắn bạn là participant của cuộc trò chuyện.'
+          : ('Không thể tải tin nhắn. Lỗi: ' + err.message));
+      });
     }
 
-    /* ==== Gửi tin nhắn ==== */
-    async function handleMessageSubmit(e) {
+    async function handleMessageSubmit(e){
       e.preventDefault();
       const text = messageInput.value.trim();
-      if (!text) return;
+      if(!text) return;
 
-      if (isAIChat) {
-        // Chỉ hiển thị trên UI (không ghi Firestore)
-        displayMessage({ text, senderId: currentUser.uid, createdAt: { seconds: Math.floor(Date.now()/1000) } });
-        messageInput.value = '';
-        displayMessage(null, true);
-        const aiText = await callGeminiAPI(text);
-        document.getElementById('typing-indicator')?.remove();
-        displayMessage({ text: aiText, senderId: 'ai', createdAt: { seconds: Math.floor(Date.now()/1000) } });
-        chatMessages.scrollTop = chatMessages.scrollHeight;
+      // Nhánh AI: chỉ hiển thị UI, KHÔNG ghi Firestore (rules không cho senderId='ai')
+      if(isAIChat){
+        displayMessage({ text, senderId: currentUser.uid, createdAt:{seconds:Math.floor(Date.now()/1000)} });
+        messageInput.value='';
+        // TODO: gọi API AI nếu muốn (chỉ render kết quả, không addDoc)
         return;
       }
 
-      if (!convId) { showErr('Không xác định được phòng chat.'); return; }
+      if(!convId){ showErr('Không xác định được phòng chat.'); return; }
 
-      const userMessage = {
-        text: text,
-        senderId: currentUser.uid,
-        receiverId: otherUserId,
-        createdAt: serverTimestamp()
-      };
+      const msg = { text, senderId: currentUser.uid, receiverId: otherUserId, createdAt: serverTimestamp() };
+      messageInput.value='';
 
-      messageInput.value = '';
-      const messagesColRef = collection(db, "conversations", convId, "messages");
+      try{
+        // Gửi message: CHỈ 3 field được rules cho phép (text, senderId, createdAt)
+        await addDoc(collection(db, "conversations", convId, "messages"), {
+          text: msg.text, senderId: msg.senderId, createdAt: msg.createdAt
+        });
 
-      try {
-        await addDoc(messagesColRef, userMessage);
-        // Cập nhật meta parent (đúng whitelist trong rules)
+        // Cập nhật meta parent: chỉ lastMessage, updatedAt (đúng whitelist)
         await updateDoc(doc(db, "conversations", convId), {
-          lastMessage: { text, senderId: currentUser.uid, createdAt: serverTimestamp() },
+          lastMessage: { text: msg.text, senderId: msg.senderId, createdAt: serverTimestamp() },
           updatedAt: serverTimestamp()
         });
-      } catch (error) {
-        console.error("Lỗi khi gửi tin nhắn:", error);
-        showErr(`Không thể gửi tin nhắn. Lỗi: ${error.message}`);
+      }catch(err){
+        showErr('Không thể gửi tin nhắn: ' + err.message);
       }
     }
   </script>
