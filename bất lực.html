@@ -1,99 +1,111 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Phân tích tư thế cho VĐV</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#0c1b22;
-    --card:#0f2530;
-    --muted:#a8c3cc;
-    --text:#e7f3f6;
-    --teal:#10b7b7;
-    --teal-2:#0aa3a3;
-    --green:#28c08b;
-    --red:#f66;
-    --yellow:#f3b94e;
-    --border: #173845;
-    --chip:#0b2a35;
-    --shadow: 0 8px 30px rgba(0,0,0,.25);
-    --radius: 14px;
+    /* Bảng màu tươi sáng hơn */
+    --bg:#e9f6f6;
+    --bg-grad1:#f2fbfb;
+    --bg-grad2:#dff3f3;
+
+    --card:#ffffff;
+    --border:#d1e7ea;
+    --text:#0d2b33;
+    --muted:#628089;
+
+    --teal:#06a2a0;
+    --teal-2:#07918f;
+    --chip:#eef8f9;
+
+    --green:#20b27c;
+    --yellow:#f2b84e;
+    --red:#e35a5a;
+
+    --radius:14px;
+    --shadow:0 10px 30px rgba(4,41,49,.08);
   }
   *{box-sizing:border-box}
+  html,body{height:100%}
   body{
-    margin:0; font-family:'Inter',system-ui,Arial,sans-serif;
-    background: radial-gradient(1200px 600px at 10% -10%, #0e3640 0%, #0c1b22 55%) fixed;
-    color:var(--text);
+    margin:0; font-family:'Inter',system-ui,Arial,sans-serif; color:var(--text);
+    background: radial-gradient(1200px 600px at 8% -8%, var(--bg-grad1), var(--bg-grad2)) fixed;
   }
   .wrap{max-width:1220px; margin:22px auto; padding:0 16px;}
+
   .topbar{
-    display:flex; align-items:center; gap:10px; padding:14px 16px;
-    border:1px solid var(--border); background:linear-gradient(180deg,#0f2733, #0f2230);
-    border-radius:12px; box-shadow:var(--shadow); position:sticky; top:10px; z-index:5;
+    display:flex; gap:10px; align-items:center;
+    padding:14px 16px; border:1px solid var(--border); background:var(--card);
+    border-radius:12px; box-shadow:var(--shadow);
   }
   .topbar h1{margin:0; font-size:18px; font-weight:700}
-  .topbar small{display:block; color:var(--muted); font-weight:500}
+  .topbar small{display:block; color:var(--muted); font-weight:600}
   .space{flex:1}
   .btn{
-    background:#10313d; color:var(--text); border:1px solid var(--border);
-    border-radius:999px; padding:9px 14px; font-weight:600; cursor:pointer;
+    background:#f3fbfb; color:var(--text); border:1px solid var(--border);
+    padding:9px 14px; border-radius:999px; font-weight:700; cursor:pointer;
     transition:.2s; display:inline-flex; align-items:center; gap:8px;
   }
-  .btn:hover{background:#133c49}
-  .btn-primary{background:var(--teal); border-color:transparent; color:#072427}
+  .btn:hover{background:#e9f6f6}
+  .btn-primary{background:var(--teal); color:#fff; border-color:transparent}
   .btn-primary:hover{background:var(--teal-2)}
-  .grid{display:grid; grid-template-columns: 1.2fr .8fr; gap:16px; margin-top:16px}
+  .btn-danger{background:#fdeeee; color:#b63a3a; border-color:#f6c7c7}
+  .btn-danger:hover{background:#fbdcdc}
+
+  .grid{display:grid; grid-template-columns:1.25fr .75fr; gap:16px; margin-top:16px}
   .card{
     background:var(--card); border:1px solid var(--border);
     border-radius:var(--radius); box-shadow:var(--shadow);
     padding:16px;
   }
-  .card h3{margin:0 0 12px 0; font-size:16px}
+  .card h3{margin:0 0 12px 0; font-size:17px}
   .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
-  select, input[type=file]{
-    appearance:none; background:#0e3040; color:var(--text); border:1px solid var(--border);
-    padding:10px 12px; border-radius:10px; min-width:150px;
+  .badge{
+    background:var(--chip); color:var(--muted); border:1px solid var(--border);
+    padding:7px 10px; border-radius:999px; font-weight:700
   }
-  .badge{background:#0b2a35; color:var(--muted); border:1px solid var(--border);
-    border-radius:999px; padding:5px 9px; font-weight:600}
+  select,input[type=file]{
+    appearance:none; background:#f7fffe; color:var(--text);
+    border:1px solid var(--border); padding:10px 12px; border-radius:10px; min-width:150px;
+    font-weight:600;
+  }
   video{width:100%; border-radius:12px; border:1px solid var(--border); background:#000}
-  .progress{height:8px; background:#0a2a35; border:1px solid var(--border);
-    border-radius:999px; overflow:hidden; margin-top:12px}
-  .progress>span{display:block; height:100%; width:0%; background:linear-gradient(90deg,#31dbc6,#27c4a9)}
+  .progress{height:10px; background:#edf7f7; border:1px solid var(--border); border-radius:999px; overflow:hidden; margin-top:12px}
+  .progress>span{display:block; height:100%; width:0%; background:linear-gradient(90deg,#34d5cf,#17b9b1)}
+
   .list{margin-top:14px}
-  .item{display:flex; align-items:center; justify-content:space-between; gap:8px;
-    border:1px solid var(--border); background:#0e2733; padding:10px 12px; border-radius:12px; margin-top:8px}
+  .item{
+    display:flex; align-items:center; justify-content:space-between; gap:8px;
+    border:1px solid var(--border); background:#fbffff; padding:10px 12px; border-radius:12px; margin-top:8px
+  }
   .item .left{display:flex; align-items:center; gap:10px}
   .chip{background:var(--chip); border:1px solid var(--border); color:var(--muted);
-    padding:3px 8px; border-radius:999px; font-size:12px; font-weight:600}
-  .btn-ghost{background:#0f2a35}
+    padding:4px 8px; border-radius:999px; font-size:12px; font-weight:700}
+
   .panel{
-    min-height:160px; border:1px dashed #1a4958; border-radius:12px; padding:12px;
-    background:linear-gradient(180deg,#0d2430 0%, #0c2330 100%);
+    min-height:160px; border:1px dashed var(--border); border-radius:12px; padding:12px; background:#fbffff;
   }
   ul{margin:6px 0 0 18px; padding:0}
   hr{border:none; border-top:1px solid var(--border); margin:12px 0}
   .muted{color:var(--muted)}
   canvas{max-width:100%}
-  @media (max-width: 980px){
-    .grid{grid-template-columns:1fr}
-  }
+  @media (max-width: 980px){ .grid{grid-template-columns:1fr} }
 </style>
 </head>
 <body>
   <div class="wrap">
-
     <div class="topbar">
       <div>
         <h1>Phân tích tư thế cho VĐV</h1>
         <small>Tải video, chạy MediaPipe, so khớp với khung chuẩn theo môn &amp; góc quay.</small>
       </div>
       <div class="space"></div>
-      <button class="btn btn-ghost" id="backBtn">← Bảng điều khiển</button>
-      <button class="btn btn-ghost" id="exportJson">Xuất features (.json)</button>
-      <button class="btn btn-ghost" id="exportCsv">Xuất (.csv)</button>
+      <button class="btn" id="backBtn">← Bảng điều khiển</button>
+      <button class="btn" id="exportJson">Xuất features (.json)</button>
+      <button class="btn" id="exportCsv">Xuất (.csv)</button>
       <button class="btn btn-primary" id="exportReport">Xuất báo cáo</button>
     </div>
 
@@ -101,34 +113,30 @@
       <!-- LEFT -->
       <div class="card">
         <h3>Trình phát & Điều khiển</h3>
-
         <div class="row" style="margin-bottom:10px">
-          <div class="row">
-            <span class="badge">Môn thể thao</span>
-            <select id="sportSel">
-              <option value="xuatphat">Xuất phát</option>
-              <option value="nhaycao">Nhảy cao</option>
-              <option value="nemta">Ném tạ</option>
-            </select>
-          </div>
-          <div class="row">
-            <span class="badge">Góc quay</span>
-            <select id="viewSel">
-              <option value="auto">Tự động</option>
-              <option value="front">FRONT</option>
-              <option value="left">LEFT</option>
-              <option value="right">RIGHT</option>
-              <option value="back">BACK</option>
-            </select>
-          </div>
-          <div class="row">
-            <span class="badge">Tải video (.mp4, .mov)</span>
-            <input id="fileInput" type="file" accept="video/*" multiple />
-          </div>
+          <span class="badge">Môn thể thao</span>
+          <select id="sportSel">
+            <option value="xuatphat">Xuất phát</option>
+            <option value="nhaycao">Nhảy cao</option>
+            <option value="nemta">Ném tạ</option>
+          </select>
+
+          <span class="badge">Góc quay</span>
+          <select id="viewSel">
+            <option value="auto">Tự động</option>
+            <option value="front">FRONT</option>
+            <option value="left">LEFT</option>
+            <option value="right">RIGHT</option>
+            <option value="back">BACK</option>
+          </select>
+
+          <span class="badge">Tải video (.mp4, .mov)</span>
+          <input id="fileInput" type="file" accept="video/*" multiple />
+
           <div class="space"></div>
           <button class="btn btn-primary" id="analyzeBtn">Phân tích</button>
-          <button class="btn btn-ghost" id="reanalyzeBtn">Phân tích lại</button>
-          <button class="btn btn-ghost" id="clearBtn">Xóa dữ liệu</button>
+          <button class="btn" id="reanalyzeBtn">Phân tích lại</button>
+          <button class="btn btn-danger" id="clearBtn">Xóa dữ liệu</button>
         </div>
 
         <video id="player" controls playsinline muted></video>
@@ -136,26 +144,21 @@
 
         <div class="list" id="history">
           <h3 style="margin-top:16px">Lịch sử video (lọc theo môn)</h3>
-          <!-- items render here -->
         </div>
       </div>
 
       <!-- RIGHT -->
       <div class="card">
         <h3>Thông tin phân tích</h3>
-        <div id="panel" class="panel">
-          <span class="muted">Chưa có video được chọn.</span>
-        </div>
+        <div id="panel" class="panel"><span class="muted">Chưa có video được chọn.</span></div>
 
         <h3 style="margin-top:16px">Thống kê tỉ lệ đúng</h3>
-        <div class="panel">
-          <canvas id="chart"></canvas>
-        </div>
+        <div class="panel"><canvas id="chart"></canvas></div>
       </div>
     </div>
 
     <p class="muted" style="text-align:center; margin:20px 0 10px">
-      © 2025 — Demo giao diện theo yêu cầu. Nếu auto-view đoán sai, hãy chọn tay FRONT/LEFT/RIGHT/BACK.
+      © 2025 — Demo giao diện màu sáng. Nếu auto-view đoán sai, hãy chọn tay FRONT/LEFT/RIGHT/BACK.
     </p>
   </div>
 
@@ -186,39 +189,31 @@
   let current = null;          // video object
   let chart = null;
 
-  // ngưỡng/khung chuẩn
-  const PASS_THRESH = { xuatphat:0.5, nhaycao:0.45, nemta:0.5 }; // nới lỏng
-  const SAMPLE_TOTAL = 90; // tăng số khung lấy mẫu
+  // nới lỏng một chút để dễ chạy
+  const PASS_THRESH = { xuatphat:0.5, nhaycao:0.45, nemta:0.5 };
+  const SAMPLE_TOTAL = 90;
 
-  // Khung chuẩn (đã nới tol 2–4° so với trước)
+  // Khung chuẩn (cùng như bản trước, giữ dung sai đã nới)
   const RULES = {
-    xuatphat:{
-      base:[
-        {name:'Gối trước', joints:['kneeL','kneeR'], want:100, tol:22, anySide:true},
-        {name:'Hông',      joints:['hipL','hipR'],  want:120, tol:24, anySide:true},
-        {name:'Thân nghiêng', joints:['torso'], want:45, tol:14},
-        {name:'Khuỷu tay trụ', joints:['elbowL','elbowR'], want:90, tol:24, anySide:true}
-      ],
-      front:null, back:null,
-      left:null, right:null
-    },
-    nhaycao:{
-      base:[
-        {name:'Gối giậm', joints:['kneeL','kneeR'], want:150, tol:22, anySide:true},
-        {name:'Hông mở',  joints:['hipL','hipR'],  want:160, tol:22, anySide:true},
-        {name:'Thân nghiêng', joints:['torso'], want:20, tol:18},
-        {name:'Vai vung', joints:['shoulderL','shoulderR'], want:160, tol:25, anySide:true}
-      ]
-    },
-    nemta:{
-      base:[
-        {name:'Gối', joints:['kneeL','kneeR'], want:100, tol:25, anySide:true},
-        {name:'Hông', joints:['hipL','hipR'],  want:120, tol:25, anySide:true},
-        {name:'Khuỷu tay', joints:['elbowL','elbowR'], want:100, tol:25, anySide:true},
-        {name:'Vai', joints:['shoulderL','shoulderR'], want:90, tol:26, anySide:true},
-        {name:'Thân nghiêng', joints:['torso'], want:30, tol:18}
-      ]
-    }
+    xuatphat:{ base:[
+      {name:'Gối trước', joints:['kneeL','kneeR'], want:100, tol:22, anySide:true},
+      {name:'Hông',      joints:['hipL','hipR'],  want:120, tol:24, anySide:true},
+      {name:'Thân nghiêng', joints:['torso'], want:45, tol:14},
+      {name:'Khuỷu tay trụ', joints:['elbowL','elbowR'], want:90, tol:24, anySide:true}
+    ]},
+    nhaycao:{ base:[
+      {name:'Gối giậm', joints:['kneeL','kneeR'], want:150, tol:22, anySide:true},
+      {name:'Hông mở',  joints:['hipL','hipR'],  want:160, tol:22, anySide:true},
+      {name:'Thân nghiêng', joints:['torso'], want:20, tol:18},
+      {name:'Vai vung', joints:['shoulderL','shoulderR'], want:160, tol:25, anySide:true}
+    ]},
+    nemta:{ base:[
+      {name:'Gối', joints:['kneeL','kneeR'], want:100, tol:25, anySide:true},
+      {name:'Hông', joints:['hipL','hipR'],  want:120, tol:25, anySide:true},
+      {name:'Khuỷu tay', joints:['elbowL','elbowR'], want:100, tol:25, anySide:true},
+      {name:'Vai', joints:['shoulderL','shoulderR'], want:90, tol:26, anySide:true},
+      {name:'Thân nghiêng', joints:['torso'], want:30, tol:18}
+    ]}
   };
 
   /************** Helpers **************/
@@ -237,36 +232,35 @@
         <div class="left">
           <span class="chip">${v.sport}</span>
           <strong>${v.name}</strong>
-          ${has?`<span class="chip" style="color:#8ff2c9;border-color:#206c57">Đã phân tích</span>`:''}
+          ${has?`<span class="chip" style="color:#119b74;border-color:#c9efe3;background:#ebfffb">Đã phân tích</span>`:''}
         </div>
         <div class="row">
-          <button class="btn btn-ghost" data-act="open">Xem</button>
-          <button class="btn btn-ghost" data-act="rean">${has?'Phân tích lại':'Phân tích'}</button>
-          <button class="btn btn-ghost" data-act="del" style="color:#ffb0b0;border-color:#4a1f26;background:#2b0f14">Xóa</button>
+          <button class="btn" data-act="open">Xem</button>
+          <button class="btn" data-act="rean">${has?'Phân tích lại':'Phân tích'}</button>
+          <button class="btn btn-danger" data-act="del">Xóa</button>
         </div>`;
       item.querySelector('[data-act="open"]').onclick = ()=> openVideo(v);
       item.querySelector('[data-act="rean"]').onclick = ()=> { openVideo(v); analyze(true); };
       item.querySelector('[data-act="del"]').onclick = ()=>{
         try{URL.revokeObjectURL(v.url);}catch(e){}
         uploaded = uploaded.filter(x=>x.id!==v.id);
-        delete results[v.id]; saveResults(); renderHistory(); renderChart(); if(current&&current.id===v.id){panel.innerHTML='<span class="muted">Chưa có video được chọn.</span>'; player.src='';}
+        delete results[v.id]; saveResults(); renderHistory(); renderChart();
+        if(current&&current.id===v.id){panel.innerHTML='<span class="muted">Chưa có video được chọn.</span>'; player.src=''; current=null;}
       };
       root.appendChild(item);
     });
-    const h = historyEl;
-    h.innerHTML = '<h3 style="margin-top:16px">Lịch sử video (lọc theo môn)</h3>';
-    h.appendChild(root);
+    historyEl.innerHTML = '<h3 style="margin-top:16px">Lịch sử video (lọc theo môn)</h3>';
+    historyEl.appendChild(root);
   }
 
   function saveResults(){ localStorage.setItem('pose_results', JSON.stringify(results)); }
-
   function renderPanel(res){
     if(!res){ panel.innerHTML='<span class="muted">Chưa có video được chọn.</span>'; return; }
     const html = `
       <div class="row" style="gap:10px;align-items:center;margin-bottom:8px">
         <strong>${res.name}</strong>
         <span class="chip">Góc: ${res.view.toUpperCase()}</span>
-        <span class="chip" style="color:#9ff9d9;border-color:#1f6f58">Tỉ lệ đúng: ${res.tile}%</span>
+        <span class="chip" style="color:#0b7b62;background:#eafffb;border-color:#b2efe6">Tỉ lệ đúng: ${res.tile}%</span>
         <span class="chip">Đúng: ${res.dung}</span>
         <span class="chip">Sai: ${res.sai}</span>
       </div>
@@ -281,12 +275,10 @@
         </div>
       </div>
       <div><strong>Gợi ý</strong><ul>${res.goiy.map(x=>`<li>${x}</li>`).join('')}</ul></div>
-      <hr>
-      <div class="muted">${res.dongvien}</div>
+      <hr><div class="muted">${res.dongvien}</div>
     `;
     panel.innerHTML = html;
   }
-
   function renderChart(){
     const sport = sportSel.value;
     const keys = Object.keys(results).filter(k=>results[k].sport===sport);
@@ -296,14 +288,14 @@
     const ctx = document.getElementById('chart').getContext('2d');
     chart = new Chart(ctx,{
       type:'bar',
-      data:{ labels, datasets:[{label:'Tỉ lệ đúng (%)', data, backgroundColor:'#19b6a8'}]},
+      data:{ labels, datasets:[{label:'Tỉ lệ đúng (%)', data, backgroundColor:'#17b9b1'}]},
       options:{
-        scales:{ y:{beginAtZero:true, max:110, grid:{color:'#1a4958'}, ticks:{color:'#b8dbe4'}}, x:{ticks:{color:'#b8dbe4'}}},
-        plugins:{ legend:{labels:{color:'#e6fbff'}}}
+        scales:{ y:{beginAtZero:true, max:110, grid:{color:'#e6f2f3'}, ticks:{color:'#4a6a72'}},
+                 x:{ticks:{color:'#4a6a72'}}},
+        plugins:{ legend:{labels:{color:'#334e55'}}}
       }
     });
   }
-
   function openVideo(v){
     current = v; player.src = v.url; player.currentTime = 0;
     renderPanel(results[v.id]); renderChart();
@@ -313,9 +305,7 @@
   let mpPose = null, lastLm = null;
   function ensurePose(){
     if(mpPose) return mpPose;
-    mpPose = new Pose.Pose({
-      locateFile: f=>`https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5/${f}`
-    });
+    mpPose = new Pose.Pose({ locateFile:f=>`https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5/${f}` });
     mpPose.setOptions({
       modelComplexity:1, smoothLandmarks:true, enableSegmentation:false,
       minDetectionConfidence:0.45, minTrackingConfidence:0.45
@@ -325,12 +315,10 @@
     });
     return mpPose;
   }
-
   function deg(a,b,c){
-    const abx=a.x-b.x, aby=a.y-b.y;
-    const cbx=c.x-b.x, cby=c.y-b.y;
+    const abx=a.x-b.x, aby=a.y-b.y, cbx=c.x-b.x, cby=c.y-b.y;
     const dot = abx*cbx + aby*cby;
-    const mag = Math.sqrt((abx*abx+aby*aby)*(cbx*cbx+cby*cby)) || 1;
+    const mag = Math.sqrt((abx*abx+aby*aby)*(cbx*cbx+cby*cby))||1;
     let cs = Math.max(-1, Math.min(1, dot/mag));
     return Math.acos(cs)*180/Math.PI;
   }
@@ -357,198 +345,160 @@
   }
   function detectView(lm){
     const lS=lm[11], rS=lm[12]; if(!(lS&&rS)) return 'front';
-    return (rS.x>lS.x)? 'right' : 'left'; // đủ tốt cho auto đơn giản
+    return (rS.x>lS.x)? 'right' : 'left';
   }
-  function getRules(sport, view){
-    const r = RULES[sport]; if(!r) return [];
-    if(view!=='auto' && r[view]) return r[view];
-    return r.base || [];
-  }
-  function checkFrame(angles, sport, view){
-    const rules = getRules(sport, view);
-    if(!rules.length) return {pass:false, ok:0, total:0};
-    let ok = 0;
-    for(const rule of rules){
-      let within = false;
+  function getRules(sport,view){ const r=RULES[sport]; if(!r) return []; return r.base||[]; }
+  function checkFrame(angles,sport,view){
+    const rules = getRules(sport,view); if(!rules.length) return {pass:false,ok:0,total:0};
+    let ok=0; for(const rule of rules){
+      let within=false;
       if(rule.anySide){
         for(const key of rule.joints){
-          const v = angles[key];
-          if(typeof v==='number' && Math.abs(v-rule.want)<=rule.tol){ within=true; break; }
+          const v = angles[key]; if(typeof v==='number' && Math.abs(v-rule.want)<=rule.tol){within=true;break;}
         }
       }else{
-        const key = rule.joints[0];
-        const v = angles[key];
+        const v = angles[rule.joints[0]];
         if(typeof v==='number' && Math.abs(v-rule.want)<=rule.tol) within=true;
       }
       if(within) ok++;
     }
-    const score = ok / rules.length;
-    return {pass: score >= (PASS_THRESH[sport]||0.5), ok, total:rules.length};
+    const score= ok/rules.length; return {pass: score>=(PASS_THRESH[sport]||0.5), ok, total:rules.length};
   }
 
   async function analyze(force=false){
-    if(!current){ alert('Chưa chọn video.'); return; }
+    if(!current){
+      // Sửa lỗi: tự chọn video gần nhất nếu chưa có current
+      if(uploaded.length){
+        openVideo(uploaded[uploaded.length-1]);
+      }else{
+        alert('Chưa có video để phân tích.');
+        return;
+      }
+    }
     const id=current.id, sport=current.sport;
     if(results[id] && !force){ renderPanel(results[id]); return; }
 
-    ensurePose(); setProgress(0);
-    player.muted = true;
-
-    // chuẩn bị video
+    ensurePose(); setProgress(0); player.muted=true;
     await new Promise(r=>{
       if(player.readyState>=1) return r();
       player.addEventListener('loadedmetadata', function on(){ player.removeEventListener('loadedmetadata',on); r(); });
     });
 
-    const duration = Math.max(1, player.duration || 3);
-    const step = duration / SAMPLE_TOTAL;
-
-    let sampled=0, valid=0;
-    let viewCount = {front:0,left:0,right:0,back:0};
-    const userView = viewSel.value;
+    const duration=Math.max(1,player.duration||3), step=duration/SAMPLE_TOTAL;
+    let sampled=0, valid=0; let viewCount={front:0,left:0,right:0,back:0};
+    const userView=viewSel.value;
 
     for(let i=0;i<SAMPLE_TOTAL;i++){
       await new Promise(res=>{
-        const t = Math.min(i*step, Math.max(0,duration-0.05));
-        const onSeeked = async ()=>{
-          player.removeEventListener('seeked', onSeeked);
+        const t=Math.min(i*step, Math.max(0,duration-0.05));
+        const onSeeked=async ()=>{
+          player.removeEventListener('seeked',onSeeked);
           try{ await mpPose.send({image:player}); }catch(e){}
           sampled++;
-
           if(lastLm&&lastLm.length){
-            // scale landmarks vào hệ toạ độ video
-            const w = player.videoWidth || 640, h=player.videoHeight || 360;
-            const lm = lastLm.map(p=>({x:p.x*w, y:p.y*h}));
-
-            const autoView = detectView(lm);
-            viewCount[autoView]=(viewCount[autoView]||0)+1;
-
-            const angles = extractAngles(lm);
-            const usedView = (userView==='auto')? autoView : userView;
-            const chk = checkFrame(angles, sport, usedView);
+            const w=player.videoWidth||640, h=player.videoHeight||360;
+            const lm=lastLm.map(p=>({x:p.x*w,y:p.y*h}));
+            const autoView=detectView(lm); viewCount[autoView]=(viewCount[autoView]||0)+1;
+            const angles=extractAngles(lm);
+            const used=(userView==='auto')? autoView : userView;
+            const chk=checkFrame(angles,sport,used);
             if(chk.pass) valid++;
           }
-          setProgress(Math.round(((i+1)/SAMPLE_TOTAL)*100));
-          setTimeout(res, 6);
+          setProgress(Math.round(((i+1)/SAMPLE_TOTAL)*100)); setTimeout(res,6);
         };
-        player.addEventListener('seeked', onSeeked);
-        try{ player.currentTime = t; }catch(e){ player.removeEventListener('seeked', onSeeked); res(); }
+        player.addEventListener('seeked',onSeeked);
+        try{ player.currentTime=t; }catch(e){ player.removeEventListener('seeked',onSeeked); res(); }
       });
     }
-
     const passRatio = valid/Math.max(1,sampled);
-    // chỉ cảnh báo nhẹ, không chặn
-    if(passRatio < 0.10){
-      console.warn('Tỉ lệ khung hợp lệ thấp:', Math.round(passRatio*100)+'%');
-      alert('Video có tỉ lệ khung hợp lệ thấp (ánh sáng/góc quay/cỡ người). Vẫn trả kết quả tham khảo.');
-    }
+    if(passRatio<0.10){ console.warn('Tỉ lệ khung hợp lệ thấp:', Math.round(passRatio*100)+'%'); }
 
-    let decidedView = userView;
-    if(decidedView==='auto'){
-      decidedView = Object.entries(viewCount).sort((a,b)=>b[1]-a[1])[0]?.[0] || 'front';
+    let decided=userView; if(decided==='auto'){
+      decided = Object.entries(viewCount).sort((a,b)=>b[1]-a[1])[0]?.[0] || 'front';
     }
-
-    const tile = Math.round(passRatio*100);
-    const res = summarize(tile, sport);
-    const out = {
-      id, name: current.name, sport, view: decidedView,
-      tile, dung: valid, sai: Math.max(0, sampled-valid),
-      loi: res.loi, chanthuong: res.chanthuong, goiy: res.goiy, dongvien: res.dongvien
-    };
-    results[id]=out; saveResults();
-    renderPanel(out); renderChart();
+    const tile=Math.round(passRatio*100);
+    const info=summarize(tile,sport);
+    const out={ id, name:current.name, sport, view:decided, tile, dung:valid, sai:Math.max(0,sampled-valid),
+      loi:info.loi, chanthuong:info.chanthuong, goiy:info.goiy, dongvien:info.dongvien };
+    results[id]=out; saveResults(); renderPanel(out); renderChart();
   }
 
-  function summarize(tile, sport){
+  function summarize(tile,sport){
     const base={
-      xuatphat:{
-        loi:["Gập gối chưa đúng","Tay chống yếu","Thân nghiêng nhiều"],
-        chanthuong:["Cổ tay","Gối","Vai"],
-        goiy:["Giữ thân thẳng khi xuất phát","Tăng phản xạ gối & mũi chân","Xuất phát tại chỗ giữ 5s"]
-      },
-      nhaycao:{
-        loi:["Chạy đà chậm","Gối không nâng cao","Không kiểm soát độ cong lưng"],
-        chanthuong:["Gối","Cột sống thắt lưng"],
-        goiy:["Chạy đà + nhảy 1 chân","Kéo giãn lưng","Bật nhảy nâng gối"]
-      },
-      nemta:{
-        loi:["Hạ thấp vai khi xoay","Chưa tối ưu lực chân"],
-        chanthuong:["Cổ tay","Vai","Lưng"],
-        goiy:["Tăng sức mạnh cơ xoay","Phối hợp chân-trục-đẩy tạ","Xoay người chậm, giữ vai"]
-      }
+      xuatphat:{loi:["Gập gối chưa đúng","Tay chống yếu","Thân nghiêng nhiều"],
+        chanthuong:["Cổ tay","Gối","Vai"], goiy:["Giữ thân thẳng khi xuất phát","Tăng phản xạ gối & mũi chân","Xuất phát tại chỗ giữ 5s"]},
+      nhaycao:{loi:["Chạy đà chậm","Gối không nâng cao","Không kiểm soát độ cong lưng"],
+        chanthuong:["Gối","Cột sống thắt lưng"], goiy:["Chạy đà + nhảy 1 chân","Kéo giãn lưng","Bật nhảy nâng gối"]},
+      nemta:{loi:["Hạ thấp vai khi xoay","Chưa tối ưu lực chân"],
+        chanthuong:["Cổ tay","Vai","Lưng"], goiy:["Tăng sức mạnh cơ xoay","Phối hợp chân-trục-đẩy tạ","Xoay người chậm, giữ vai"]}
     }[sport];
-
-    let loi, chanthuong, goiy, dongvien;
-    if(tile===100){loi=[]; chanthuong=[]; goiy=[]; dongvien='🌟 Xuất sắc!';}
-    else if(tile>=90){loi=base.loi.slice(0,1); chanthuong=base.chanthuong.slice(0,1); goiy=base.goiy.slice(0,1); dongvien='🔥 Rất tốt!';}
-    else if(tile>=70){loi=base.loi.slice(0,2); chanthuong=base.chanthuong.slice(0,2); goiy=base.goiy.slice(0,2); dongvien='👍 Khá tốt!';}
-    else{loi=base.loi; chanthuong=base.chanthuong; goiy=base.goiy; dongvien='⚠️ Cần cải thiện.';}
+    let loi,chanthuong,goiy,dongvien;
+    if(tile===100){loi=[];chanthuong=[];goiy=[];dongvien='🌟 Xuất sắc!';}
+    else if(tile>=90){loi=base.loi.slice(0,1);chanthuong=base.chanthuong.slice(0,1);goiy=base.goiy.slice(0,1);dongvien='🔥 Rất tốt!';}
+    else if(tile>=70){loi=base.loi.slice(0,2);chanthuong=base.chanthuong.slice(0,2);goiy=base.goiy.slice(0,2);dongvien='👍 Khá tốt!';}
+    else{loi=base.loi;chanthuong=base.chanthuong;goiy=base.goiy;dongvien='⚠️ Cần cải thiện.';}
     return {loi,chanthuong,goiy,dongvien};
   }
 
   /************** Export **************/
-  exportReport.onclick = ()=>{
-    if(!current || !results[current.id]){ alert('Chưa có kết quả.'); return; }
-    const data = results[current.id];
-    const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
-    const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-    a.download = data.name.replace(/\.[^/.]+$/,'')+'_report.json'; a.click();
-    setTimeout(()=>URL.revokeObjectURL(a.href), 500);
-  };
-
-  exportJson.onclick = ()=>{
-    if(!current){ alert('Chưa chọn video.'); return; }
-    const data = results[current.id];
-    const payload = {meta:{id:current.id,name:current.name,sport:current.sport}, result:data};
-    const blob = new Blob([JSON.stringify(payload,null,2)], {type:'application/json'});
-    const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-    a.download = current.name.replace(/\.[^/.]+$/,'')+'_features.json'; a.click();
-    setTimeout(()=>URL.revokeObjectURL(a.href), 500);
-  };
-
-  exportCsv.onclick = ()=>{
-    if(!current || !results[current.id]){ alert('Chưa có kết quả.'); return; }
-    const header = ['name','sport','view','tile','dung','sai'];
-    const r = results[current.id];
-    const row = [r.name,r.sport,r.view,r.tile,r.dung,r.sai].map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',');
-    const blob = new Blob([[header.join(','),row].join('\n')],{type:'text/csv'});
+  exportReport.onclick=()=>{
+    if(!current||!results[current.id]){alert('Chưa có kết quả.');return;}
+    const data=results[current.id];
+    const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
     const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
-    a.download = r.name.replace(/\.[^/.]+$/,'')+'_summary.csv'; a.click();
-    setTimeout(()=>URL.revokeObjectURL(a.href), 500);
+    a.download=data.name.replace(/\.[^/.]+$/,'')+'_report.json'; a.click();
+    setTimeout(()=>URL.revokeObjectURL(a.href),500);
+  };
+  exportJson.onclick=()=>{
+    if(!current){alert('Chưa chọn video.');return;}
+    const data=results[current.id];
+    const payload={meta:{id:current.id,name:current.name,sport:current.sport}, result:data};
+    const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+    const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+    a.download=current.name.replace(/\.[^/.]+$/,'')+'_features.json'; a.click();
+    setTimeout(()=>URL.revokeObjectURL(a.href),500);
+  };
+  exportCsv.onclick=()=>{
+    if(!current||!results[current.id]){alert('Chưa có kết quả.');return;}
+    const r=results[current.id], header=['name','sport','view','tile','dung','sai'];
+    const row=[r.name,r.sport,r.view,r.tile,r.dung,r.sai].map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',');
+    const blob=new Blob([[header.join(','),row].join('\n')],{type:'text/csv'});
+    const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+    a.download=r.name.replace(/\.[^/.]+$/,'')+'_summary.csv'; a.click();
+    setTimeout(()=>URL.revokeObjectURL(a.href),500);
   };
 
   /************** Events **************/
   fileInput.addEventListener('change', e=>{
-    const files = Array.from(e.target.files||[]);
+    const files=Array.from(e.target.files||[]);
     files.forEach(f=>{
-      const id = uid(f.name);
-      const url = URL.createObjectURL(f);
-      let tag = sportSel.value;
+      const id=uid(f.name), url=URL.createObjectURL(f);
+      let tag=sportSel.value;
       const ln=f.name.toLowerCase();
       if(ln.includes('nhay')) tag='nhaycao';
       else if(ln.includes('nem')) tag='nemta';
       else if(ln.includes('xuat')) tag='xuatphat';
       uploaded.push({id,name:f.name,url,sport:tag});
     });
-    renderHistory();
-    if(uploaded.length && !current){ openVideo(uploaded[uploaded.length-1]); }
+    renderHistory(); if(uploaded.length && !current){ openVideo(uploaded[uploaded.length-1]); }
   });
 
   analyzeBtn.onclick = ()=> analyze(false);
-  reanalyzeBtn.onclick = ()=> analyze(true);
-
+  reanalyzeBtn.onclick = ()=>{
+    // Sửa lỗi: nếu chưa có current nhưng có video trong lịch sử -> tự chọn video gần nhất
+    if(!current && uploaded.length){ openVideo(uploaded[uploaded.length-1]); }
+    analyze(true);
+  };
   clearBtn.onclick = ()=>{
     if(!confirm('Xóa toàn bộ dữ liệu (kết quả & video) trong phiên hiện tại?')) return;
-    uploaded.forEach(v=>{ try{URL.revokeObjectURL(v.url);}catch(e){} });
-    uploaded=[]; results={}; saveResults(); renderHistory(); renderChart(); panel.innerHTML='<span class="muted">Chưa có video được chọn.</span>'; player.src='';
+    uploaded.forEach(v=>{try{URL.revokeObjectURL(v.url);}catch(e){}});
+    uploaded=[]; results={}; saveResults(); renderHistory(); renderChart();
+    panel.innerHTML='<span class="muted">Chưa có video được chọn.</span>'; player.src=''; current=null; setProgress(0);
   };
-
   sportSel.onchange = ()=>{ renderHistory(); renderChart(); };
-  viewSel.onchange = ()=>{}; // giữ nguyên
 
   // init
-  ensurePose();
-  renderHistory(); renderChart();
+  ensurePose(); renderHistory(); renderChart();
   </script>
 </body>
 </html>
