@@ -4,68 +4,199 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Hỗ trợ Huấn luyện Thể thao - Phân tích Tư thế</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
   <style>
     :root{
-      --bg:#f7f9fb; --card:#fff; --bd:#e6e9ee; --txt:#1f2937; --muted:#6b7280;
-      --pri:#009688; --pri2:#00796B; --green:#16a34a; --red:#dc2626;
-      --r-md:.5rem; --r-lg:.75rem; --shadow:0 6px 18px rgba(16,24,40,.06);
+      /* Bảng màu tươi + chuyển sắc */
+      --bg1:#0f172a;         /* slate-900 */
+      --bg2:#111827;         /* gray-900  */
+      --grad1:#0ea5e9;       /* sky-500   */
+      --grad2:#22c55e;       /* green-500 */
+      --grad3:#a855f7;       /* purple-500*/
+      --card:rgba(255,255,255,.08);
+      --glass:rgba(255,255,255,.12);
+      --bd:rgba(255,255,255,.12);
+      --txt:#e5e7eb;
+      --muted:#94a3b8;
+      --pri:#22d3ee;         /* cyan-400  */
+      --pri2:#0ea5e9;        /* sky-500   */
+      --accent:#f59e0b;      /* amber-500 */
+      --ok:#22c55e;
+      --warn:#f97316;
+      --danger:#ef4444;
+      --shadow:0 10px 30px rgba(0,0,0,.35);
+      --r-lg:16px;
+      --r-xl:22px;
     }
     *{box-sizing:border-box}
-    body{margin:0;font-family:Inter,system-ui,Arial,sans-serif;background:var(--bg);color:var(--txt)}
-    .wrap{max-width:1200px;margin:auto;padding:24px}
-    h3{margin:0 0 12px;font-size:18px;border-bottom:1px solid var(--bd);padding-bottom:8px}
-    .muted{color:var(--muted)} .small{font-size:13px;color:var(--muted)}
-    .card{background:var(--card);border:1px solid var(--bd);border-radius:var(--r-lg);box-shadow:var(--shadow);padding:18px}
-    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:.6rem;border:1px solid var(--bd);background:#eef2f6;color:var(--txt);cursor:pointer}
-    .btn:hover{background:#e3e8ef}
-    .btn-primary{background:var(--pri);border-color:var(--pri);color:#fff}
-    .btn-primary:hover{background:var(--pri2)}
-    input[type=file],select,input[type=number]{padding:10px 12px;border:1px solid var(--bd);border-radius:.6rem;background:#fff}
-    .grid{display:grid;gap:18px}
-    .layout{grid-template-columns:1.15fr .85fr}
-    .toolbar{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-    .toolbar>*:nth-child(4){justify-self:end}
-    .player{position:relative;background:#000;border-radius:.75rem;overflow:hidden;border:1px solid var(--bd);min-height:260px}
-    .player video,.player canvas{width:100%;height:100%;display:block}
-    .badge{position:absolute;left:12px;top:12px;padding:4px 10px;border-radius:999px;font-size:12px;background:rgba(0,0,0,.55);color:#fff}
-    .progress{display:flex;gap:10px;align-items:center;margin-top:10px}
-    .bar{flex:1;height:10px;border-radius:999px;overflow:hidden;background:#eef2f6;border:1px solid var(--bd)}
-    .bar>span{display:block;height:100%;width:0;background:var(--green);transition:width .3s}
-    .pill{display:inline-block;padding:2px 8px;border-radius:999px;border:1px solid var(--bd);background:#f4f7fb;font-size:12px}
-    .editor{max-height:260px;overflow:auto;border:1px solid var(--bd);border-radius:.6rem;background:#fff;padding:8px}
-    .video-item{display:flex;justify-content:space-between;align-items:center;border:1px solid var(--bd);border-radius:.6rem;padding:10px;margin-bottom:8px;background:#fff}
-    .video-item .btn{padding:6px 10px}
+    html,body{height:100%}
+    body{
+      margin:0;
+      color:var(--txt);
+      font-family:Inter,system-ui,Arial,sans-serif;
+      background:
+        radial-gradient(1200px 600px at 10% -10%, rgba(14,165,233,.25), transparent 60%),
+        radial-gradient(900px 500px at 110% -20%, rgba(168,85,247,.20), transparent 55%),
+        radial-gradient(700px 400px at 50% 120%, rgba(34,197,94,.18), transparent 60%),
+        linear-gradient(160deg, var(--bg1), var(--bg2));
+      background-attachment: fixed;
+    }
+
+    .wrap{max-width:1200px;margin:auto;padding:28px}
+    .page-head{
+      display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px
+    }
+    .title{
+      font-family:Poppins,Inter,sans-serif;
+      font-weight:700; font-size:22px;
+      letter-spacing:.2px;
+      background: linear-gradient(90deg, var(--pri) 0%, var(--grad3) 50%, var(--accent) 100%);
+      -webkit-background-clip:text; background-clip:text; color:transparent;
+    }
+    .subtitle{color:var(--muted);font-size:13px}
+
+    .card{
+      background:linear-gradient(180deg, var(--glass), rgba(255,255,255,.06));
+      border:1px solid var(--bd);
+      border-radius:var(--r-xl);
+      box-shadow:var(--shadow);
+      backdrop-filter:saturate(140%) blur(10px);
+      padding:18px;
+    }
+    h3{
+      margin:0 0 12px;
+      font-size:16px;font-weight:700;letter-spacing:.2px;
+      color:#fff;
+      display:flex;align-items:center;gap:8px
+    }
+    h3:before{
+      content:'';
+      display:inline-block;width:8px;height:8px;border-radius:50%;
+      background:radial-gradient(circle at 35% 35%, #fff, var(--pri2) 60%, transparent 70%);
+      box-shadow:0 0 18px var(--pri2);
+    }
+    .small{font-size:13px;color:var(--muted)}
+    .muted{color:var(--muted)}
     .row{display:flex;gap:10px;flex-wrap:wrap}
     .row>*{flex:1}
+
+    /* Toolbar */
+    .toolbar{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+    .toolbar .slot{background:rgba(255,255,255,.03);border:1px dashed var(--bd);padding:10px;border-radius:14px}
+    label.small{display:block;margin-bottom:6px}
+    input[type=file],select,input[type=number]{
+      width:100%;
+      padding:10px 12px;border:1px solid var(--bd);border-radius:12px;background:rgba(255,255,255,.06);
+      color:var(--txt);outline:none;
+    }
+    select:focus,input:focus{box-shadow:0 0 0 3px rgba(14,165,233,.2)}
+
+    /* Buttons */
+    .btn{
+      display:inline-flex;align-items:center;gap:8px;padding:10px 14px;
+      border-radius:14px;border:1px solid var(--bd);
+      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02));
+      color:var(--txt);cursor:pointer;user-select:none;
+      transition:transform .08s ease, box-shadow .2s ease, background .2s ease;
+      box-shadow:0 6px 16px rgba(0,0,0,.25);
+    }
+    .btn:hover{box-shadow:0 10px 22px rgba(0,0,0,.3);}
+    .btn:active{transform:translateY(1px)}
+    .btn-primary{
+      border-color:transparent;
+      background:linear-gradient(90deg, var(--pri) 0%, var(--pri2) 100%);
+      color:#00131a;
+      font-weight:700;
+      text-shadow:0 1px 0 rgba(255,255,255,.25);
+    }
+    .btn-danger{background:linear-gradient(90deg, #fb7185 0%, #ef4444 100%); border-color:transparent; color:#2b0a0a;font-weight:700}
+    .btn-ghost{background:rgba(255,255,255,.05)}
+    a.btn{text-decoration:none}
+
+    /* Player */
+    .player{
+      position:relative;border-radius:18px;overflow:hidden;
+      border:1px solid var(--bd);
+      background:
+        radial-gradient(400px 220px at 80% -10%, rgba(14,165,233,.15), transparent 60%),
+        radial-gradient(300px 180px at -10% 90%, rgba(34,197,94,.15), transparent 60%),
+        #000;
+      min-height:280px;
+    }
+    .player video,.player canvas{width:100%;height:100%;display:block}
+    .badge{
+      position:absolute;left:12px;top:12px;padding:6px 12px;border-radius:999px;font-size:12px;
+      background:linear-gradient(90deg, rgba(255,255,255,.15), rgba(255,255,255,.05));
+      border:1px solid rgba(255,255,255,.2); color:#fff;
+      box-shadow:0 0 0 2px rgba(255,255,255,.06);
+      animation:glow 2s ease-in-out infinite;
+    }
+    @keyframes glow{
+      0%,100%{box-shadow:0 0 0 2px rgba(255,255,255,.06), 0 0 10px rgba(34,211,238,.0)}
+      50%{box-shadow:0 0 0 2px rgba(255,255,255,.06), 0 0 18px rgba(34,211,238,.35)}
+    }
+
+    /* Progress */
+    .progress{display:flex;gap:10px;align-items:center;margin-top:12px}
+    .bar{flex:1;height:12px;border-radius:999px;overflow:hidden;background:rgba(255,255,255,.08);border:1px solid var(--bd)}
+    .bar>span{
+      display:block;height:100%;width:0%;
+      background:linear-gradient(90deg, var(--ok), #10b981, #34d399);
+      transition:width .35s ease-in-out
+    }
+
+    /* Pills */
+    .pill{
+      display:inline-block;padding:3px 10px;border-radius:999px;border:1px solid var(--bd);
+      background:rgba(255,255,255,.06); font-size:12px; color:var(--txt)
+    }
+
+    /* Editor */
+    .editor{
+      max-height:260px;overflow:auto;border:1px solid var(--bd);
+      border-radius:14px;background:rgba(255,255,255,.04);padding:10px
+    }
+    .video-item{
+      display:flex;justify-content:space-between;align-items:center;
+      border:1px solid var(--bd);border-radius:14px;padding:10px;margin-bottom:8px;
+      background:rgba(255,255,255,.05);
+      transition:transform .08s ease, background .2s ease
+    }
+    .video-item:hover{background:rgba(255,255,255,.07); transform:translateY(-1px)}
+    .video-item .btn{padding:8px 12px}
+
+    /* Layout */
+    .grid{display:grid;gap:18px}
+    .layout{grid-template-columns:1.15fr .85fr}
     @media (max-width: 992px){.layout{grid-template-columns:1fr}.toolbar{grid-template-columns:1fr 1fr}}
   </style>
 </head>
 <body>
 <div class="wrap">
   <!-- Header -->
-  <div class="card" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+  <div class="page-head">
     <div>
-      <div id="pageTitle" style="font-weight:700;font-size:18px">Bảng điều khiển Phân tích Tư thế</div>
-      <div class="small">Chọn môn, tải video và bắt đầu phân tích.</div>
+      <div id="pageTitle" class="title">Bảng điều khiển Phân tích Tư thế</div>
+      <div class="subtitle">Chọn môn, tải video và bắt đầu phân tích.</div>
     </div>
-    <a href="bangdieukhien.html" class="btn">← Quay lại</a>
+    <a href="bangdieukhien.html" class="btn btn-ghost">← Quay lại</a>
   </div>
 
   <!-- Chuẩn bị dữ liệu -->
   <div class="card">
     <h3>Chuẩn bị dữ liệu</h3>
     <div class="toolbar">
-      <div>
-        <div class="small">Môn thể thao</div>
+      <div class="slot">
+        <label class="small">Môn thể thao</label>
         <select id="sport">
           <option value="xuatphat">Xuất phát</option>
           <option value="nhaycao">Nhảy cao</option>
           <option value="nemta">Ném tạ</option>
         </select>
       </div>
-      <div>
-        <div class="small">Góc quay</div>
+      <div class="slot">
+        <label class="small">Góc quay</label>
         <select id="viewSel">
           <option value="auto">Tự động</option>
           <option value="front">Trước/Sau</option>
@@ -74,12 +205,12 @@
           <option value="back">Đằng sau</option>
         </select>
       </div>
-      <div>
-        <div class="small">Tải video (.mp4)</div>
+      <div class="slot">
+        <label class="small">Tải video (.mp4)</label>
         <input id="videoUpload" type="file" accept="video/*" multiple />
       </div>
-      <div style="align-self:end">
-        <button id="clearStorage" class="btn" title="Xóa toàn bộ video & kết quả">🗑 Xóa dữ liệu</button>
+      <div class="slot" style="display:flex;align-items:flex-end">
+        <button id="clearStorage" class="btn btn-danger" title="Xóa toàn bộ video & kết quả">🗑 Xóa dữ liệu</button>
       </div>
     </div>
   </div>
@@ -88,13 +219,11 @@
   <div class="grid layout">
     <!-- Cột trái -->
     <div class="grid">
-      <!-- Danh sách video -->
       <div class="card">
         <h3>Lịch sử video</h3>
         <div id="videoList" class="small muted">Chưa có video nào.</div>
       </div>
 
-      <!-- Trình phát & phân tích -->
       <div class="card">
         <h3>Trình phát & Phân tích</h3>
         <div class="player" id="playerWrap">
@@ -120,20 +249,20 @@
       <div class="card">
         <h3>Thông tin phân tích</h3>
         <div id="analysisPanel" class="small">Chưa có video được chọn.</div>
-        <hr>
+        <hr style="border-color:var(--bd);opacity:.5">
         <div class="row">
           <div>
-            <div class="small">Ngưỡng pass theo môn (%)</div>
+            <label class="small">Ngưỡng pass theo môn (%)</label>
             <input type="range" id="sportThresh" min="40" max="90" step="1">
-            <div class="small"><span id="threshLabel"></span></div>
+            <div class="small"><span id="threshLabel" class="pill"></span></div>
           </div>
           <div>
-            <div class="small">Tùy chọn</div>
+            <label class="small">Tùy chọn</label><br/>
             <button id="resetStandards" class="btn">Khôi phục khung chuẩn mặc định</button>
           </div>
         </div>
-        <hr>
-        <h4 class="small" style="margin:0 0 8px;color:var(--muted)">Thống kê tỉ lệ đúng</h4>
+        <hr style="border-color:var(--bd);opacity:.5">
+        <h4 class="small" style="margin:0 0 8px;color:#d1d5db">Thống kê tỉ lệ đúng</h4>
         <div style="height:220px"><canvas id="chartCanvas"></canvas></div>
       </div>
 
@@ -158,10 +287,9 @@
         </div>
       </div>
 
-      <!-- Bộ chỉnh khung chuẩn -->
       <div class="card">
         <h3>Khung chuẩn (chỉnh & lưu cục bộ)</h3>
-        <div class="small muted">Bạn có thể sửa <b>góc mục tiêu (want)</b>, <b>dung sai (tol)</b>, <b>trọng số (weight)</b>. Lưu vào LocalStorage.</div>
+        <div class="small muted">Sửa <b>want</b>, <b>tol</b>, <b>weight</b> rồi “Lưu khung chuẩn”.</div>
         <div id="stdEditor" class="editor small"></div>
         <div class="row" style="margin-top:8px">
           <button id="saveStdBtn" class="btn btn-primary">Lưu khung chuẩn</button>
@@ -171,20 +299,18 @@
     </div>
   </div>
 
-  <!-- Ghi chú -->
   <div class="card" style="margin-top:14px">
     <h3>Ghi chú</h3>
     <div class="small">
-      Kết quả pass/fail từng khung hình dựa trên khung chuẩn theo môn & góc quay, có <b>trọng số</b>.  
-      Tỉ lệ đúng (%) = tổng trọng số của các khung hình đạt / tổng trọng số của tất cả khung hình hợp lệ.  
-      Dữ liệu, video và khung chuẩn được lưu cục bộ (LocalStorage/IndexedDB).
+      Pass/fail từng khung hình dựa trên khung chuẩn theo môn & góc quay, có <b>trọng số</b> và <b>ngưỡng</b>.  
+      Video/khung chuẩn lưu cục bộ (IndexedDB/LocalStorage). Có thể lưu thành tích & cảnh báo lên Firestore (khi có <code>?athleteId=...</code>).
     </div>
   </div>
 </div>
 
-<!-- Modal tối giản -->
-<div id="customModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);backdrop-filter:blur(3px);z-index:999;align-items:center;justify-content:center">
-  <div style="background:#fff;border:1px solid var(--bd);box-shadow:var(--shadow);border-radius:.75rem;padding:18px;max-width:420px">
+<!-- Modal -->
+<div id="customModal" style="display:none;position:fixed;inset:0;background:rgba(2,6,23,.55);backdrop-filter:blur(4px);z-index:999;align-items:center;justify-content:center">
+  <div style="background:linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.05));border:1px solid var(--bd);box-shadow:var(--shadow);border-radius:18px;padding:18px;max-width:480px">
     <div id="modalText" style="margin-bottom:12px"></div>
     <div id="modalActions" class="row" style="justify-content:flex-end"></div>
   </div>
@@ -196,13 +322,13 @@
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils@0.5/drawing_utils.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.17.0/dist/tf.min.js"></script>
 
-<!-- Firebase SDK -->
+<!-- Firebase SDK + Toàn bộ logic (giữ nguyên chức năng, chỉ chỉnh UI) -->
 <script type="module">
+  /* === Firebase init (giữ như trước) === */
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+  import { getAuth } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
   import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
-  // Config của bạn
   const firebaseConfig = {
     apiKey: "AIzaSyA2dXWCyjL2xgCSyeW9QQ7RvjI_O7kFHJw",
     authDomain: "sporthealthdata.firebaseapp.com",
@@ -211,12 +337,10 @@
     messagingSenderId: "789054240877",
     appId: "1:789054240877:web:04a400c9ea586523a86764",
   };
-
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db   = getFirestore(app);
 
-  // === Helper: lưu kết quả phân tích lên Firestore nếu có athleteId ===
   async function saveAchievementToFirestore(resultData, athleteId) {
     try {
       const col = collection(db, "users", athleteId, "achievements");
@@ -243,7 +367,7 @@
     } catch (e) { console.error("Lỗi lưu warnings:", e); }
   }
 
-  // ======== App phân tích ========
+  /* === App elements === */
   const sportSel = document.getElementById('sport');
   const viewSel  = document.getElementById('viewSel');
   const videoUpload = document.getElementById('videoUpload');
@@ -276,7 +400,7 @@
   const sportThresh = document.getElementById('sportThresh');
   const threshLabel = document.getElementById('threshLabel');
 
-  // -------- IndexedDB (lưu video) --------
+  /* === IndexedDB === */
   const DB_NAME='thethaott_videos_db', DB_VERSION=1, STORE_NAME='videos';
   let idb;
   function initDB(){
@@ -315,7 +439,7 @@
     tx.onerror=e=>rej(e);
   });
 
-  // -------- Modal --------
+  /* === Modal === */
   function showModal(html, confirm=false, onOk=null){
     const m=document.getElementById('customModal');
     const t=document.getElementById('modalText');
@@ -335,10 +459,10 @@
     m.style.display='flex';
   }
 
-  // -------- Khung chuẩn (có trọng số) + ngưỡng --------
+  /* === Khung chuẩn + Ngưỡng === */
   const DEFAULT_THRESH = {xuatphat:60, nhaycao:55, nemta:60}; // %
-  function loadThresh(){ const saved=JSON.parse(localStorage.getItem('std_thresh')||'{}'); return {...DEFAULT_THRESH, ...saved}; }
-  function saveThresh(v){ localStorage.setItem('std_thresh', JSON.stringify(v)); }
+  const loadThresh = ()=> ({...DEFAULT_THRESH, ...(JSON.parse(localStorage.getItem('std_thresh')||'{}'))});
+  const saveThresh = v => localStorage.setItem('std_thresh', JSON.stringify(v));
   let THRESH = loadThresh();
 
   const DEFAULT_STD = {
@@ -367,33 +491,29 @@
     nhaycao:{ left:[{name:'Thân nghiêng',joints:['torsoIncline'], want:20, tol:18, anySide:false, weight:0.9}], right:[{name:'Thân nghiêng',joints:['torsoIncline'], want:20, tol:18, anySide:false, weight:0.9}] },
     nemta:  { left:[{name:'Thân nghiêng',joints:['torsoIncline'], want:30, tol:18, anySide:false, weight:0.9}], right:[{name:'Thân nghiêng',joints:['torsoIncline'], want:30, tol:18, anySide:false, weight:0.9}] },
   };
-  function loadStd(){ const saved=JSON.parse(localStorage.getItem('std_rules')||'{}'); const merged=JSON.parse(JSON.stringify(DEFAULT_STD)); for(const k in saved){merged[k]=saved[k];} return merged; }
-  function saveStd(v){ localStorage.setItem('std_rules', JSON.stringify(v)); }
+  const loadStd = ()=> {
+    const saved=JSON.parse(localStorage.getItem('std_rules')||'{}');
+    const merged=JSON.parse(JSON.stringify(DEFAULT_STD));
+    for(const k in saved){ merged[k]=saved[k]; }
+    return merged;
+  }
+  const saveStd = v => localStorage.setItem('std_rules', JSON.stringify(v));
   let STD = loadStd();
-
-  function rulesFor(sport, view){
+  const rulesFor = (sport, view) => {
     const base = STD[sport] ? JSON.parse(JSON.stringify(STD[sport])) : [];
     const ov = VIEW_OVERRIDES[sport]?.[view] || [];
     return [...base, ...ov];
-  }
+  };
 
-  // -------- Phần cứng phân tích --------
+  /* === MediaPipe & tính góc === */
   let uploadedVideos=[], results=JSON.parse(localStorage.getItem('thethaott_results')||'{}');
   let currentVideo=null, mpPose=null, mpPoseDrawingCallback=null, lastPoseLandmarks=null, chart=null;
   let featTime=[], featAngles=[], featVel=[], featROM={}, aiModel=null, aiAvailable=false;
   let viewCounts={front:0,left:0,right:0,back:0};
 
-  function saveResults(){ localStorage.setItem('thethaott_results', JSON.stringify(results)); renderChart(); }
-
-  function uidFromName(name){ let h=2166136261; for(let i=0;i<name.length;i++){h ^= name.charCodeAt(i);h += (h<<1)+(h<<4)+(h<<7)+(h<<8)+(h<<24);} return 'v_'+(h>>>0); }
-
-  function setProgress(pct, text){
-    progressRow.style.display='flex';
-    progressBar.style.width=Math.max(0,Math.min(100,pct))+'%';
-    progressText.textContent=text||`${Math.round(pct)}%`;
-    if(pct>=100){ setTimeout(()=>progressRow.style.display='none', 400); }
-  }
-
+  const saveResults = ()=>{ localStorage.setItem('thethaott_results', JSON.stringify(results)); renderChart(); }
+  const uidFromName = name => { let h=2166136261; for(let i=0;i<name.length;i++){h ^= name.charCodeAt(i);h += (h<<1)+(h<<4)+(h<<7)+(h<<8)+(h<<24);} return 'v_'+(h>>>0); }
+  function setProgress(pct, text){ progressRow.style.display='flex'; progressBar.style.width=Math.max(0,Math.min(100,pct))+'%'; progressText.textContent=text||`${Math.round(pct)}%`; if(pct>=100){ setTimeout(()=>progressRow.style.display='none', 400); } }
   function ensureMpPose(){
     if(!mpPose){
       mpPose = new Pose({locateFile:f=>`https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5/${f}`});
@@ -402,69 +522,29 @@
     }
     return mpPose;
   }
-
   async function tryLoadAIModel(){
-    try{
-      aiStatusPill.textContent='AI: đang tải...';
-      aiModel = await tf.loadLayersModel('model/model.json');
-      aiAvailable=true; aiStatusPill.textContent='AI: sẵn sàng';
-    }catch{ aiAvailable=false; aiModel=null; aiStatusPill.textContent='AI: chưa có model'; }
+    try{ aiStatusPill.textContent='AI: đang tải...'; aiModel = await tf.loadLayersModel('model/model.json'); aiAvailable=true; aiStatusPill.textContent='AI: sẵn sàng'; }
+    catch{ aiAvailable=false; aiModel=null; aiStatusPill.textContent='AI: chưa có model'; }
   }
 
-  // --- Góc & tính toán ---
   const PER_FRAME_BASE = ()=>({xuatphat:(THRESH.xuatphat/100), nhaycao:(THRESH.nhaycao/100), nemta:(THRESH.nemta/100)});
-  function degBetween(a,b,c){ const abx=a.x-b.x, aby=a.y-b.y, cbx=c.x-b.x, cby=c.y-b.y; const dot=abx*cbx+aby*cby; const mag=Math.sqrt((abx*abx+aby*aby)*(cbx*cbx+cby*cby)); if(!mag) return 0; let cos=dot/mag; cos=Math.max(-1,Math.min(1,cos)); return Math.acos(cos)*180/Math.PI; }
-  function torsoInclineDeg(lm){ const lS=lm[11], rS=lm[12], lH=lm[23], rH=lm[24]; if(!(lS&&rS&&lH&&rH)) return 0; const s={x:(lS.x+rS.x)/2,y:(lS.y+rS.y)/2}; const h={x:(lH.x+rH.x)/2,y:(lH.y+rH.y)/2}; const dx=s.x-h.x, dy=s.y-h.y; return Math.atan2(Math.abs(dy),Math.abs(dx))*180/Math.PI; }
-  function extractAngles(lm){
-    const ang={};
-    if(lm[23]&&lm[25]&&lm[27]) ang.kneeL=degBetween(lm[23],lm[25],lm[27]);
-    if(lm[24]&&lm[26]&&lm[28]) ang.kneeR=degBetween(lm[24],lm[26],lm[28]);
-    if(lm[11]&&lm[23]&&lm[25]) ang.hipL=degBetween(lm[11],lm[23],lm[25]);
-    if(lm[12]&&lm[24]&&lm[26]) ang.hipR=degBetween(lm[12],lm[24],lm[26]);
-    if(lm[11]&&lm[13]&&lm[15]) ang.elbowL=degBetween(lm[11],lm[13],lm[15]);
-    if(lm[12]&&lm[14]&&lm[16]) ang.elbowR=degBetween(lm[12],lm[14],lm[16]);
-    if(lm[13]&&lm[11]&&lm[23]) ang.shoulderL=degBetween(lm[13],lm[11],lm[23]);
-    if(lm[14]&&lm[12]&&lm[24]) ang.shoulderR=degBetween(lm[14],lm[12],lm[24]);
-    ang.torsoIncline=torsoInclineDeg(lm); return ang;
-  }
-  function detectView2D(lm){
-    const lS=lm[11], rS=lm[12]; if(!(lS&&rS)) return 'front';
-    return (Math.abs(rS.x-lS.x) < 0.55*Math.abs(((lm[11].x+lm[12].x)/2)-((lm[23].x+lm[24].x)/2))) ? (rS.x>lS.x?'right':'left') : 'front';
-  }
-  function angleVelocity(prev,curr,dt){
-    const out={}, keys=new Set([...Object.keys(prev||{}),...Object.keys(curr||{})]);
-    keys.forEach(k=>{ const a=(curr&&typeof curr[k]==='number')?curr[k]:null; const b=(prev&&typeof prev[k]==='number')?prev[k]:null; out[k]=(a!=null&&b!=null&&dt>0)?(a-b)/dt:0; });
-    return out;
-  }
-  function computeROM(series){
-    const keys=new Set(); series.forEach(a=>Object.keys(a).forEach(k=>keys.add(k)));
-    const rom={}; keys.forEach(k=>{let min=+Infinity, max=-Infinity; series.forEach(a=>{const v=a[k]; if(typeof v==='number'){if(v<min)min=v; if(v>max)max=v;}}); if(min<+Infinity&&max>-Infinity) rom[k]={min,max,range:max-min};});
-    return rom;
-  }
-  function summarizeFeatures(){
-    const keys=new Set(); featAngles.forEach(a=>Object.keys(a).forEach(k=>keys.add(k)));
-    const sum={},sumSq={}; keys.forEach(k=>{sum[k]=0;sumSq[k]=0;});
-    const n=featAngles.length;
-    featAngles.forEach(a=>{ keys.forEach(k=>{const v=typeof a[k]==='number'?a[k]:0; sum[k]+=v; sumSq[k]+=v*v;});});
-    const mean={},std={}; keys.forEach(k=>{mean[k]=n?(sum[k]/n):0; std[k]=n?Math.sqrt(Math.max(0,sumSq[k]/n-mean[k]*mean[k])):0;});
-    const rom=computeROM(featAngles);
-    const vkeys=new Set(); featVel.forEach(a=>Object.keys(a).forEach(k=>vkeys.add(k)));
-    const vsum={},vsumSq={}; vkeys.forEach(k=>{vsum[k]=0;vsumSq[k]=0;}); const vn=featVel.length;
-    featVel.forEach(a=>{ vkeys.forEach(k=>{const v=typeof a[k]==='number'?a[k]:0; vsum[k]+=v; vsumSq[k]+=v*v;});});
-    const vmean={},vstd={}; vkeys.forEach(k=>{vmean[k]=vn?(vsum[k]/vn):0; vstd[k]=vn?Math.sqrt(Math.max(0,vsumSq[k]/vn - vmean[k]*vmean[k])):0;});
-    return {mean,std,rom,vmean,vstd,nFrames:n,duration: featTime.length? featTime.at(-1)-featTime[0]:0};
-  }
+  const degBetween=(a,b,c)=>{const abx=a.x-b.x,aby=a.y-b.y,cbx=c.x-b.x,cby=c.y-b.y;const dot=abx*cbx+aby*cby;const mag=Math.sqrt((abx*abx+aby*aby)*(cbx*cbx+cby*cby));if(!mag)return 0;let cos=dot/mag;cos=Math.max(-1,Math.min(1,cos));return Math.acos(cos)*180/Math.PI;}
+  const torsoInclineDeg=lm=>{const lS=lm[11],rS=lm[12],lH=lm[23],rH=lm[24];if(!(lS&&rS&&lH&&rH))return 0;const s={x:(lS.x+rS.x)/2,y:(lS.y+rS.y)/2},h={x:(lH.x+rH.x)/2,y:(lH.y+rH.y)/2};return Math.atan2(Math.abs(s.y-h.y),Math.abs(s.x-h.x))*180/Math.PI}
+  const extractAngles=lm=>{const ang={}; if(lm[23]&&lm[25]&&lm[27]) ang.kneeL=degBetween(lm[23],lm[25],lm[27]); if(lm[24]&&lm[26]&&lm[28]) ang.kneeR=degBetween(lm[24],lm[26],lm[28]); if(lm[11]&&lm[23]&&lm[25]) ang.hipL=degBetween(lm[11],lm[23],lm[25]); if(lm[12]&&lm[24]&&lm[26]) ang.hipR=degBetween(lm[12],lm[24],lm[26]); if(lm[11]&&lm[13]&&lm[15]) ang.elbowL=degBetween(lm[11],lm[13],lm[15]); if(lm[12]&&lm[14]&&lm[16]) ang.elbowR=degBetween(lm[12],lm[14],lm[16]); if(lm[13]&&lm[11]&&lm[23]) ang.shoulderL=degBetween(lm[13],lm[11],lm[23]); if(lm[14]&&lm[12]&&lm[24]) ang.shoulderR=degBetween(lm[14],lm[12],lm[24]); ang.torsoIncline=torsoInclineDeg(lm); return ang;}
+  const detectView2D=lm=>{const lS=lm[11],rS=lm[12]; if(!(lS&&rS)) return 'front'; return (Math.abs(rS.x-lS.x) < 0.55*Math.abs(((lm[11].x+lm[12].x)/2)-((lm[23].x+lm[24].x)/2))) ? (rS.x>lS.x?'right':'left') : 'front';}
+  const angleVelocity=(prev,curr,dt)=>{const out={},keys=new Set([...Object.keys(prev||{}),...Object.keys(curr||{})]);keys.forEach(k=>{const a=(curr&&typeof curr[k]==='number')?curr[k]:null;const b=(prev&&typeof prev[k]==='number')?prev[k]:null;out[k]=(a!=null&&b!=null&&dt>0)?(a-b)/dt:0;});return out;}
+  const computeROM=series=>{const keys=new Set();series.forEach(a=>Object.keys(a).forEach(k=>keys.add(k)));const rom={};keys.forEach(k=>{let min=+Infinity,max=-Infinity;series.forEach(a=>{const v=a[k];if(typeof v==='number'){if(v<min)min=v;if(v>max)max=v;}});if(min<+Infinity&&max>-Infinity)rom[k]={min,max,range:max-min};});return rom;}
+  function summarizeFeatures(){const keys=new Set();featAngles.forEach(a=>Object.keys(a).forEach(k=>keys.add(k)));const sum={},sumSq={};keys.forEach(k=>{sum[k]=0;sumSq[k]=0;});const n=featAngles.length;featAngles.forEach(a=>{keys.forEach(k=>{const v=typeof a[k]==='number'?a[k]:0;sum[k]+=v;sumSq[k]+=v*v;});});const mean={},std={};keys.forEach(k=>{mean[k]=n?(sum[k]/n):0;std[k]=n?Math.sqrt(Math.max(0,sumSq[k]/n-mean[k]*mean[k])):0;});const rom=computeROM(featAngles);const vkeys=new Set();featVel.forEach(a=>Object.keys(a).forEach(k=>vkeys.add(k)));const vsum={},vsumSq={};vkeys.forEach(k=>{vsum[k]=0;vsumSq[k]=0;});const vn=featVel.length;featVel.forEach(a=>{vkeys.forEach(k=>{const v=typeof a[k]==='number'?a[k]:0;vsum[k]+=v;vsumSq[k]+=v*v;});});const vmean={},vstd={};vkeys.forEach(k=>{vmean[k]=vn?(vsum[k]/vn):0;vstd[k]=vn?Math.sqrt(Math.max(0,vsumSq[k]/vn - vmean[k]*vmean[k])):0;});return {mean,std,rom,vmean,vstd,nFrames:n,duration: featTime.length? featTime.at(-1)-featTime[0]:0};}
 
   function weightedCheck(angles, sport, view){
     const rules = rulesFor(sport, view);
     let okW=0, totalW=0;
     for(const r of rules){
-      const weight = Number(r.weight||1);
-      totalW += weight;
+      const w = Number(r.weight||1); totalW += w;
       let within=false;
       if(r.anySide){ for(const k of r.joints){ const v=angles[k]; if(typeof v==='number' && Math.abs(v-r.want)<=r.tol){within=true;break;} } }
       else{ const v=angles[r.joints[0]]; if(typeof v==='number' && Math.abs(v-r.want)<=r.tol) within=true; }
-      if(within) okW += weight;
+      if(within) okW += w;
     }
     const score = totalW>0? okW/totalW : 0;
     const pass = score >= (PER_FRAME_BASE()[sport]||0.6);
@@ -487,11 +567,11 @@
 
   function showAnalysisPanel(res){
     if(!res){ analysisPanel.innerHTML='Chưa có phân tích.'; return; }
-    let html = `<strong>${res.name}</strong><br>`;
-    html += `Góc: <em style="color:var(--pri)">${(res.view||'auto').toUpperCase()}</em> · Tỉ lệ đúng: <b>${res.tile}%</b> (Đúng: ${res.dung} | Sai: ${res.sai})<br>`;
-    html += `Xếp loại: <b>${res.xeploai}</b> – ${res.ketluan}<br>`;
+    let html = `<strong style="color:#fff">${res.name}</strong><br>`;
+    html += `Góc: <span class="pill">${(res.view||'auto').toUpperCase()}</span> · Tỉ lệ đúng: <b style="color:var(--pri)">${res.tile}%</b> (Đúng: ${res.dung} | Sai: ${res.sai})<br>`;
+    html += `Xếp loại: <b style="color:var(--accent)">${res.xeploai}</b> – ${res.ketluan}<br>`;
     if(res.tile<100){
-      html += '<hr><div><b>❌ Lỗi tư thế</b><ul>'+res.loi.map(x=>`<li>${x}</li>`).join('')+'</ul></div>';
+      html += '<hr style="border-color:var(--bd);opacity:.5"><div><b>❌ Lỗi tư thế</b><ul>'+res.loi.map(x=>`<li>${x}</li>`).join('')+'</ul></div>';
       html += '<div><b>⚠️ Nguy cơ chấn thương</b><ul>'+res.chanthuong.map(x=>`<li>${x}</li>`).join('')+'</ul></div>';
       html += '<div><b>💡 Gợi ý</b><ul>'+res.goiy.map(x=>`<li>${x}</li>`).join('')+'</ul></div>';
     }
@@ -502,19 +582,18 @@
     const sport=sportSel.value;
     const keys=Object.keys(results).filter(k=>results[k].sport===sport);
     const labels=keys.map(k=>results[k].name); const data=keys.map(k=>results[k].tile);
-    if(chart) chart.destroy();
-    chart=new Chart(chartCanvas.getContext('2d'),{
+    if(window._chart) window._chart.destroy();
+    window._chart=new Chart(chartCanvas.getContext('2d'),{
       type:'bar',
-      data:{labels,datasets:[{label:'Tỉ lệ đúng (%)',data,backgroundColor:'rgba(0,150,136,.75)'}]},
-      options:{indexAxis:'y',scales:{x:{min:0,max:110}},plugins:{legend:{display:false}}}
+      data:{labels,datasets:[{label:'Tỉ lệ đúng (%)',data,backgroundColor:'rgba(34,211,238,.8)',borderRadius:8}]},
+      options:{indexAxis:'y',scales:{x:{min:0,max:110,grid:{color:'rgba(255,255,255,.06)'}},y:{grid:{display:false}}},plugins:{legend:{display:false}}}
     });
   }
 
-  // --- Standars editor UI ---
   function renderStdEditor(){
-    const s=sportSel.value; const list=rulesFor(s, 'front'); // base view
+    const s=sportSel.value; const list=rulesFor(s, 'front');
     stdEditor.innerHTML = list.map((r,i)=>`
-      <div style="display:grid;grid-template-columns:1.2fr .8fr .8fr .8fr;gap:8px;align-items:center;margin-bottom:6px">
+      <div style="display:grid;grid-template-columns:1.2fr .8fr .8fr .8fr;gap:10px;align-items:center;margin-bottom:8px">
         <div>${r.name}${r.anySide?' <span class="pill">anySide</span>':''}</div>
         <div>muốn: <input data-k="want" data-i="${i}" type="number" value="${r.want}" style="width:80px">°</div>
         <div>± <input data-k="tol" data-i="${i}" type="number" value="${r.tol}" style="width:70px">°</div>
@@ -531,7 +610,6 @@
     saveStd(STD);
   }
 
-  // --- Video list UI ---
   function renderVideoList(){
     const s=sportSel.value;
     const filtered=uploadedVideos.filter(v=>v.sportTag===s||v.name.toLowerCase().includes(s==='xuatphat'?'xuat':(s==='nhaycao'?'nhay':'nem')));
@@ -542,15 +620,14 @@
       const div=document.createElement('div'); div.className='video-item';
       div.innerHTML=`
         <div style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-right:8px">
-          <b title="${v.name}">${v.name}</b>
-          ${has?`<span class="pill" title="Đã phân tích">${results[v.id].tile}%</span>`:''}
+          <b>${v.name}</b> ${has?`<span class="pill" title="Đã phân tích">${results[v.id].tile}%</span>`:''}
         </div>
-        <div style="display:flex;gap:6px">
-          <button class="btn open">Xem</button>
+        <div style="display:flex;gap:8px">
+          <button class="btn">Xem</button>
           <button class="btn ${has?'':'btn-primary'} analyze">${has?'Phân tích lại':'Phân tích'}</button>
-          <button class="btn del" title="Xóa">&times;</button>
+          <button class="btn btn-danger del" title="Xóa">&times;</button>
         </div>`;
-      div.querySelector('.open').onclick=()=>openVideo(v);
+      div.querySelector('.btn').onclick=()=>openVideo(v);
       div.querySelector('.analyze').onclick=()=>{openVideo(v); setTimeout(()=>runAnalysisIfNeeded(v, has),200);}
       div.querySelector('.del').onclick=()=>showModal('Xóa video này?',true,async()=>{
         try{
@@ -566,7 +643,6 @@
     });
   }
 
-  // --- Player & overlay ---
   async function openVideo(v){
     currentVideo=v; player.src=v.url; player.muted=false; player.crossOrigin='anonymous'; player.playsInline=true;
     await new Promise(r=>{ if(player.readyState>=1) return r(); const fn=()=>{player.removeEventListener('loadedmetadata',fn); r();}; player.addEventListener('loadedmetadata',fn); setTimeout(r,1000); });
@@ -595,10 +671,10 @@
         liveBadge.textContent = `[${vUse}] ` + (chk.pass?'✅ Đạt':'⚠️ Lỗi');
 
         const conns = (typeof POSE_CONNECTIONS!=='undefined')?POSE_CONNECTIONS:(Pose&&Pose.POSE_CONNECTIONS?Pose.POSE_CONNECTIONS:null);
-        if(conns){ ctx.strokeStyle = chk.pass?'#16a34a':'#dc2626'; ctx.lineWidth=2.5;
+        if(conns){ ctx.strokeStyle = chk.pass?'#22c55e':'#ef4444'; ctx.lineWidth=2.6;
           conns.forEach(c=>{const a=lm[c[0]], b=lm[c[1]]; if(a&&b){ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();}});
         }
-        lm.forEach(p=>{ctx.fillStyle=chk.pass?'#14b8a6':'#f43f5e'; ctx.beginPath(); ctx.arc(p.x,p.y,4,0,Math.PI*2); ctx.fill();});
+        lm.forEach(p=>{ctx.fillStyle=chk.pass?'#22d3ee':'#fb7185'; ctx.beginPath(); ctx.arc(p.x,p.y,4,0,Math.PI*2); ctx.fill();});
       } else liveBadge.style.display='none';
     };
     mpPose.onResults(mpPoseDrawingCallback);
@@ -613,7 +689,6 @@
     player.onended=()=>{ if(raf) cancelAnimationFrame(raf); liveBadge.style.display='none'; };
   }
 
-  // --- Phân tích ---
   async function analyzeVideoUsingMediaPipe(videoFile, sport, force=false){
     if(results[videoFile.id] && !force) return results[videoFile.id];
     if(!ensureMpPose()){ showModal('Không khởi tạo được MediaPipe Pose.'); return null; }
@@ -647,7 +722,6 @@
             const dt=featTime.length? t-featTime.at(-1) : step;
             featTime.push(t); featAngles.push(ang); featVel.push(angleVelocity(prevAngles||ang, ang, dt)); prevAngles=ang;
 
-            // Cộng dồn trọng số của ruleset
             const sumW = rulesFor(sport,vUse).reduce((s,r)=>s+(Number(r.weight||1)),0);
             totalW += sumW; if(chk.pass) validW += sumW;
           }
@@ -672,7 +746,6 @@
     const resultObj = { id:videoFile.id, name:videoFile.name, sport, sai:Math.max(0,total-sampled), dung:sampled, tile, view:decided, khungChuan:rulesFor(sport,decided), features:summary, ...deterministicClassification(tile,sport) };
     results[videoFile.id]=resultObj; saveResults(); setProgress(100,'Xong');
 
-    // Lưu Firestore nếu có athleteId
     const q = new URLSearchParams(location.search);
     const athleteId=q.get('athleteId');
     if(athleteId){ await saveAchievementToFirestore(resultObj, athleteId); await saveInjuryWarningsToFirestore(resultObj, athleteId); }
@@ -680,14 +753,6 @@
     return resultObj;
   }
 
-  async function runAnalysisIfNeeded(v, force=false){
-    analysisPanel.innerHTML='<div class="small">Đang phân tích...</div>'; setProgress(0,'0%');
-    const res=await analyzeVideoUsingMediaPipe(v, v.sportTag||sportSel.value, force);
-    if(res){ showAnalysisPanel(res); renderChart(); renderDashboard(res); showModal('Phân tích xong và đã lưu.'); }
-    else analysisPanel.innerHTML='<div class="small">Phân tích thất bại.</div>';
-  }
-
-  // --- Dashboard & xuất file ---
   function renderDashboard(res){
     const t=featTime, pick=(arr,k)=>arr.map(a=> (typeof a[k]==='number')?a[k]:0 );
     const knee = pick(featAngles,'kneeL').map((v,i)=>Math.max(v, pick(featAngles,'kneeR')[i]||v));
@@ -697,11 +762,11 @@
     const velH = pick(featVel,'hipL').map((v,i)=>Math.abs(Math.max(v, pick(featVel,'hipR')[i]||v)));
 
     window._a && _a.destroy(); window._v && _v.destroy(); window._r && _r.destroy();
-    const optBase={responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{labels:{color:'#111'}}},scales:{x:{grid:{color:'#eee'}},y:{grid:{color:'#eee'}}}};
-    _a=new Chart(angleChartEl.getContext('2d'),{type:'line',data:{labels:t,datasets:[{label:'Gối',data:knee,borderColor:'#009688',tension:.1},{label:'Hông',data:hip,borderColor:'#6f42c1',tension:.1},{label:'Thân',data:torso,borderColor:'#fd7e14',tension:.1}]},options:optBase});
-    _v=new Chart(velChartEl.getContext('2d'),{type:'line',data:{labels:t,datasets:[{label:'|v| Gối',data:velK,borderColor:'#16a34a',tension:.1},{label:'|v| Hông',data:velH,borderColor:'#dc2626',tension:.1}]},options:{...optBase,scales:{...optBase.scales,y:{...optBase.scales.y,title:{display:true,text:'°/s'}}}}});
+    const optBase={responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{labels:{color:'#e5e7eb'}}},scales:{x:{grid:{color:'rgba(255,255,255,.08)'}},y:{grid:{color:'rgba(255,255,255,.08)'}}}};
+    _a=new Chart(angleChartEl.getContext('2d'),{type:'line',data:{labels:t,datasets:[{label:'Gối',data:knee,borderColor:'#22d3ee',tension:.1},{label:'Hông',data:hip,borderColor:'#a78bfa',tension:.1},{label:'Thân',data:torso,borderColor:'#f59e0b',tension:.1}]},options:optBase});
+    _v=new Chart(velChartEl.getContext('2d'),{type:'line',data:{labels:t,datasets:[{label:'|v| Gối',data:velK,borderColor:'#34d399',tension:.1},{label:'|v| Hông',data:velH,borderColor:'#fb7185',tension:.1}]},options:{...optBase,scales:{...optBase.scales,y:{...optBase.scales.y,title:{display:true,text:'°/s',color:'#e5e7eb'}}}}});
     const rom=res.features?.rom||{}; const labels=Object.keys(rom), data=labels.map(k=>rom[k].range);
-    _r=new Chart(romChartEl.getContext('2d'),{type:'bar',data:{labels,datasets:[{label:'ROM (°)',data,backgroundColor:'rgba(220,53,69,.75)'}]},options:{...optBase,indexAxis:'y'}});
+    _r=new Chart(romChartEl.getContext('2d'),{type:'bar',data:{labels,datasets:[{label:'ROM (°)',data,backgroundColor:'rgba(245,158,11,.85)',borderRadius:8}]},options:{...optBase,indexAxis:'y'}});
     aiAlertsEl.innerHTML='<span class="muted">Ấn "Chạy mô hình AI".</span>';
   }
 
@@ -735,7 +800,7 @@
     if(aiAvailable&&aiModel){
       try{const t=tf.tensor2d([inputVec]); const out=aiModel.predict(t); const y=(Array.isArray(out)?out[0]:out).dataSync(); const labels=['Sai kỹ thuật','Tư thế rủi ro','Bất thường']; alerts=Array.from(y).map((s,i)=>`${labels[i]||('mục '+i)}: ${(s*100).toFixed(1)}%`);}catch{alerts=['Model lỗi. Dùng heuristics.'];}
     }
-    if(!alerts.length){ // Heuristic
+    if(!alerts.length){
       const r=summary.rom||{}, vm=summary.vmean||{};
       const kneeROM=Math.max(r.kneeL?.range||0,r.kneeR?.range||0);
       const hipROM=Math.max(r.hipL?.range||0,r.hipR?.range||0);
@@ -750,7 +815,6 @@
     aiAlertsEl.innerHTML='<ul>'+alerts.map(a=>`<li>${a}</li>`).join('')+'</ul>';
   };
 
-  // --- Sự kiện UI ---
   sportSel.onchange=()=>{ renderVideoList(); renderChart(); renderStdEditor(); updateThreshUI(); };
   analyzeBtn.onclick=()=>{ if(!currentVideo) return showModal('Chưa chọn video.'); runAnalysisIfNeeded(currentVideo,false); };
   forceAnalyzeBtn.onclick=()=>{ if(!currentVideo) return showModal('Chưa chọn video.'); runAnalysisIfNeeded(currentVideo,true); };
@@ -773,23 +837,16 @@
     results={}; renderVideoList(); renderChart(); analysisPanel.innerHTML='Đã xóa dữ liệu.'; player.src=''; currentVideo=null;
   });
 
+  const updateThreshUI=()=>{ const s=sportSel.value; sportThresh.value=THRESH[s]; threshLabel.textContent=`${THRESH[s]}%`; }
+  sportThresh.oninput=()=>{ const s=sportSel.value; THRESH[s]=Number(sportThresh.value); threshLabel.textContent=`${THRESH[s]}%`; saveThresh(THRESH); };
+
   saveStdBtn.onclick=()=>{ applyStdEditorToSTD(); showModal('Đã lưu khung chuẩn.'); };
   recalcBtn.onclick=()=>{ if(!currentVideo) return showModal('Chưa có video.'); runAnalysisIfNeeded(currentVideo,true); };
   document.getElementById('resetStandards').onclick=()=>{ STD=JSON.parse(JSON.stringify(DEFAULT_STD)); saveStd(STD); renderStdEditor(); showModal('Đã khôi phục mặc định.'); };
 
-  // --- Ngưỡng UI ---
-  function updateThreshUI(){
-    const s=sportSel.value; sportThresh.value=THRESH[s]; threshLabel.textContent=`${THRESH[s]}%`;
-  }
-  sportThresh.oninput=()=>{ const s=sportSel.value; THRESH[s]=Number(sportThresh.value); threshLabel.textContent=`${THRESH[s]}%`; saveThresh(THRESH); };
-
-  // --- Khởi động ---
   (async ()=>{
-    // Khôi phục video trong DB
     try{ await initDB(); const stored=await getVideosFromDB(); uploadedVideos = stored.map(v=>({...v, url:URL.createObjectURL(v.file)})); }catch(e){ console.warn('DB fail',e); }
     renderVideoList(); renderChart(); renderStdEditor(); updateThreshUI(); ensureMpPose();
-
-    // Tùy biến tiêu đề theo URL
     const q=new URLSearchParams(location.search); const name=q.get('athleteName');
     if(name){ document.getElementById('pageTitle').textContent = `Phân tích tư thế cho VĐV: ${decodeURIComponent(name)}`; }
   })();
