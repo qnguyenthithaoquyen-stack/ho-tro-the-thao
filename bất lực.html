@@ -7,48 +7,23 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    /* Bảng màu tươi sáng hơn */
-    --bg:#e9f6f6;
-    --bg-grad1:#f2fbfb;
-    --bg-grad2:#dff3f3;
-
-    --card:#ffffff;
-    --border:#d1e7ea;
-    --text:#0d2b33;
-    --muted:#628089;
-
-    --teal:#06a2a0;
-    --teal-2:#07918f;
-    --chip:#eef8f9;
-
-    --green:#20b27c;
-    --yellow:#f2b84e;
-    --red:#e35a5a;
-
-    --radius:14px;
-    --shadow:0 10px 30px rgba(4,41,49,.08);
+    --bg:#e9f6f6; --bg-grad1:#f2fbfb; --bg-grad2:#dff3f3;
+    --card:#ffffff; --border:#d1e7ea; --text:#0d2b33; --muted:#628089;
+    --teal:#06a2a0; --teal-2:#07918f; --chip:#eef8f9;
+    --radius:14px; --shadow:0 10px 30px rgba(4,41,49,.08);
   }
   *{box-sizing:border-box}
-  html,body{height:100%}
-  body{
-    margin:0; font-family:'Inter',system-ui,Arial,sans-serif; color:var(--text);
-    background: radial-gradient(1200px 600px at 8% -8%, var(--bg-grad1), var(--bg-grad2)) fixed;
-  }
+  body{margin:0; font-family:'Inter',system-ui,Arial,sans-serif; color:var(--text);
+    background: radial-gradient(1200px 600px at 8% -8%, var(--bg-grad1), var(--bg-grad2)) fixed;}
   .wrap{max-width:1220px; margin:22px auto; padding:0 16px;}
 
-  .topbar{
-    display:flex; gap:10px; align-items:center;
-    padding:14px 16px; border:1px solid var(--border); background:var(--card);
-    border-radius:12px; box-shadow:var(--shadow);
-  }
+  .topbar{display:flex; gap:10px; align-items:center; padding:14px 16px;
+    border:1px solid var(--border); background:var(--card); border-radius:12px; box-shadow:var(--shadow);}
   .topbar h1{margin:0; font-size:18px; font-weight:700}
   .topbar small{display:block; color:var(--muted); font-weight:600}
   .space{flex:1}
-  .btn{
-    background:#f3fbfb; color:var(--text); border:1px solid var(--border);
-    padding:9px 14px; border-radius:999px; font-weight:700; cursor:pointer;
-    transition:.2s; display:inline-flex; align-items:center; gap:8px;
-  }
+  .btn{background:#f3fbfb; color:var(--text); border:1px solid var(--border);
+    padding:9px 14px; border-radius:999px; font-weight:700; cursor:pointer; transition:.2s; display:inline-flex; align-items:center; gap:8px}
   .btn:hover{background:#e9f6f6}
   .btn-primary{background:var(--teal); color:#fff; border-color:transparent}
   .btn-primary:hover{background:var(--teal-2)}
@@ -56,38 +31,20 @@
   .btn-danger:hover{background:#fbdcdc}
 
   .grid{display:grid; grid-template-columns:1.25fr .75fr; gap:16px; margin-top:16px}
-  .card{
-    background:var(--card); border:1px solid var(--border);
-    border-radius:var(--radius); box-shadow:var(--shadow);
-    padding:16px;
-  }
+  .card{background:var(--card); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); padding:16px}
   .card h3{margin:0 0 12px 0; font-size:17px}
   .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
-  .badge{
-    background:var(--chip); color:var(--muted); border:1px solid var(--border);
-    padding:7px 10px; border-radius:999px; font-weight:700
-  }
-  select,input[type=file]{
-    appearance:none; background:#f7fffe; color:var(--text);
-    border:1px solid var(--border); padding:10px 12px; border-radius:10px; min-width:150px;
-    font-weight:600;
-  }
+  .badge{background:var(--chip); color:var(--muted); border:1px solid var(--border); padding:7px 10px; border-radius:999px; font-weight:700}
+  select,input[type=file]{appearance:none; background:#f7fffe; color:var(--text); border:1px solid var(--border);
+    padding:10px 12px; border-radius:10px; min-width:150px; font-weight:600}
   video{width:100%; border-radius:12px; border:1px solid var(--border); background:#000}
   .progress{height:10px; background:#edf7f7; border:1px solid var(--border); border-radius:999px; overflow:hidden; margin-top:12px}
   .progress>span{display:block; height:100%; width:0%; background:linear-gradient(90deg,#34d5cf,#17b9b1)}
-
   .list{margin-top:14px}
-  .item{
-    display:flex; align-items:center; justify-content:space-between; gap:8px;
-    border:1px solid var(--border); background:#fbffff; padding:10px 12px; border-radius:12px; margin-top:8px
-  }
+  .item{display:flex; align-items:center; justify-content:space-between; gap:8px; border:1px solid var(--border); background:#fbffff; padding:10px 12px; border-radius:12px; margin-top:8px}
   .item .left{display:flex; align-items:center; gap:10px}
-  .chip{background:var(--chip); border:1px solid var(--border); color:var(--muted);
-    padding:4px 8px; border-radius:999px; font-size:12px; font-weight:700}
-
-  .panel{
-    min-height:160px; border:1px dashed var(--border); border-radius:12px; padding:12px; background:#fbffff;
-  }
+  .chip{background:var(--chip); border:1px solid var(--border); color:var(--muted); padding:4px 8px; border-radius:999px; font-size:12px; font-weight:700}
+  .panel{min-height:160px; border:1px dashed var(--border); border-radius:12px; padding:12px; background:#fbffff}
   ul{margin:6px 0 0 18px; padding:0}
   hr{border:none; border-top:1px solid var(--border); margin:12px 0}
   .muted{color:var(--muted)}
@@ -110,7 +67,6 @@
     </div>
 
     <div class="grid">
-      <!-- LEFT -->
       <div class="card">
         <h3>Trình phát & Điều khiển</h3>
         <div class="row" style="margin-bottom:10px">
@@ -147,7 +103,6 @@
         </div>
       </div>
 
-      <!-- RIGHT -->
       <div class="card">
         <h3>Thông tin phân tích</h3>
         <div id="panel" class="panel"><span class="muted">Chưa có video được chọn.</span></div>
@@ -158,17 +113,16 @@
     </div>
 
     <p class="muted" style="text-align:center; margin:20px 0 10px">
-      © 2025 — Demo giao diện màu sáng. Nếu auto-view đoán sai, hãy chọn tay FRONT/LEFT/RIGHT/BACK.
+      © 2025 — Giao diện tươi sáng. Nếu auto-view đoán sai, hãy chọn tay FRONT/LEFT/RIGHT/BACK.
     </p>
   </div>
 
-  <!-- Libs -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5/pose.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils@0.5/drawing_utils.js"></script>
 
   <script>
-  /************** UI refs **************/
+  /* ==== DOM refs ==== */
   const sportSel = document.getElementById('sportSel');
   const viewSel  = document.getElementById('viewSel');
   const fileInput= document.getElementById('fileInput');
@@ -182,18 +136,17 @@
   const exportReport = document.getElementById('exportReport');
   const exportJson = document.getElementById('exportJson');
   const exportCsv = document.getElementById('exportCsv');
+  const backBtn  = document.getElementById('backBtn');
 
-  /************** State **************/
-  let uploaded = [];           // [{id,name,url,sport}]
+  /* ==== State ==== */
+  let uploaded = [];                 // [{id,name,url,sport}]
   let results = JSON.parse(localStorage.getItem('pose_results')||'{}');
-  let current = null;          // video object
+  let current = null;
   let chart = null;
 
-  // nới lỏng một chút để dễ chạy
   const PASS_THRESH = { xuatphat:0.5, nhaycao:0.45, nemta:0.5 };
   const SAMPLE_TOTAL = 90;
 
-  // Khung chuẩn (cùng như bản trước, giữ dung sai đã nới)
   const RULES = {
     xuatphat:{ base:[
       {name:'Gối trước', joints:['kneeL','kneeR'], want:100, tol:22, anySide:true},
@@ -216,47 +169,13 @@
     ]}
   };
 
-  /************** Helpers **************/
   function uid(name){ return 'v_'+(name+'_'+Date.now()).replace(/[^\w]+/g,''); }
   function setProgress(p){ bar.style.width = Math.max(0,Math.min(100,p))+'%'; }
-
-  function renderHistory(){
-    const sport = sportSel.value;
-    const list = uploaded.filter(v => v.sport===sport);
-    const root = document.createElement('div');
-    list.forEach(v=>{
-      const has = !!results[v.id];
-      const item = document.createElement('div');
-      item.className='item';
-      item.innerHTML = `
-        <div class="left">
-          <span class="chip">${v.sport}</span>
-          <strong>${v.name}</strong>
-          ${has?`<span class="chip" style="color:#119b74;border-color:#c9efe3;background:#ebfffb">Đã phân tích</span>`:''}
-        </div>
-        <div class="row">
-          <button class="btn" data-act="open">Xem</button>
-          <button class="btn" data-act="rean">${has?'Phân tích lại':'Phân tích'}</button>
-          <button class="btn btn-danger" data-act="del">Xóa</button>
-        </div>`;
-      item.querySelector('[data-act="open"]').onclick = ()=> openVideo(v);
-      item.querySelector('[data-act="rean"]').onclick = ()=> { openVideo(v); analyze(true); };
-      item.querySelector('[data-act="del"]').onclick = ()=>{
-        try{URL.revokeObjectURL(v.url);}catch(e){}
-        uploaded = uploaded.filter(x=>x.id!==v.id);
-        delete results[v.id]; saveResults(); renderHistory(); renderChart();
-        if(current&&current.id===v.id){panel.innerHTML='<span class="muted">Chưa có video được chọn.</span>'; player.src=''; current=null;}
-      };
-      root.appendChild(item);
-    });
-    historyEl.innerHTML = '<h3 style="margin-top:16px">Lịch sử video (lọc theo môn)</h3>';
-    historyEl.appendChild(root);
-  }
-
   function saveResults(){ localStorage.setItem('pose_results', JSON.stringify(results)); }
+
   function renderPanel(res){
     if(!res){ panel.innerHTML='<span class="muted">Chưa có video được chọn.</span>'; return; }
-    const html = `
+    panel.innerHTML = `
       <div class="row" style="gap:10px;align-items:center;margin-bottom:8px">
         <strong>${res.name}</strong>
         <span class="chip">Góc: ${res.view.toUpperCase()}</span>
@@ -265,19 +184,11 @@
         <span class="chip">Sai: ${res.sai}</span>
       </div>
       <div class="row" style="gap:12px;flex-wrap:wrap">
-        <div style="flex:1; min-width:240px">
-          <strong>Lỗi thường gặp</strong>
-          <ul>${res.loi.map(x=>`<li>${x}</li>`).join('')}</ul>
-        </div>
-        <div style="flex:1; min-width:240px">
-          <strong>Nguy cơ chấn thương</strong>
-          <ul>${res.chanthuong.map(x=>`<li>${x}</li>`).join('')}</ul>
-        </div>
+        <div style="flex:1; min-width:240px"><strong>Lỗi thường gặp</strong><ul>${res.loi.map(x=>`<li>${x}</li>`).join('')}</ul></div>
+        <div style="flex:1; min-width:240px"><strong>Nguy cơ chấn thương</strong><ul>${res.chanthuong.map(x=>`<li>${x}</li>`).join('')}</ul></div>
       </div>
       <div><strong>Gợi ý</strong><ul>${res.goiy.map(x=>`<li>${x}</li>`).join('')}</ul></div>
-      <hr><div class="muted">${res.dongvien}</div>
-    `;
-    panel.innerHTML = html;
+      <hr><div class="muted">${res.dongvien}</div>`;
   }
   function renderChart(){
     const sport = sportSel.value;
@@ -289,138 +200,131 @@
     chart = new Chart(ctx,{
       type:'bar',
       data:{ labels, datasets:[{label:'Tỉ lệ đúng (%)', data, backgroundColor:'#17b9b1'}]},
-      options:{
-        scales:{ y:{beginAtZero:true, max:110, grid:{color:'#e6f2f3'}, ticks:{color:'#4a6a72'}},
-                 x:{ticks:{color:'#4a6a72'}}},
-        plugins:{ legend:{labels:{color:'#334e55'}}}
-      }
+      options:{scales:{y:{beginAtZero:true, max:110, grid:{color:'#e6f2f3'}, ticks:{color:'#4a6a72'}}, x:{ticks:{color:'#4a6a72'}}},
+               plugins:{legend:{labels:{color:'#334e55'}}}}
     });
   }
-  function openVideo(v){
-    current = v; player.src = v.url; player.currentTime = 0;
-    renderPanel(results[v.id]); renderChart();
+  function renderHistory(){
+    const sport=sportSel.value;
+    const list=uploaded.filter(v=>v.sport===sport);
+    const root=document.createElement('div');
+    list.forEach(v=>{
+      const has=!!results[v.id];
+      const item=document.createElement('div');
+      item.className='item';
+      item.innerHTML=`
+        <div class="left">
+          <span class="chip">${v.sport}</span>
+          <strong>${v.name}</strong>
+          ${has?`<span class="chip" style="color:#119b74;border-color:#c9efe3;background:#ebfffb">Đã phân tích</span>`:''}
+        </div>
+        <div class="row">
+          <button class="btn" data-act="open">Xem</button>
+          <button class="btn" data-act="rean">${has?'Phân tích lại':'Phân tích'}</button>
+          <button class="btn btn-danger" data-act="del">Xóa</button>
+        </div>`;
+      item.querySelector('[data-act="open"]').onclick=()=>openVideo(v);
+      item.querySelector('[data-act="rean"]').onclick=()=>{openVideo(v); analyze(true);};
+      item.querySelector('[data-act="del"]').onclick=()=>{
+        try{URL.revokeObjectURL(v.url);}catch(e){}
+        uploaded=uploaded.filter(x=>x.id!==v.id); delete results[v.id]; saveResults(); renderHistory(); renderChart();
+        if(current&&current.id===v.id){panel.innerHTML='<span class="muted">Chưa có video được chọn.</span>'; player.src=''; current=null;}
+      };
+      root.appendChild(item);
+    });
+    historyEl.innerHTML='<h3 style="margin-top:16px">Lịch sử video (lọc theo môn)</h3>';
+    historyEl.appendChild(root);
   }
+  function openVideo(v){ current=v; player.src=v.url; player.currentTime=0; renderPanel(results[v.id]); renderChart(); }
 
-  /************** MediaPipe Pose **************/
-  let mpPose = null, lastLm = null;
+  /* ==== MediaPipe Pose ==== */
+  let mpPose=null, lastLm=null;
   function ensurePose(){
     if(mpPose) return mpPose;
-    mpPose = new Pose.Pose({ locateFile:f=>`https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5/${f}` });
-    mpPose.setOptions({
-      modelComplexity:1, smoothLandmarks:true, enableSegmentation:false,
-      minDetectionConfidence:0.45, minTrackingConfidence:0.45
-    });
-    mpPose.onResults(res=>{
-      if(res && res.poseLandmarks && res.poseLandmarks.length) lastLm = res.poseLandmarks;
-    });
+    mpPose=new Pose.Pose({ locateFile:f=>`https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5/${f}` });
+    mpPose.setOptions({modelComplexity:1, smoothLandmarks:true, enableSegmentation:false, minDetectionConfidence:0.45, minTrackingConfidence:0.45});
+    mpPose.onResults(res=>{ if(res&&res.poseLandmarks&&res.poseLandmarks.length) lastLm=res.poseLandmarks; });
     return mpPose;
   }
-  function deg(a,b,c){
-    const abx=a.x-b.x, aby=a.y-b.y, cbx=c.x-b.x, cby=c.y-b.y;
-    const dot = abx*cbx + aby*cby;
-    const mag = Math.sqrt((abx*abx+aby*aby)*(cbx*cbx+cby*cby))||1;
-    let cs = Math.max(-1, Math.min(1, dot/mag));
-    return Math.acos(cs)*180/Math.PI;
-  }
-  function torsoIncline(lm){
-    const lS=lm[11], rS=lm[12], lH=lm[23], rH=lm[24];
-    if(!(lS&&rS&&lH&&rH)) return 0;
-    const s={x:(lS.x+rS.x)/2, y:(lS.y+rS.y)/2};
-    const h={x:(lH.x+rH.x)/2, y:(lH.y+rH.y)/2};
-    const dx=s.x-h.x, dy=s.y-h.y;
-    return Math.atan2(Math.abs(dy), Math.abs(dx))*180/Math.PI;
-  }
+  function deg(a,b,c){ const abx=a.x-b.x, aby=a.y-b.y, cbx=c.x-b.x, cby=c.y-b.y;
+    const dot=abx*cbx+aby*cby; const mag=Math.sqrt((abx*abx+aby*aby)*(cbx*cbx+cby*cby))||1;
+    let cs=Math.max(-1,Math.min(1,dot/mag)); return Math.acos(cs)*180/Math.PI; }
+  function torsoIncline(lm){ const lS=lm[11],rS=lm[12],lH=lm[23],rH=lm[24];
+    if(!(lS&&rS&&lH&&rH)) return 0; const s={x:(lS.x+rS.x)/2,y:(lS.y+rS.y)/2}, h={x:(lH.x+rH.x)/2,y:(lH.y+rH.y)/2};
+    const dx=s.x-h.x, dy=s.y-h.y; return Math.atan2(Math.abs(dy),Math.abs(dx))*180/Math.PI; }
   function extractAngles(lm){
-    const a={};
-    if(lm[23]&&lm[25]&&lm[27]) a.kneeL = deg(lm[23],lm[25],lm[27]);
-    if(lm[24]&&lm[26]&&lm[28]) a.kneeR = deg(lm[24],lm[26],lm[28]);
-    if(lm[11]&&lm[23]&&lm[25]) a.hipL  = deg(lm[11],lm[23],lm[25]);
-    if(lm[12]&&lm[24]&&lm[26]) a.hipR  = deg(lm[12],lm[24],lm[26]);
-    if(lm[11]&&lm[13]&&lm[15]) a.elbowL= deg(lm[11],lm[13],lm[15]);
-    if(lm[12]&&lm[14]&&lm[16]) a.elbowR= deg(lm[12],lm[14],lm[16]);
-    if(lm[13]&&lm[11]&&lm[23]) a.shoulderL = deg(lm[13],lm[11],lm[23]);
-    if(lm[14]&&lm[12]&&lm[24]) a.shoulderR = deg(lm[14],lm[12],lm[24]);
-    a.torso = torsoIncline(lm);
-    return a;
+    const a={}; if(lm[23]&&lm[25]&&lm[27]) a.kneeL=deg(lm[23],lm[25],lm[27]);
+    if(lm[24]&&lm[26]&&lm[28]) a.kneeR=deg(lm[24],lm[26],lm[28]);
+    if(lm[11]&&lm[23]&&lm[25]) a.hipL=deg(lm[11],lm[23],lm[25]);
+    if(lm[12]&&lm[24]&&lm[26]) a.hipR=deg(lm[12],lm[24],lm[26]);
+    if(lm[11]&&lm[13]&&lm[15]) a.elbowL=deg(lm[11],lm[13],lm[15]);
+    if(lm[12]&&lm[14]&&lm[16]) a.elbowR=deg(lm[12],lm[14],lm[16]);
+    if(lm[13]&&lm[11]&&lm[23]) a.shoulderL=deg(lm[13],lm[11],lm[23]);
+    if(lm[14]&&lm[12]&&lm[24]) a.shoulderR=deg(lm[14],lm[12],lm[24]);
+    a.torso=torsoIncline(lm); return a;
   }
-  function detectView(lm){
-    const lS=lm[11], rS=lm[12]; if(!(lS&&rS)) return 'front';
-    return (rS.x>lS.x)? 'right' : 'left';
-  }
-  function getRules(sport,view){ const r=RULES[sport]; if(!r) return []; return r.base||[]; }
+  function detectView(lm){ const lS=lm[11], rS=lm[12]; if(!(lS&&rS)) return 'front'; return (rS.x>lS.x)?'right':'left'; }
+  function getRules(sport){ const r=RULES[sport]; return r?r.base:[]; }
   function checkFrame(angles,sport,view){
-    const rules = getRules(sport,view); if(!rules.length) return {pass:false,ok:0,total:0};
+    const rules=getRules(sport); if(!rules.length) return {pass:false,ok:0,total:0};
     let ok=0; for(const rule of rules){
       let within=false;
-      if(rule.anySide){
-        for(const key of rule.joints){
-          const v = angles[key]; if(typeof v==='number' && Math.abs(v-rule.want)<=rule.tol){within=true;break;}
-        }
-      }else{
-        const v = angles[rule.joints[0]];
-        if(typeof v==='number' && Math.abs(v-rule.want)<=rule.tol) within=true;
-      }
+      if(rule.anySide){ for(const k of rule.joints){ const v=angles[k]; if(typeof v==='number' && Math.abs(v-rule.want)<=rule.tol){within=true;break;} } }
+      else{ const v=angles[rule.joints[0]]; if(typeof v==='number' && Math.abs(v-rule.want)<=rule.tol) within=true; }
       if(within) ok++;
     }
-    const score= ok/rules.length; return {pass: score>=(PASS_THRESH[sport]||0.5), ok, total:rules.length};
+    const score = ok/rules.length;
+    return {pass: score >= (PASS_THRESH[sport]||0.5), ok, total:rules.length};
   }
 
   async function analyze(force=false){
-    if(!current){
-      // Sửa lỗi: tự chọn video gần nhất nếu chưa có current
-      if(uploaded.length){
-        openVideo(uploaded[uploaded.length-1]);
-      }else{
-        alert('Chưa có video để phân tích.');
-        return;
+    try{
+      if(!current){
+        if(uploaded.length){ openVideo(uploaded[uploaded.length-1]); }
+        else{ alert('Chưa có video để phân tích.'); return; }
       }
-    }
-    const id=current.id, sport=current.sport;
-    if(results[id] && !force){ renderPanel(results[id]); return; }
+      if(results[current.id] && !force){ renderPanel(results[current.id]); return; }
 
-    ensurePose(); setProgress(0); player.muted=true;
-    await new Promise(r=>{
-      if(player.readyState>=1) return r();
-      player.addEventListener('loadedmetadata', function on(){ player.removeEventListener('loadedmetadata',on); r(); });
-    });
+      ensurePose(); setProgress(0); player.muted=true;
+      await new Promise(r=>{ if(player.readyState>=1) return r();
+        player.addEventListener('loadedmetadata', function on(){ player.removeEventListener('loadedmetadata',on); r(); }); });
 
-    const duration=Math.max(1,player.duration||3), step=duration/SAMPLE_TOTAL;
-    let sampled=0, valid=0; let viewCount={front:0,left:0,right:0,back:0};
-    const userView=viewSel.value;
+      const duration=Math.max(1,player.duration||3), step=duration/SAMPLE_TOTAL;
+      let sampled=0, valid=0; let viewCount={front:0,left:0,right:0,back:0};
+      const userView=viewSel.value;
 
-    for(let i=0;i<SAMPLE_TOTAL;i++){
-      await new Promise(res=>{
-        const t=Math.min(i*step, Math.max(0,duration-0.05));
-        const onSeeked=async ()=>{
-          player.removeEventListener('seeked',onSeeked);
-          try{ await mpPose.send({image:player}); }catch(e){}
-          sampled++;
-          if(lastLm&&lastLm.length){
-            const w=player.videoWidth||640, h=player.videoHeight||360;
-            const lm=lastLm.map(p=>({x:p.x*w,y:p.y*h}));
-            const autoView=detectView(lm); viewCount[autoView]=(viewCount[autoView]||0)+1;
-            const angles=extractAngles(lm);
-            const used=(userView==='auto')? autoView : userView;
-            const chk=checkFrame(angles,sport,used);
-            if(chk.pass) valid++;
-          }
-          setProgress(Math.round(((i+1)/SAMPLE_TOTAL)*100)); setTimeout(res,6);
-        };
-        player.addEventListener('seeked',onSeeked);
-        try{ player.currentTime=t; }catch(e){ player.removeEventListener('seeked',onSeeked); res(); }
-      });
-    }
-    const passRatio = valid/Math.max(1,sampled);
-    if(passRatio<0.10){ console.warn('Tỉ lệ khung hợp lệ thấp:', Math.round(passRatio*100)+'%'); }
-
-    let decided=userView; if(decided==='auto'){
-      decided = Object.entries(viewCount).sort((a,b)=>b[1]-a[1])[0]?.[0] || 'front';
-    }
-    const tile=Math.round(passRatio*100);
-    const info=summarize(tile,sport);
-    const out={ id, name:current.name, sport, view:decided, tile, dung:valid, sai:Math.max(0,sampled-valid),
-      loi:info.loi, chanthuong:info.chanthuong, goiy:info.goiy, dongvien:info.dongvien };
-    results[id]=out; saveResults(); renderPanel(out); renderChart();
+      for(let i=0;i<SAMPLE_TOTAL;i++){
+        await new Promise(res=>{
+          const t=Math.min(i*step, Math.max(0,duration-0.05));
+          const onSeeked=async ()=>{
+            player.removeEventListener('seeked',onSeeked);
+            try{ await mpPose.send({image:player}); }catch(e){}
+            sampled++;
+            if(lastLm&&lastLm.length){
+              const w=player.videoWidth||640,h=player.videoHeight||360;
+              const lm=lastLm.map(p=>({x:p.x*w,y:p.y*h}));
+              const autoView=detectView(lm); viewCount[autoView]=(viewCount[autoView]||0)+1;
+              const angles=extractAngles(lm);
+              const used=(userView==='auto')? autoView : userView;
+              const chk=checkFrame(angles,current.sport,used);
+              if(chk.pass) valid++;
+            }
+            setProgress(Math.round(((i+1)/SAMPLE_TOTAL)*100)); setTimeout(res,6);
+          };
+          player.addEventListener('seeked',onSeeked);
+          try{ player.currentTime=t; }catch(e){ player.removeEventListener('seeked',onSeeked); res(); }
+        });
+      }
+      let decided=userView; if(decided==='auto'){
+        decided=Object.entries(viewCount).sort((a,b)=>b[1]-a[1])[0]?.[0]||'front';
+      }
+      const passRatio=valid/Math.max(1,sampled);
+      const tile=Math.round(passRatio*100);
+      const info=summarize(tile,current.sport);
+      const out={ id:current.id, name:current.name, sport:current.sport, view:decided, tile,
+        dung:valid, sai:Math.max(0,sampled-valid), loi:info.loi, chanthuong:info.chanthuong, goiy:info.goiy, dongvien:info.dongvien };
+      results[current.id]=out; saveResults(); renderPanel(out); renderChart();
+    }catch(err){ console.error(err); alert('Có lỗi khi phân tích. Mở console để xem chi tiết.'); }
   }
 
   function summarize(tile,sport){
@@ -440,7 +344,7 @@
     return {loi,chanthuong,goiy,dongvien};
   }
 
-  /************** Export **************/
+  /* ==== Export & Buttons ==== */
   exportReport.onclick=()=>{
     if(!current||!results[current.id]){alert('Chưa có kết quả.');return;}
     const data=results[current.id];
@@ -451,8 +355,7 @@
   };
   exportJson.onclick=()=>{
     if(!current){alert('Chưa chọn video.');return;}
-    const data=results[current.id];
-    const payload={meta:{id:current.id,name:current.name,sport:current.sport}, result:data};
+    const payload={meta:{id:current.id,name:current.name,sport:current.sport}, result:results[current.id]||null};
     const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
     const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
     a.download=current.name.replace(/\.[^/.]+$/,'')+'_features.json'; a.click();
@@ -468,26 +371,13 @@
     setTimeout(()=>URL.revokeObjectURL(a.href),500);
   };
 
-  /************** Events **************/
-  fileInput.addEventListener('change', e=>{
-    const files=Array.from(e.target.files||[]);
-    files.forEach(f=>{
-      const id=uid(f.name), url=URL.createObjectURL(f);
-      let tag=sportSel.value;
-      const ln=f.name.toLowerCase();
-      if(ln.includes('nhay')) tag='nhaycao';
-      else if(ln.includes('nem')) tag='nemta';
-      else if(ln.includes('xuat')) tag='xuatphat';
-      uploaded.push({id,name:f.name,url,sport:tag});
-    });
-    renderHistory(); if(uploaded.length && !current){ openVideo(uploaded[uploaded.length-1]); }
-  });
-
+  // Quan trọng: gán handler cho 2 nút bạn hỏi
   analyzeBtn.onclick = ()=> analyze(false);
-  reanalyzeBtn.onclick = ()=>{
-    // Sửa lỗi: nếu chưa có current nhưng có video trong lịch sử -> tự chọn video gần nhất
-    if(!current && uploaded.length){ openVideo(uploaded[uploaded.length-1]); }
-    analyze(true);
+  reanalyzeBtn.onclick = ()=> { if(!current && uploaded.length){ openVideo(uploaded[uploaded.length-1]); } analyze(true); };
+  backBtn.onclick = ()=>{
+    // Nếu có trang bảng điều khiển cùng thư mục thì chuyển, nếu không thì quay lại lịch sử
+    const url='bangdieukhien.html';
+    fetch(url,{method:'HEAD'}).then(()=>location.href=url).catch(()=>history.back());
   };
   clearBtn.onclick = ()=>{
     if(!confirm('Xóa toàn bộ dữ liệu (kết quả & video) trong phiên hiện tại?')) return;
@@ -495,6 +385,18 @@
     uploaded=[]; results={}; saveResults(); renderHistory(); renderChart();
     panel.innerHTML='<span class="muted">Chưa có video được chọn.</span>'; player.src=''; current=null; setProgress(0);
   };
+
+  /* ==== Upload & Init ==== */
+  fileInput.addEventListener('change', e=>{
+    const files=Array.from(e.target.files||[]);
+    files.forEach(f=>{
+      const id=uid(f.name), url=URL.createObjectURL(f);
+      let tag=sportSel.value; const ln=f.name.toLowerCase();
+      if(ln.includes('nhay')) tag='nhaycao'; else if(ln.includes('nem')) tag='nemta'; else if(ln.includes('xuat')) tag='xuatphat';
+      uploaded.push({id,name:f.name,url,sport:tag});
+    });
+    renderHistory(); if(uploaded.length && !current){ openVideo(uploaded[uploaded.length-1]); }
+  });
   sportSel.onchange = ()=>{ renderHistory(); renderChart(); };
 
   // init
