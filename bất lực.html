@@ -6,252 +6,80 @@
   <title>Hỗ trợ Huấn luyện Thể thao - Phân tích Tư thế</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    /* ==== Bảng màu và Biến (Theme Sáng với màu Teal) ==== */
     :root {
       --bg-light: #f8f9fa;
       --card-bg: #ffffff;
       --border-color: #dee2e6;
       --text-dark: #212529;
       --text-muted: #6c757d;
-      --primary-blue: #009688; /* Đã thay đổi */
-      --primary-blue-hover: #00796B; /* Đã thay đổi */
+      --primary-blue: #009688;
+      --primary-blue-hover: #00796B;
       --accent-green: #198754;
       --accent-red: #dc3545;
       --font-family: 'Inter', system-ui, Arial, sans-serif;
-      --border-radius-md: 0.375rem; /* 6px */
-      --border-radius-lg: 0.5rem;   /* 8px */
+      --border-radius-md: 0.375rem;
+      --border-radius-lg: 0.5rem;
       --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
       --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
     }
-
-    /* ==== Thiết lập chung ==== */
-    body {
-      font-family: var(--font-family);
-      background-color: var(--bg-light);
-      color: var(--text-dark);
-      margin: 0;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-    }
+    body { font-family: var(--font-family); background-color: --bg-light; color: var(--text-dark); margin: 0; }
     .container { max-width: 1200px; margin: 0 auto; padding: 24px; }
     h1, h2, h3, h4 { margin: 0 0 12px 0; font-weight: 600; color: var(--text-dark); }
-    h1 { font-size: 24px; }
-    h2 { font-size: 24px; }
-    h3 { font-size: 18px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; margin-bottom: 16px; }
+    h1 { font-size: 24px; } h2 { font-size: 24px; } h3 { font-size: 18px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; margin-bottom: 16px; }
     h4 { font-size: 16px; font-weight: 500; color: var(--text-muted); margin-bottom: 10px;}
     hr { border: none; border-top: 1px solid var(--border-color); margin: 20px 0; }
     .small { font-size: 13px; color: var(--text-muted); }
     .muted { color: var(--text-muted); }
-
-    /* ==== Card Layout ==== */
-    .card {
-      background-color: var(--card-bg);
-      border-radius: var(--border-radius-lg);
-      padding: 20px;
-      margin-top: 16px;
-      border: 1px solid var(--border-color);
-      box-shadow: var(--shadow-sm);
-    }
-
-    /* ==== Form Controls & Buttons ==== */
+    .card { background-color: var(--card-bg); border-radius: var(--border-radius-lg); padding: 20px; margin-top: 16px; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); }
     label { font-size: 14px; margin-bottom: 6px; display: inline-block; color: var(--text-dark); font-weight: 500;}
     select, input[type=file] {
-      padding: 10px 14px;
-      border-radius: var(--border-radius-md);
-      border: 1px solid var(--border-color);
-      background-color: #fff;
-      color: var(--text-dark);
-      font-family: var(--font-family);
-      font-size: 14px;
-      transition: border-color .2s ease, box-shadow .2s ease;
+      padding: 10px 14px; border-radius: var(--border-radius-md); border: 1px solid var(--border-color); background-color: #fff; color: var(--text-dark); font-family: var(--font-family); font-size: 14px; transition: border-color .2s ease, box-shadow .2s ease;
     }
-    select:focus, input[type=file]:focus {
-      outline: none;
-      border-color: var(--primary-blue);
-      box-shadow: 0 0 0 3px rgba(0, 150, 136, 0.25);
-    }
-    input[type=file]::file-selector-button {
-      background-color: var(--bg-light);
-      color: var(--text-dark);
-      border: 1px solid var(--border-color);
-      padding: 8px 12px;
-      border-radius: 6px;
-      margin-right: 12px;
-      cursor: pointer;
-      transition: background-color .2s ease;
-    }
-    input[type=file]::file-selector-button:hover {
-      background-color: #e9ecef;
-    }
-
-    .btn {
-      cursor: pointer;
-      font-weight: 500;
-      text-align: center;
-      padding: 10px 16px;
-      font-size: 14px;
-      border-radius: var(--border-radius-md);
-      border: 1px solid var(--border-color);
-      background-color: #e9ecef;
-      color: var(--text-dark);
-      transition: all 0.2s ease;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-    }
+    select:focus, input[type=file]:focus { outline: none; border-color: var(--primary-blue); box-shadow: 0 0 0 3px rgba(0,150,136,.25); }
+    input[type=file]::file-selector-button { background-color: var(--bg-light); color: var(--text-dark); border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 6px; margin-right: 12px; cursor: pointer; transition: background-color .2s ease; }
+    input[type=file]::file-selector-button:hover { background-color: #e9ecef; }
+    .btn { cursor: pointer; font-weight: 500; text-align: center; padding: 10px 16px; font-size: 14px; border-radius: var(--border-radius-md); border: 1px solid var(--border-color); background-color: #e9ecef; color: var(--text-dark); transition: all 0.2s ease; text-decoration: none; display: inline-flex; align-items: center; }
     .btn:hover { background-color: #ced4da; }
-    
-    /* Primary & Specific Buttons */
-    #analyzeBtn, #forceAnalyzeBtn, .btn-primary {
-      background-color: var(--primary-blue);
-      border-color: var(--primary-blue);
-      color: #fff;
-    }
-    #analyzeBtn:hover, #forceAnalyzeBtn:hover, .btn-primary:hover {
-      background-color: var(--primary-blue-hover);
-      border-color: var(--primary-blue-hover);
-    }
-    
-    #clearStorage {
-      background-color: transparent;
-      border: 1px solid var(--accent-red);
-      color: var(--accent-red);
-    }
-    #clearStorage:hover {
-      background-color: var(--accent-red);
-      color: #fff;
-    }
-
-    /* ==== Layout Specifics ==== */
+    #analyzeBtn, #forceAnalyzeBtn, .btn-primary { background-color: var(--primary-blue); border-color: var(--primary-blue); color: #fff; }
+    #analyzeBtn:hover, #forceAnalyzeBtn:hover, .btn-primary:hover { background-color: var(--primary-blue-hover); border-color: var(--primary-blue-hover); }
+    #clearStorage { background-color: transparent; border: 1px solid var(--accent-red); color: var(--accent-red); }
+    #clearStorage:hover { background-color: var(--accent-red); color: #fff; }
     .flex { display: flex; gap: 16px; align-items: flex-end; flex-wrap: wrap; }
     .main-area { display: grid; grid-template-columns: 1fr 400px; gap: 24px; margin-top: 16px; }
-    
     .video-list { max-height: 240px; overflow-y: auto; margin-top: 12px; padding-right: 8px; }
-    .video-item {
-      padding: 12px;
-      border-radius: var(--border-radius-md);
-      border: 1px solid var(--border-color);
-      margin-bottom: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      transition: background-color .2s ease, border-color .2s ease, box-shadow .2s ease;
-    }
-    .video-item:hover {
-      background-color: #f1f3f5;
-      border-color: #adb5bd;
-      box-shadow: var(--shadow-sm);
-    }
+    .video-item { padding: 12px; border-radius: var(--border-radius-md); border: 1px solid var(--border-color); margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; transition: background-color .2s ease, border-color .2s ease, box-shadow .2s ease; }
+    .video-item:hover { background-color: #f1f3f5; border-color: #adb5bd; box-shadow: var(--shadow-sm); }
     .video-item .btn { padding: 6px 10px; font-size: 13px; margin-left: 8px; }
-    .video-item .delete-btn {
-        color: var(--accent-red);
-        border-color: var(--accent-red);
-        background-color: transparent;
-        width: 30px;
-        height: 30px;
-        padding: 0;
-        justify-content: center;
-        font-size: 18px;
-    }
-     .video-item .delete-btn:hover {
-        background-color: var(--accent-red);
-        color: #fff;
-    }
-
-    .player-wrap {
-      position: relative;
-      background-color: #000;
-      border-radius: var(--border-radius-lg);
-      overflow: hidden;
-      min-height: 240px;
-      border: 1px solid var(--border-color);
-    }
+    .video-item .delete-btn { color: var(--accent-red); border-color: var(--accent-red); background-color: transparent; width: 30px; height: 30px; padding: 0; justify-content: center; font-size: 18px; }
+    .video-item .delete-btn:hover { background-color: var(--accent-red); color: #fff; }
+    .player-wrap { position: relative; background-color: #000; border-radius: var(--border-radius-lg); overflow: hidden; min-height: 240px; border: 1px solid var(--border-color); }
     video { max-width: 100%; display: block; }
     .player-wrap video, .player-wrap canvas { width: 100%; height: 100%; display: block; }
     .overlay-canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2; }
-    
-    .badge {
-      position: absolute; left: 12px; top: 12px; padding: 4px 10px;
-      border-radius: 999px; font-size: 12px; font-weight: 500;
-      background-color: rgba(0,0,0,.55); color: white; backdrop-filter: blur(5px);
-      border: 1px solid rgba(255,255,255,.15);
-    }
-    .pill {
-      display: inline-block; padding: 3px 10px;
-      border: 1px solid var(--border-color);
-      background-color: var(--bg-light);
-      border-radius: 999px; font-size: 12px; margin-right: 8px;
-    }
-
+    .badge { position: absolute; left: 12px; top: 12px; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 500; background-color: rgba(0,0,0,.55); color: white; backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,.15); }
+    .pill { display: inline-block; padding: 3px 10px; border: 1px solid var(--border-color); background-color: var(--bg-light); border-radius: 999px; font-size: 12px; margin-right: 8px; }
     .progress { display: flex; align-items: center; gap: 12px; margin-top: 12px; }
     .bar { flex: 1; height: 10px; background-color: #e9ecef; border-radius: 999px; overflow: hidden; border: 1px solid var(--border-color); }
     .bar > span { display: block; height: 100%; width: 0%; background-color: var(--accent-green); transition: width .3s ease-out; }
-
     .info-list ul { padding-left: 20px; margin: 10px 0; }
     .info-list li { margin-bottom: 6px; }
-
     .gallery { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
     .gallery-item { position: relative; }
     .gallery-item img { width: 120px; height: 80px; object-fit: cover; border-radius: 6px; display: block; border: 1px solid var(--border-color); }
-    .gallery .del-btn {
-      position: absolute; right: 4px; top: 4px;
-      background: rgba(0,0,0,0.5); border: none; color: #fff;
-      padding: 0; width: 20px; height: 20px;
-      border-radius: 50%; cursor: pointer; display: flex; align-items: center;
-      justify-content: center; font-size: 12px; line-height: 1;
-      transition: background-color .2s ease;
-    }
+    .gallery .del-btn { position: absolute; right: 4px; top: 4px; background: rgba(0,0,0,0.5); border: none; color: #fff; padding: 0; width: 20px; height: 20px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px; line-height: 1; transition: background-color .2s ease; }
     .gallery .del-btn:hover { background-color: var(--accent-red); }
-
     .dash-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
     .chart-wrap { height: 240px; }
-    
     pre { white-space: pre-wrap; word-wrap: break-word; }
-
-    /* ==== Custom Modal ==== */
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background-color: rgba(0, 0, 0, 0.4);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-      backdrop-filter: blur(4px);
-    }
-    .modal-content {
-      background-color: var(--card-bg);
-      padding: 24px;
-      border-radius: var(--border-radius-lg);
-      box-shadow: var(--shadow-md);
-      text-align: center;
-      max-width: 400px;
-      border: 1px solid var(--border-color);
-    }
-    .modal-content p {
-      margin: 0 0 16px 0;
-      font-size: 1rem;
-      color: var(--text-dark);
-    }
-    .modal-actions {
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-    }
-
-    @media (max-width: 992px) {
-        .main-area { grid-template-columns: 1fr; }
-    }
-    @media (max-width: 768px) {
-        body { padding: 16px; }
-        .container { padding: 0; }
-        .flex { flex-direction: column; align-items: stretch; gap: 12px; }
-    }
-
+    .modal-overlay { position: fixed; inset: 0; background-color: rgba(0, 0, 0, 0.4); display: flex; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px); }
+    .modal-content { background-color: var(--card-bg); padding: 24px; border-radius: var(--border-radius-lg); box-shadow: var(--shadow-md); text-align: center; max-width: 400px; border: 1px solid var(--border-color); }
+    .modal-content p { margin: 0 0 16px 0; font-size: 1rem; color: var(--text-dark); }
+    .modal-actions { display: flex; justify-content: center; gap: 1rem; }
+    @media (max-width: 992px) { .main-area { grid-template-columns: 1fr; } }
+    @media (max-width: 768px) { body { padding: 16px; } .container { padding: 0; } .flex { flex-direction: column; align-items: stretch; gap: 12px; } }
   </style>
 </head>
 <body>
-
   <div class="container"> 
     <div style="padding-top: 1rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
         <div>
@@ -265,6 +93,7 @@
             Quay lại Bảng điều khiển
         </a>
     </div>
+
     <div class="card">
       <h3>Tải lên & Chọn Video</h3>
       <div class="flex">
@@ -304,7 +133,6 @@
       </div>
 
       <hr>
-      
       <div>
         <label>Lịch sử video đã phân tích (lọc theo môn)</label>
         <div class="video-list" id="videoList"></div>
@@ -340,6 +168,21 @@
         <hr>
         <h4>Thư viện ảnh</h4>
         <div class="gallery" id="gallery"></div>
+
+        <!-- ====== BỔ SUNG: Tùy chỉnh khung chuẩn & ngưỡng ====== -->
+        <hr>
+        <h4>Tùy chỉnh khung chuẩn & ngưỡng</h4>
+        <div class="small" style="margin-bottom:8px">
+          Điều chỉnh mục tiêu (want), dung sai (tol), trọng số (weight) cho từng luật. Thay đổi được lưu cục bộ.
+        </div>
+        <div class="flex" style="align-items:center;margin-bottom:8px">
+          <div>
+            <label>Ngưỡng pass từng khung (theo môn): <span id="threshLabel">60%</span></label>
+            <input type="range" id="frameThreshSlider" min="30" max="90" value="60" />
+          </div>
+          <button id="resetStandardsBtn" class="btn" title="Khôi phục khung chuẩn mặc định" style="margin-left:auto">Khôi phục mặc định</button>
+        </div>
+        <div id="standardsEditor" class="small" style="max-height:220px;overflow:auto;border:1px solid var(--border-color);border-radius:8px;padding:8px;background:#fff"></div>
       </div>
     </div>
 
@@ -376,11 +219,10 @@
 
     <div class="card">
       <h3>Ghi chú kỹ thuật</h3>
-      <div class="small">Bản chuyển đổi từ mã Python gốc: dữ liệu mẫu (loi, chanthuong, goiy) được giữ nguyên. Phân tích không dùng random: tỉ lệ đúng/sai được tính dựa trên số khung hình đạt điều kiện kỹ thuật (đo được khớp và thỏa ngưỡng góc). Kết quả được lưu localStorage dưới khóa "thethaott_results".</div>
+      <div class="small">Kết quả chỉ mang tính hỗ trợ huấn luyện, không thay thế chẩn đoán y khoa.</div>
     </div>
   </div>
   
-  <!-- Custom Modal HTML -->
   <div id="customModal" class="modal-overlay" style="display:none;">
     <div class="modal-content">
       <p id="modalText"></p>
@@ -390,163 +232,120 @@
     </div>
   </div>
 
-
-  <!-- Thư viện script: MediaPipe + Chart.js + TensorFlow.js (tùy chọn) -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5/pose.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils@0.5/drawing_utils.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.17.0/dist/tf.min.js"></script>
 
   <script type="module">
+    /* ================= Firebase ================= */
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
     import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
     
     const firebaseConfig = {
-        apiKey: "AIzaSyA2dXWCyjL2xgCSyeW9QQ7RvjI_O7kFHJw",
-        authDomain: "sporthealthdata.firebaseapp.com",
-        projectId: "sporthealthdata",
-        storageBucket: "sporthealthdata.appspot.com",
-        messagingSenderId: "789054240877",
-        appId: "1:789054240877:web:04a400c9ea586523a86764",
+      apiKey: "AIzaSyA2dXWCyjL2xgCSyeW9QQ7RvjI_O7kFHJw",
+      authDomain: "sporthealthdata.firebaseapp.com",
+      projectId: "sporthealthdata",
+      storageBucket: "sporthealthdata.appspot.com",
+      messagingSenderId: "789054240877",
+      appId: "1:789054240877:web:04a400c9ea586523a86764",
     };
-
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // ==== IndexedDB Functions for Video Persistence ====
+    /* ============== IndexedDB for videos ============== */
     const DB_NAME = 'thethaott_videos_db';
     const DB_VERSION = 1;
     const STORE_NAME = 'videos';
     let idb;
-
     function initDB() {
-        return new Promise((resolve, reject) => {
-            const request = indexedDB.open(DB_NAME, DB_VERSION);
-
-            request.onupgradeneeded = (event) => {
-                const dbInstance = event.target.result;
-                if (!dbInstance.objectStoreNames.contains(STORE_NAME)) {
-                    dbInstance.createObjectStore(STORE_NAME, { keyPath: 'id' });
-                }
-            };
-
-            request.onsuccess = (event) => {
-                idb = event.target.result;
-                console.log('Database initialized successfully.');
-                resolve(idb);
-            };
-
-            request.onerror = (event) => {
-                console.error('Database error:', event.target.errorCode);
-                reject('Database error');
-            };
-        });
+      return new Promise((resolve, reject) => {
+        const request = indexedDB.open(DB_NAME, DB_VERSION);
+        request.onupgradeneeded = (event) => {
+          const dbInstance = event.target.result;
+          if (!dbInstance.objectStoreNames.contains(STORE_NAME)) {
+            dbInstance.createObjectStore(STORE_NAME, { keyPath: 'id' });
+          }
+        };
+        request.onsuccess = (event) => { idb = event.target.result; resolve(idb); };
+        request.onerror = (event) => { reject('Database error'); };
+      });
     }
-
     function saveVideoToDB(videoData) {
-        return new Promise((resolve, reject) => {
-            if (!idb) {
-                reject('DB not initialized');
-                return;
-            }
-            const transaction = idb.transaction([STORE_NAME], 'readwrite');
-            const store = transaction.objectStore(STORE_NAME);
-            const request = store.put(videoData);
-
-            request.onsuccess = () => resolve();
-            request.onerror = (event) => reject('Error saving video: ' + event.target.errorCode);
-        });
+      return new Promise((resolve, reject) => {
+        if (!idb) return reject('DB not initialized');
+        const transaction = idb.transaction([STORE_NAME], 'readwrite');
+        const store = transaction.objectStore(STORE_NAME);
+        const request = store.put(videoData);
+        request.onsuccess = () => resolve();
+        request.onerror = (event) => reject('Error saving video: ' + event.target.errorCode);
+      });
     }
-    
     function getVideosFromDB() {
-        return new Promise((resolve, reject) => {
-            if (!idb) {
-                reject('DB not initialized');
-                return;
-            }
-            const transaction = idb.transaction([STORE_NAME], 'readonly');
-            const store = transaction.objectStore(STORE_NAME);
-            const request = store.getAll();
-
-            request.onsuccess = (event) => resolve(event.target.result);
-            request.onerror = (event) => reject('Error fetching videos: ' + event.target.errorCode);
-        });
+      return new Promise((resolve, reject) => {
+        if (!idb) return reject('DB not initialized');
+        const transaction = idb.transaction([STORE_NAME], 'readonly');
+        const store = transaction.objectStore(STORE_NAME);
+        const request = store.getAll();
+        request.onsuccess = (event) => resolve(event.target.result);
+        request.onerror = (event) => reject('Error fetching videos: ' + event.target.errorCode);
+      });
     }
-
     function deleteVideoFromDB(videoId) {
-        return new Promise((resolve, reject) => {
-            if (!idb) return reject('DB not initialized');
-            
-            const transaction = idb.transaction([STORE_NAME], 'readwrite');
-            const store = transaction.objectStore(STORE_NAME);
-            const request = store.delete(videoId);
-
-            transaction.oncomplete = () => resolve();
-            transaction.onerror = (event) => reject('Error deleting video: ' + event.target.errorCode);
-        });
+      return new Promise((resolve, reject) => {
+        if (!idb) return reject('DB not initialized');
+        const transaction = idb.transaction([STORE_NAME], 'readwrite');
+        const store = transaction.objectStore(STORE_NAME);
+        store.delete(videoId);
+        transaction.oncomplete = () => resolve();
+        transaction.onerror = (event) => reject('Error deleting video: ' + event.target.errorCode);
+      });
     }
-
     function clearVideosFromDB() {
-        return new Promise((resolve, reject) => {
-             if (!idb) {
-                reject('DB not initialized');
-                return;
-            }
-            const transaction = idb.transaction([STORE_NAME], 'readwrite');
-            const store = transaction.objectStore(STORE_NAME);
-            const request = store.clear();
-            
-            request.onsuccess = () => resolve();
-            request.onerror = (event) => reject('Error clearing videos: ' + event.target.errorCode);
-        });
+      return new Promise((resolve, reject) => {
+        if (!idb) return reject('DB not initialized');
+        const transaction = idb.transaction([STORE_NAME], 'readwrite');
+        const store = transaction.objectStore(STORE_NAME);
+        const request = store.clear();
+        request.onsuccess = () => resolve();
+        request.onerror = (event) => reject('Error clearing videos: ' + event.target.errorCode);
+      });
     }
 
-    // ==== Modal Functions ====
+    /* ============== Modal helpers ============== */
     function showModal(message, isConfirm = false, onConfirm = null) {
-        const modal = document.getElementById('customModal');
-        const modalText = document.getElementById('modalText');
-        const actionContainer = document.getElementById('modalActions');
-        
-        if (!modal || !modalText || !actionContainer) return;
-
-        modalText.textContent = message;
-        
-        // Clear previous buttons
-        actionContainer.innerHTML = '';
-
-        if (isConfirm) {
-            const confirmBtn = document.createElement('button');
-            confirmBtn.textContent = 'Xác nhận';
-            confirmBtn.className = 'btn btn-primary';
-            confirmBtn.onclick = () => {
-            if (onConfirm) onConfirm();
-            hideModal();
-            };
-
-            const cancelBtn = document.createElement('button');
-            cancelBtn.textContent = 'Hủy';
-            cancelBtn.className = 'btn';
-            cancelBtn.onclick = hideModal;
-            
-            actionContainer.appendChild(cancelBtn);
-            actionContainer.appendChild(confirmBtn);
-        } else {
-            const closeBtn = document.createElement('button');
-            closeBtn.textContent = 'Đóng';
-            closeBtn.className = 'btn btn-primary';
-            closeBtn.onclick = hideModal;
-            actionContainer.appendChild(closeBtn);
-        }
-
-        modal.style.display = 'flex';
+      const modal = document.getElementById('customModal');
+      const modalText = document.getElementById('modalText');
+      const actionContainer = document.getElementById('modalActions');
+      if (!modal || !modalText || !actionContainer) return;
+      modalText.textContent = message;
+      actionContainer.innerHTML = '';
+      if (isConfirm) {
+        const confirmBtn = document.createElement('button');
+        confirmBtn.textContent = 'Xác nhận';
+        confirmBtn.className = 'btn btn-primary';
+        confirmBtn.onclick = () => { if (onConfirm) onConfirm(); hideModal(); };
+        const cancelBtn = document.createElement('button');
+        cancelBtn.textContent = 'Hủy';
+        cancelBtn.className = 'btn';
+        cancelBtn.onclick = hideModal;
+        actionContainer.appendChild(cancelBtn);
+        actionContainer.appendChild(confirmBtn);
+      } else {
+        const closeBtn = document.createElement('button');
+        closeBtn.textContent = 'Đóng';
+        closeBtn.className = 'btn btn-primary';
+        closeBtn.onclick = hideModal;
+        actionContainer.appendChild(closeBtn);
+      }
+      modal.style.display = 'flex';
     }
-
     function hideModal() {
-        const modal = document.getElementById('customModal');
-        if(modal) modal.style.display = 'none';
+      const modal = document.getElementById('customModal');
+      if(modal) modal.style.display = 'none';
     }
-    
-    // ==== Dữ liệu mẫu (giữ nguyên từ mã Python) ====
+
+    /* ============== Dữ liệu mẫu (nội dung gợi ý) ============== */
     const DU_LIEU = {
       xuatphat: {
         loi: ["Gập gối chưa đúng góc", "Tay chống chưa vững", "Thân người hơi nghiêng về trước"],
@@ -565,7 +364,7 @@
       }
     };
 
-    // ==== Khung xương chuẩn theo môn (góc mong muốn ± dung sai) ====
+    /* ============== Khung chuẩn gốc (có thể chỉnh) ============== */
     const KHUNG_CHUAN = {
       xuatphat: [
         {name:'Gối (trái hoặc phải)', joints:['kneeL','kneeR'], want:100, tol:20, anySide:true},
@@ -589,9 +388,7 @@
     };
 
     const KHUNG_CHUAN_GOC = {
-      xuatphat: {
-        front: KHUNG_CHUAN.xuatphat,
-        back:  KHUNG_CHUAN.xuatphat,
+      xuatphat: { front: KHUNG_CHUAN.xuatphat, back: KHUNG_CHUAN.xuatphat,
         left:  [
           {name:'Gối (bên gần camera)', joints:['kneeL','kneeR'], want:100, tol:22, anySide:true},
           {name:'Hông (bên gần camera)', joints:['hipL','hipR'], want:120, tol:28, anySide:true},
@@ -603,9 +400,7 @@
           {name:'Thân (nghiêng ngang)', joints:['torsoIncline'], want:45, tol:18}
         ]
       },
-      nhaycao: {
-        front: KHUNG_CHUAN.nhaycao,
-        back:  KHUNG_CHUAN.nhaycao,
+      nhaycao: { front: KHUNG_CHUAN.nhaycao, back: KHUNG_CHUAN.nhaycao,
         left:  [
           {name:'Gối giậm (bên gần camera)', joints:['kneeL','kneeR'], want:150, tol:22, anySide:true},
           {name:'Hông mở', joints:['hipL','hipR'], want:160, tol:22, anySide:true},
@@ -617,9 +412,7 @@
           {name:'Thân (nghiêng ngang)', joints:['torsoIncline'], want:20, tol:18}
         ]
       },
-      nemta: {
-        front: KHUNG_CHUAN.nemta,
-        back:  KHUNG_CHUAN.nemta,
+      nemta: { front: KHUNG_CHUAN.nemta, back: KHUNG_CHUAN.nemta,
         left:  [
           {name:'Hông (bên gần camera)', joints:['hipL','hipR'], want:120, tol:28, anySide:true},
           {name:'Vai (bên gần camera)', joints:['shoulderL','shoulderR'], want:90, tol:28, anySide:true},
@@ -635,8 +428,47 @@
       }
     };
 
+    /* ============== Tùy chỉnh khung & ngưỡng (mới) ============== */
+    const STANDARDS_KEY = 'thethaott_standards_v2';
+    const THRESH_KEY    = 'thethaott_thresh_v2';
+    const DEFAULT_THRESH = { xuatphat:0.6, nhaycao:0.5, nemta:0.6 };
+
+    function addDefaultWeights(kcg){
+      const clone = JSON.parse(JSON.stringify(kcg));
+      for (const sport of Object.keys(clone)) {
+        for (const view of Object.keys(clone[sport])) {
+          clone[sport][view].forEach(r => { if (r.weight == null) r.weight = 1.0; });
+        }
+      }
+      return clone;
+    }
+    const BASE_STANDARDS = addDefaultWeights(KHUNG_CHUAN_GOC);
+    let USER_STANDARDS = null;
+    let USER_THRESH    = null;
+
+    function loadStandards(){
+      try { USER_STANDARDS = JSON.parse(localStorage.getItem(STANDARDS_KEY) || 'null'); } catch { USER_STANDARDS = null; }
+      if (!USER_STANDARDS) USER_STANDARDS = JSON.parse(JSON.stringify(BASE_STANDARDS));
+      try { USER_THRESH = JSON.parse(localStorage.getItem(THRESH_KEY) || 'null'); } catch { USER_THRESH = null; }
+      if (!USER_THRESH) USER_THRESH = { ...DEFAULT_THRESH };
+    }
+    function saveStandards(){
+      localStorage.setItem(STANDARDS_KEY, JSON.stringify(USER_STANDARDS));
+      localStorage.setItem(THRESH_KEY, JSON.stringify(USER_THRESH));
+    }
+    function getRulesByView(sport, view){
+      const g = USER_STANDARDS?.[sport];
+      if(!g) return BASE_STANDARDS[sport]?.front || [];
+      return g[view] || g.front || [];
+    }
+    function getFrameThresh(sport){
+      return USER_THRESH?.[sport] ?? DEFAULT_THRESH[sport] ?? 0.6;
+    }
+
+    /* ============== Ngưỡng pass cũ (giữ để tương thích, không dùng trực tiếp) ============== */
     const PER_FRAME_THRESH = { xuatphat:0.6, nhaycao:0.5, nemta:0.6 };
 
+    /* ============== DOM refs ============== */
     const sportSel = document.getElementById('sport');
     const viewSel  = document.getElementById('viewSel');
     const videoUpload = document.getElementById('videoUpload');
@@ -666,13 +498,14 @@
     const exportFeaturesCsvBtn = document.getElementById('exportFeaturesCsvBtn');
     const runModelBtn = document.getElementById('runModelBtn');
 
+    /* ============== State ============== */
     let uploadedVideos = []; 
     let results = JSON.parse(localStorage.getItem('thethaott_results')||'{}');
     let currentVideo = null;
     let mpPose = null;
     let mpPoseDrawingCallback = null;
     let chart = null;
-    let lastPoseLandmarks = null;
+    let lastPoseLandmarks = null;        // normalized landmarks from MediaPipe
     let overlayPass = null;
     let featTime = [];
     let featAngles = [];
@@ -684,8 +517,7 @@
 
     function saveResults(){ localStorage.setItem('thethaott_results', JSON.stringify(results)); renderChart(); }
     function uidFromName(name){
-      let h=2166136261;
-      for(let i=0;i<name.length;i++){h ^= name.charCodeAt(i);h += (h<<1)+(h<<4)+(h<<7)+(h<<8)+(h<<24);} return 'v_'+(h>>>0);
+      let h=2166136261; for(let i=0;i<name.length;i++){h ^= name.charCodeAt(i);h += (h<<1)+(h<<4)+(h<<7)+(h<<8)+(h<<24);} return 'v_'+(h>>>0);
     }
     function setProgress(pct, text){
       progressRow.style.display = 'flex';
@@ -694,21 +526,20 @@
       if(pct>=100){ setTimeout(()=>{ progressRow.style.display = 'none'; }, 400); }
     }
 
+    /* ============== MediaPipe Pose init ============== */
     function ensureMpPose(){
-      if(typeof Pose === 'undefined'){
-        console.error('MediaPipe Pose library not loaded.');
-        return null;
-      }
+      if(typeof Pose === 'undefined'){ console.error('MediaPipe Pose library not loaded.'); return null; }
       if(!mpPose){
         mpPose = new Pose({locateFile: (f)=>`https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5/${f}`});
         mpPose.setOptions({modelComplexity:1, smoothLandmarks:true, enableSegmentation:false, minDetectionConfidence:0.45, minTrackingConfidence:0.45});
         mpPose.onResults((resultsPose)=>{
-          if(resultsPose && resultsPose.poseLandmarks && resultsPose.poseLandmarks.length) lastPoseLandmarks = resultsPose.poseLandmarks;
+          if(resultsPose && resultsPose.poseLandmarks && resultsPose.poseLandmarks.length) lastPoseLandmarks = resultsPose.poseLandmarks; // normalized
         });
       }
       return mpPose;
     }
 
+    /* ============== AI model (tuỳ chọn) ============== */
     async function tryLoadAIModel(){
       try{
         aiStatusPill.textContent = 'AI: đang tải...';
@@ -720,82 +551,64 @@
         aiStatusPill.textContent = 'AI: chưa có model';
       }
     }
-    
+
+    /* ============== Xóa video ============== */
     function deleteVideo(videoId) {
-        showModal(`Bạn có chắc muốn xóa video này và kết quả phân tích của nó?`, true, async () => {
-            try {
-                const videoToDelete = uploadedVideos.find(v => v.id === videoId);
-                if (videoToDelete && videoToDelete.url) {
-                    URL.revokeObjectURL(videoToDelete.url);
-                }
-
-                await deleteVideoFromDB(videoId);
-                
-                uploadedVideos = uploadedVideos.filter(v => v.id !== videoId);
-                if (results[videoId]) {
-                    delete results[videoId];
-                    saveResults(); 
-                }
-
-                renderVideoList();
-
-                if(currentVideo && currentVideo.id === videoId) {
-                    player.src = '';
-                    analysisPanel.innerHTML = 'Chưa có video được chọn.';
-                    currentVideo = null;
-                }
-
-                showModal('Đã xóa video thành công.');
-
-            } catch (err) {
-                console.error('Lỗi khi xóa video:', err);
-                showModal('Không thể xóa video khỏi cơ sở dữ liệu.');
-            }
-        });
+      showModal(`Bạn có chắc muốn xóa video này và kết quả phân tích của nó?`, true, async () => {
+        try {
+          const videoToDelete = uploadedVideos.find(v => v.id === videoId);
+          if (videoToDelete && videoToDelete.url) URL.revokeObjectURL(videoToDelete.url);
+          await deleteVideoFromDB(videoId);
+          uploadedVideos = uploadedVideos.filter(v => v.id !== videoId);
+          if (results[videoId]) { delete results[videoId]; saveResults(); }
+          renderVideoList();
+          if(currentVideo && currentVideo.id === videoId) {
+            player.src = '';
+            analysisPanel.innerHTML = 'Chưa có video được chọn.';
+            currentVideo = null;
+          }
+          showModal('Đã xóa video thành công.');
+        } catch (err) {
+          console.error('Lỗi khi xóa video:', err);
+          showModal('Không thể xóa video khỏi cơ sở dữ liệu.');
+        }
+      });
     }
 
+    /* ============== Danh sách video ============== */
     function renderVideoList(){
-        const sport = sportSel.value;
-        videoListEl.innerHTML='';
-        const filtered = uploadedVideos.filter(v=>{
-          if(v.sportTag === sport) return true;
-          const ln = (v.name||'').toLowerCase();
-          return ln.includes(sport) || ln.includes(sport === 'xuatphat' ? 'xuat' : (sport === 'nhaycao' ? 'nhay' : 'nem'));
-        });
-        if(filtered.length===0){ videoListEl.innerHTML='<div class="small">Chưa có video cho môn này. Hãy tải lên.</div>'; return }
-        
-        filtered.forEach((v)=>{
-            const div = document.createElement('div'); 
-            div.className='video-item';
-            const hasResult = !!results[v.id];
-    
-            div.innerHTML = `
-                <div style="flex-grow: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-right: 10px;">
-                    <strong title="${v.name}">${v.name}</strong>
-                    <div class="small">${v.sportTag || ''}</div>
-                </div>
-                <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
-                    ${hasResult ? `<span class="pill" style="background-color: #e6ffed; border-color: #b7eb8f; color: #389e0d;" title="Đã phân tích: ${results[v.id].tile}%">✔ Đã phân tích</span>` : ''}
-                    <button class="btn open-btn" title="Xem video này">Xem</button>
-                    <button class="btn analyze-btn ${hasResult ? '' : 'btn-primary'}" title="${hasResult ? 'Chạy lại phân tích' : 'Phân tích video này'}">${hasResult ? 'Phân tích lại' : 'Phân tích'}</button>
-                    <button class="btn delete-btn" title="Xóa video và kết quả">&times;</button>
-                </div>
-            `;
-    
-            div.querySelector('.open-btn').onclick = () => openVideo(v);
-    
-            div.querySelector('.analyze-btn').onclick = () => {
-                openVideo(v);
-                setTimeout(() => runAnalysisIfNeeded(v, hasResult), 200); 
-            };
-    
-            div.querySelector('.delete-btn').onclick = () => deleteVideo(v.id);
-    
-            videoListEl.appendChild(div);
-        });
+      const sport = sportSel.value;
+      videoListEl.innerHTML='';
+      const filtered = uploadedVideos.filter(v=>{
+        if(v.sportTag === sport) return true;
+        const ln = (v.name||'').toLowerCase();
+        return ln.includes(sport) || ln.includes(sport === 'xuatphat' ? 'xuat' : (sport === 'nhaycao' ? 'nhay' : 'nem'));
+      });
+      if(filtered.length===0){ videoListEl.innerHTML='<div class="small">Chưa có video cho môn này. Hãy tải lên.</div>'; return }
+      filtered.forEach((v)=>{
+        const div = document.createElement('div'); 
+        div.className='video-item';
+        const hasResult = !!results[v.id];
+        div.innerHTML = `
+          <div style="flex-grow:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-right:10px;">
+            <strong title="${v.name}">${v.name}</strong>
+            <div class="small">${v.sportTag || ''}</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
+            ${hasResult ? `<span class="pill" style="background-color:#e6ffed;border-color:#b7eb8f;color:#389e0d;" title="Đã phân tích: ${results[v.id].tile}%">✔ Đã phân tích</span>` : ''}
+            <button class="btn open-btn" title="Xem video này">Xem</button>
+            <button class="btn analyze-btn ${hasResult ? '' : 'btn-primary'}" title="${hasResult ? 'Chạy lại phân tích' : 'Phân tích video này'}">${hasResult ? 'Phân tích lại' : 'Phân tích'}</button>
+            <button class="btn delete-btn" title="Xóa video và kết quả">&times;</button>
+          </div>
+        `;
+        div.querySelector('.open-btn').onclick = () => openVideo(v);
+        div.querySelector('.analyze-btn').onclick = () => { openVideo(v); setTimeout(() => runAnalysisIfNeeded(v, hasResult), 200); };
+        div.querySelector('.delete-btn').onclick = () => deleteVideo(v.id);
+        videoListEl.appendChild(div);
+      });
     }
 
-
+    /* ============== Thư viện ảnh ============== */
     function renderGallery(){
       gallery.innerHTML='';
       const imgs = JSON.parse(localStorage.getItem('thethaott_gallery')||'[]');
@@ -804,9 +617,7 @@
         const img = document.createElement('img'); img.src = src;
         const del = document.createElement('button'); del.className='del-btn'; del.textContent='✕';
         del.title = 'Xóa ảnh này';
-        del.onclick = ()=>{ 
-            showModal('Bạn có chắc muốn xóa ảnh này?', true, () => removeGalleryImage(idx));
-        };
+        del.onclick = ()=>{ showModal('Bạn có chắc muốn xóa ảnh này?', true, () => removeGalleryImage(idx)); };
         wrap.appendChild(img); wrap.appendChild(del);
         gallery.appendChild(wrap);
       });
@@ -819,6 +630,7 @@
       renderGallery();
     }
 
+    /* ============== Biểu đồ tổng hợp ============== */
     function renderChart(){
       const sport = sportSel.value;
       const keys = Object.keys(results).filter(k=>results[k].sport===sport);
@@ -826,29 +638,13 @@
       const data = keys.map(k=>results[k].tile);
       if(chart) chart.destroy();
       chart = new Chart(chartCanvas.getContext('2d'),{
-          type:'bar',
-          data:{
-              labels, 
-              datasets:[{
-                  label:'Tỉ lệ đúng (%)',
-                  data,
-                  backgroundColor: 'rgba(0, 150, 136, 0.7)',
-                  borderColor: 'rgba(0, 150, 136, 1)',
-                  borderWidth: 1,
-                  borderRadius: 4
-                }]
-            }, 
-            options:{
-                indexAxis:'y',
-                scales:{
-                    x:{min:0,max:110, ticks:{color: 'var(--text-muted)'}, grid:{color: 'var(--border-color)'}},
-                    y:{ticks:{color: 'var(--text-dark)'}, grid:{display: false}}
-                },
-                plugins: { legend: { display: false } }
-            }
-        });
+        type:'bar',
+        data:{ labels, datasets:[{ label:'Tỉ lệ đúng (%)', data, backgroundColor:'rgba(0,150,136,0.7)', borderColor:'rgba(0,150,136,1)', borderWidth:1, borderRadius:4 }] }, 
+        options:{ indexAxis:'y', scales:{ x:{min:0,max:110,ticks:{color:'var(--text-muted)'},grid:{color:'var(--border-color)'}}, y:{ticks:{color:'var(--text-dark)'},grid:{display:false}} }, plugins:{legend:{display:false}} }
+      });
     }
 
+    /* ============== Panel kết quả ============== */
     function showAnalysisPanel(res){
       if(!res){ analysisPanel.innerHTML='Chưa có phân tích.'; return }
       let html = `<strong>${res.name}</strong><br>`;
@@ -866,13 +662,14 @@
         res.khungChuan.forEach(rule=>{
           const target = `${rule.want}° ± ${rule.tol}°`;
           const jointsText = rule.anySide ? `${rule.name} (bên bất kỳ)` : rule.name;
-          html += `<li>${jointsText}: ${target}</li>`;
+          html += `<li>${jointsText}: ${target} ${rule.weight?`(w=${rule.weight})`:''}</li>`;
         });
         html += '</ul></div>';
       }
       analysisPanel.innerHTML = html;
     }
 
+    /* ============== Phân loại kết quả tổng quan ============== */
     function deterministicClassification(tile, sport){
       const bo = DU_LIEU[sport];
       let loi, chanthuong, goiy, xeploai, dongvien, ketluan;
@@ -883,6 +680,7 @@
       return {loi, chanthuong, goiy, xeploai, dongvien, ketluan};
     }
 
+    /* ============== Hình học & trích đặc trưng ============== */
     function degBetween(a,b,c){
       const abx = a.x - b.x, aby = a.y - b.y;
       const cbx = c.x - b.x, cby = c.y - b.y;
@@ -915,48 +713,48 @@
       return ang;
     }
 
-    function detectView2D(lm){
-      const lS=lm[11], rS=lm[12], lH=lm[23], rH=lm[24];
+    /* ============== Nhận diện góc quay (mới, dùng normalized) ============== */
+    function detectView(lmN){
+      const lS=lmN[11], rS=lmN[12], lH=lmN[23], rH=lmN[24];
       if(!(lS&&rS&&lH&&rH)) return 'front';
+      const vis = ((lS.visibility||0)+(rS.visibility||0))/2;
+      const dzShoulder = (rS.z||0) - (lS.z||0);
       const sMid={x:(lS.x+rS.x)/2,y:(lS.y+rS.y)/2};
       const hMid={x:(lH.x+rH.x)/2,y:(lH.y+rH.y)/2};
       const torso = Math.hypot(sMid.x-hMid.x, sMid.y-hMid.y);
-      const shoulderW = Math.abs(rS.x-lS.x);
-      const ratio = shoulderW / (torso||1);
-      if(ratio < 0.55){
-        return (rS.x > lS.x) ? 'right' : 'left';
+      const shoulderW = Math.abs(rS.x - lS.x);
+      const ratio = shoulderW / (torso||1e-6);
+      if (ratio < 0.55 && Math.abs(dzShoulder) > 0.05 && vis > 0.5) {
+        return dzShoulder > 0 ? 'right' : 'left';
       }
       return 'front';
     }
 
-    function getRulesByView(sport, view){
-      const g = KHUNG_CHUAN_GOC[sport];
-      if(!g) return KHUNG_CHUAN[sport]||[];
-      return g[view] || KHUNG_CHUAN[sport] || [];
-    }
-
+    /* ============== So khớp khung chuẩn (mới – có trọng số & báo lệch) ============== */
     function checkAgainstStandard(angles, sport, view){
       const rules = getRulesByView(sport, view);
-      let okCount = 0, totalRules = rules.length;
-      for(const r of rules){
-        let within = false;
-        if(r.anySide){
-          for(const key of r.joints){
-            const v = angles[key];
-            if(typeof v === 'number' && Math.abs(v - r.want) <= r.tol){ within = true; break; }
-          }
+      let scoreSum = 0, totalW = 0;
+      const fails = [];
+      for (const r of rules){
+        const weight = (r.weight ?? 1);
+        totalW += weight;
+        const keys = r.anySide ? r.joints : [r.joints[0]];
+        const evals = keys.map(k => ({k, v: angles[k]})).filter(x => typeof x.v === 'number');
+        if (evals.length === 0) { fails.push({ name:r.name, want:r.want, tol:r.tol, got:NaN, delta:NaN }); continue; }
+        const pass = evals.some(x => Math.abs(x.v - r.want) <= r.tol);
+        if (pass) {
+          scoreSum += weight;
         } else {
-          const key = r.joints[0];
-          const v = angles[key];
-          if(typeof v === 'number' && Math.abs(v - r.want) <= r.tol) within = true;
+          const best = evals.sort((a,b)=>Math.abs(a.v-r.want) - Math.abs(b.v-r.want))[0];
+          fails.push({ name:r.name, want:r.want, tol:r.tol, got:best.v, delta:+(best.v - r.want).toFixed(1) });
         }
-        if(within) okCount++;
       }
-      const score = (totalRules>0) ? okCount/totalRules : 0;
-      const pass  = score >= (PER_FRAME_THRESH[sport] ?? 0.6);
-      return {pass, score, okCount, totalRules, rules};
+      const score = totalW > 0 ? (scoreSum / totalW) : 0;
+      const pass  = score >= getFrameThresh(sport);
+      return { pass, score, okCount: scoreSum, totalRules: rules.length, rules, fails, totalW };
     }
 
+    /* ============== Vận tốc, ROM, tổng hợp đặc trưng ============== */
     function angleVelocity(prev, curr, dt){
       const out = {};
       const keys = new Set([...Object.keys(prev||{}), ...Object.keys(curr||{})]);
@@ -967,7 +765,6 @@
       });
       return out;
     }
-
     function computeROM(series){
       const keys = new Set(); series.forEach(a=>Object.keys(a).forEach(k=>keys.add(k)));
       const rom = {};
@@ -980,7 +777,6 @@
       });
       return rom;
     }
-
     function summarizeFeatures(){
       const keys = new Set(); featAngles.forEach(a=>Object.keys(a).forEach(k=>keys.add(k)));
       const sum={}, sumSq={}, n=featAngles.length;
@@ -1015,56 +811,40 @@
 
       return {mean,std,rom,vmean,vstd, nFrames:n, duration: featTime.length? featTime[featTime.length-1]-featTime[0]:0};
     }
-    
+
+    /* ============== Lưu Firestore (giữ nguyên) ============== */
     async function saveAchievementToFirestore(resultData, athleteId) {
-        if (!athleteId || !resultData) return;
-
-        try {
-            const achievementsColRef = collection(db, "users", athleteId, "achievements");
-            await addDoc(achievementsColRef, {
-                date: serverTimestamp(),
-                eventName: `Phân tích tư thế video: ${resultData.name}`,
-                result: `Tỉ lệ đúng: ${resultData.tile}%`,
-                notes: `Xếp loại: ${resultData.xeploai}. ${resultData.ketluan}`
-            });
-            console.log("Đã lưu thành tích phân tích vào Firestore.");
-        } catch (error) {
-            console.error("Lỗi khi lưu thành tích phân tích:", error);
-        }
+      if (!athleteId || !resultData) return;
+      try {
+        const achievementsColRef = collection(db, "users", athleteId, "achievements");
+        await addDoc(achievementsColRef, {
+          date: serverTimestamp(),
+          eventName: `Phân tích tư thế video: ${resultData.name}`,
+          result: `Tỉ lệ đúng: ${resultData.tile}%`,
+          notes: `Xếp loại: ${resultData.xeploai}. ${resultData.ketluan}`
+        });
+      } catch (error) { console.error("Lỗi khi lưu thành tích:", error); }
     }
-
     async function saveInjuryWarningsToFirestore(resultData, athleteId) {
-        if (!athleteId || !resultData || !resultData.chanthuong || resultData.chanthuong.length === 0) {
-            return;
+      if (!athleteId || !resultData || !resultData.chanthuong || resultData.chanthuong.length === 0) return;
+      try {
+        const warningsColRef = collection(db, "users", athleteId, "warnings");
+        for (const injury of resultData.chanthuong) {
+          await addDoc(warningsColRef, {
+            date: serverTimestamp(),
+            title: `Nguy cơ chấn thương: ${injury}`,
+            description: `Phát hiện nguy cơ chấn thương vùng ${injury} trong lúc phân tích video "${resultData.name}". Đề nghị xem lại kỹ thuật.`,
+            severity: 'medium'
+          });
         }
-
-        try {
-            const warningsColRef = collection(db, "users", athleteId, "injury_warnings");
-            
-            for (const injury of resultData.chanthuong) {
-                await addDoc(warningsColRef, {
-                    date: serverTimestamp(),
-                    title: `Nguy cơ chấn thương: ${injury}`,
-                    description: `Phát hiện nguy cơ chấn thương vùng ${injury} trong lúc phân tích video "${resultData.name}". Đề nghị xem lại kỹ thuật.`,
-                    severity: 'medium' // Can be 'high' or 'medium'
-                });
-            }
-            console.log("Đã lưu cảnh báo chấn thương vào Firestore.");
-
-        } catch (error) {
-            console.error("Lỗi khi lưu cảnh báo chấn thương:", error);
-        }
+      } catch (error) { console.error("Lỗi khi lưu cảnh báo:", error); }
     }
 
-
+    /* ============== Phân tích video ============== */
     async function analyzeVideoUsingMediaPipe(videoFile, sport, force=false){
       const id = videoFile.id;
       if(results[id] && !force) return results[id];
-
-      if(!ensureMpPose()){ 
-        showModal('Lỗi: Không thể khởi tạo thư viện MediaPipe Pose.');
-        return null; 
-      }
+      if(!ensureMpPose()){ showModal('Lỗi: Không thể khởi tạo thư viện MediaPipe Pose.'); return null; }
 
       featTime=[]; featAngles=[]; featVel=[]; featROM={};
       viewCounts = {front:0,left:0,right:0,back:0};
@@ -1089,7 +869,6 @@
 
       const prevCb = mpPoseDrawingCallback || (r=>{ if(r && r.poseLandmarks) lastPoseLandmarks = r.poseLandmarks; });
       setProgress(0, '0%');
-      
       const chosenView = viewSel.value;
 
       for(let i=0;i<totalToSample;i++){
@@ -1099,16 +878,20 @@
             sampled++;
             let passFrame = false;
             if(resPose && resPose.poseLandmarks && resPose.poseLandmarks.length){
+              // normalized landmarks
+              const lmN = resPose.poseLandmarks;
+              // pixel landmarks for angle calc
               const w = player.videoWidth || overlay.width || 640;
               const h = player.videoHeight || overlay.height || 360;
-              const lm = resPose.poseLandmarks.map(l=>({x: l.x * w, y: l.y * h}));
+              const lm = lmN.map(l=>({x: l.x * w, y: l.y * h}));
 
-              const autoView = detectView2D(lm);
+              // improved auto view
+              const autoView = detectView(lmN);
               if(autoView && viewCounts[autoView]!=null) viewCounts[autoView]++;
               const useView = (chosenView==='auto') ? autoView : chosenView;
 
               const nose = lm[0] || {x:w/2,y:h/2};
-              const nearCenter = Math.abs(nose.x - w/2) < w*0.60;
+              const nearCenter = Math.abs(nose.x - w/2) < w*0.60; // lọc thô
               if(nearCenter){
                 const ang = extractAngles(lm);
                 const chk = checkAgainstStandard(ang, sport, useView);
@@ -1123,10 +906,11 @@
                 prevAngles = ang;
               }
             } else if(lastPoseLandmarks && lastPoseLandmarks.length>0){
+              const lmN = lastPoseLandmarks;
               const w = player.videoWidth || overlay.width || 640;
               const h = player.videoHeight || overlay.height || 360;
-              const lm = lastPoseLandmarks.map(l=>({x: l.x * w, y: l.y * h}));
-              const autoView = detectView2D(lm);
+              const lm = lmN.map(l=>({x: l.x * w, y: l.y * h}));
+              const autoView = detectView(lmN);
               if(autoView && viewCounts[autoView]!=null) viewCounts[autoView]++;
               const useView = (chosenView==='auto') ? autoView : chosenView;
               const ang = extractAngles(lm);
@@ -1142,7 +926,6 @@
             }
 
             if(passFrame) validFrames++;
-            
             mpPose.onResults(()=>{ if(arguments[0] && arguments[0].poseLandmarks) lastPoseLandmarks = arguments[0].poseLandmarks; });
             const pct = Math.round(((i+1)/totalToSample)*100);
             setProgress(pct, pct+'%');
@@ -1150,7 +933,6 @@
           };
 
           mpPose.onResults(tmpCb);
-
           const onSeeked = async () => {
             player.removeEventListener('seeked', onSeeked);
             try{ await mpPose.send({image: player}); }catch(e){}
@@ -1192,17 +974,17 @@
       results[videoFile.id] = resultObj; 
       saveResults();
       setProgress(100, 'Xong');
-      
+
       const urlParams = new URLSearchParams(window.location.search);
       const athleteId = urlParams.get('athleteId');
       if (athleteId) {
-          saveAchievementToFirestore(resultObj, athleteId);
-          saveInjuryWarningsToFirestore(resultObj, athleteId); 
+        saveAchievementToFirestore(resultObj, athleteId);
+        saveInjuryWarningsToFirestore(resultObj, athleteId); 
       }
-
       return resultObj;
     }
 
+    /* ============== Mở video + overlay realtime ============== */
     async function openVideo(v){
       currentVideo = v;
       player.src = v.url;
@@ -1235,19 +1017,22 @@
 
       const ctx = overlay.getContext('2d');
 
+      // handler duy nhất: vẽ skeleton + badge
       mpPoseDrawingCallback = (resultsPose)=>{
         if(resultsPose && resultsPose.poseLandmarks && resultsPose.poseLandmarks.length) lastPoseLandmarks = resultsPose.poseLandmarks;
         const displayW = player.videoWidth || overlay.width || 640;
         const displayH = player.videoHeight || overlay.height || 360;
         ctx.clearRect(0,0,overlay.width,overlay.height);
         if(lastPoseLandmarks && lastPoseLandmarks.length){
-          const landmarks = lastPoseLandmarks.map(l => ({x: l.x * displayW, y: l.y * displayH}));
+          const lmN = lastPoseLandmarks;
+          const landmarks = lmN.map(l => ({x: l.x * displayW, y: l.y * displayH}));
           const conns = (typeof POSE_CONNECTIONS !== 'undefined') ? POSE_CONNECTIONS : (Pose && Pose.POSE_CONNECTIONS ? Pose.POSE_CONNECTIONS : null);
 
           if(currentVideo){
             const ang = extractAngles(landmarks);
             const spt = currentVideo.sportTag || sportSel.value;
-            const vUse = (viewSel.value==='auto') ? detectView2D(landmarks) : viewSel.value;
+            const autoV = detectView(lmN);
+            const vUse = (viewSel.value==='auto') ? autoV : viewSel.value;
             const chk = checkAgainstStandard(ang, spt, vUse);
             overlayPass = chk.pass ? 'pass' : 'fail';
             liveBadge.style.display = 'block';
@@ -1257,7 +1042,7 @@
           }
 
           if(conns){
-            ctx.strokeStyle = overlayPass === 'pass' ? 'var(--accent-green)' : 'var(--accent-red)';
+            ctx.strokeStyle = overlayPass === 'pass' ? '#198754' : '#dc3545';  // fixed color for canvas
             ctx.lineWidth = 2.5;
             conns.forEach(conn=>{
               const a = landmarks[conn[0]]; const b = landmarks[conn[1]];
@@ -1270,7 +1055,6 @@
           });
         }
       };
-
       mpPose.onResults(mpPoseDrawingCallback);
 
       let rafId = null; let lastSend = 0; const minInterval = 45;
@@ -1283,13 +1067,13 @@
         }
         rafId = requestAnimationFrame(frameLoop);
       }
-
       player.onplay = ()=>{ frameLoop(); };
       player.onended = ()=>{ if(rafId) cancelAnimationFrame(rafId); liveBadge.style.display='none'; };
 
       showAnalysisPanel(results[v.id]);
     }
 
+    /* ============== Chạy phân tích nếu cần ============== */
     async function runAnalysisIfNeeded(v, force=false){
       analysisPanel.innerHTML = '<div class="small">Đang phân tích... Vui lòng chờ.</div>';
       setProgress(0, '0%');
@@ -1303,6 +1087,7 @@
       }
     }
 
+    /* ============== Export/Toggle dashboard ============== */
     exportBtn.addEventListener('click', ()=>{
       if(!currentVideo || !results[currentVideo.id]){ showModal('Chưa có kết quả để xuất.'); return; }
       const data = results[currentVideo.id];
@@ -1313,79 +1098,61 @@
       document.body.appendChild(a); a.click(); a.remove();
       setTimeout(()=>URL.revokeObjectURL(url), 800);
     });
-
     toggleDashboardBtn.addEventListener('click', ()=>{
       dashCard.style.display = dashCard.style.display==='none' ? 'block' : 'none';
-      if(dashCard.style.display==='block' && currentVideo && results[currentVideo.id]){
-        renderDashboard(results[currentVideo.id]);
-      }
+      if(dashCard.style.display==='block' && currentVideo && results[currentVideo.id]) renderDashboard(results[currentVideo.id]);
     });
 
+    /* ============== Dashboard ============== */
     function renderDashboard(res){
       const t = featTime;
       const pick = (arr, key)=>arr.map(a=> (typeof a[key]==='number')?a[key]:0 );
-
       const knee = pick(featAngles,'kneeL').map((v,i)=> Math.max(v, pick(featAngles,'kneeR')[i]||v));
       const hip  = pick(featAngles,'hipL').map((v,i)=> Math.max(v, pick(featAngles,'hipR')[i]||v));
       const torso= pick(featAngles,'torsoIncline');
       const velKnee = pick(featVel,'kneeL').map((v,i)=> Math.abs(Math.max(v, pick(featVel,'kneeR')[i]||v)));
       const velHip  = pick(featVel,'hipL').map((v,i)=> Math.abs(Math.max(v, pick(featVel,'hipR')[i]||v)));
-
       if(window._angleChart) window._angleChart.destroy();
       if(window._velChart) window._velChart.destroy();
       if(window._romChart) window._romChart.destroy();
-      
       const chartOptions = {
         responsive:true, maintainAspectRatio: false, interaction:{mode:'index', intersect:false},
-        scales:{
-            x:{title:{display:true,text:'t (s)', color: 'var(--text-muted)'}, ticks:{color: 'var(--text-muted)'}, grid:{color: 'var(--border-color)'}}, 
-            y:{title:{display:true,text:'Góc (°)', color: 'var(--text-muted)'}, ticks:{color: 'var(--text-muted)'}, grid:{color: 'var(--border-color)'}}
-        },
+        scales:{ x:{title:{display:true,text:'t (s)',color:'var(--text-muted)'},ticks:{color:'var(--text-muted)'},grid:{color:'var(--border-color)'}}, y:{title:{display:true,text:'Góc (°)',color:'var(--text-muted)'},ticks:{color:'var(--text-muted)'},grid:{color:'var(--border-color)'}}},
         plugins: { legend: { labels: { color: 'var(--text-dark)' } } }
       };
-
       window._angleChart = new Chart(angleChartEl.getContext('2d'), {
         type:'line',
         data:{labels:t, datasets:[
-          {label:'Gối', data:knee, borderColor: '#009688', tension: 0.1, fill: false},
-          {label:'Hông', data:hip, borderColor: '#6f42c1', tension: 0.1, fill: false},
-          {label:'Thân', data:torso, borderColor: '#fd7e14', tension: 0.1, fill: false}
+          {label:'Gối', data:knee, borderColor:'#009688', tension:0.1, fill:false},
+          {label:'Hông', data:hip, borderColor:'#6f42c1', tension:0.1, fill:false},
+          {label:'Thân', data:torso, borderColor:'#fd7e14', tension:0.1, fill:false}
         ]},
         options: chartOptions
       });
-
       window._velChart = new Chart(velChartEl.getContext('2d'), {
         type:'line',
         data:{labels:t, datasets:[
-          {label:'|v| Gối', data:velKnee, borderColor:'#198754', tension: 0.1, fill: false},
-          {label:'|v| Hông', data:velHip, borderColor:'#dc3545', tension: 0.1, fill: false}
+          {label:'|v| Gối', data:velKnee, borderColor:'#198754', tension:0.1, fill:false},
+          {label:'|v| Hông', data:velHip, borderColor:'#dc3545', tension:0.1, fill:false}
         ]},
         options: {...chartOptions, scales: {...chartOptions.scales, y: {...chartOptions.scales.y, title: {display:true, text:'°/s', color:'var(--text-muted)'}}}}
       });
-
       const rom = res.features?.rom || {};
       const romLabels = Object.keys(rom);
       const romData = romLabels.map(k=>rom[k].range);
       window._romChart = new Chart(romChartEl.getContext('2d'), {
         type:'bar',
-        data:{labels:romLabels, datasets:[{
-            label:'ROM (°)', 
-            data:romData,
-            backgroundColor: 'rgba(220, 53, 69, 0.7)',
-        }]},
-        options: {...chartOptions, indexAxis: 'y', scales: { ...chartOptions.scales, x: {ticks:{color: 'var(--text-muted)'}, grid:{color: 'var(--border-color)'}}, y: {...chartOptions.scales.y, title: {display:false}, ticks:{color:'var(--text-dark)'}, grid:{display:false}}}}
+        data:{labels:romLabels, datasets:[{ label:'ROM (°)', data:romData, backgroundColor:'rgba(220,53,69,0.7)' }]},
+        options: {...chartOptions, indexAxis: 'y', scales:{ ...chartOptions.scales, x:{ticks:{color:'var(--text-muted)'},grid:{color:'var(--border-color)'}}, y:{...chartOptions.scales.y, title:{display:false}, ticks:{color:'var(--text-dark)'}, grid:{display:false}}}}
       });
-
       aiAlertsEl.innerHTML = '<span class="muted">Ấn "Chạy mô hình AI" để dự đoán.</span>';
     }
 
+    /* ============== Export features ============== */
     exportFeaturesBtn.addEventListener('click', ()=>{
       if(!currentVideo){ showModal('Chưa có video.'); return; }
       const summary = results[currentVideo.id]?.features || summarizeFeatures();
-      const payload = {
-        meta:{videoId:currentVideo.id, name:currentVideo.name, sport:currentVideo.sportTag||sportSel.value},
-        time: featTime, angles: featAngles, velocity: featVel, summary
-      };
+      const payload = { meta:{videoId:currentVideo.id,name:currentVideo.name,sport:currentVideo.sportTag||sportSel.value}, time: featTime, angles: featAngles, velocity: featVel, summary };
       const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -1393,7 +1160,6 @@
       document.body.appendChild(a); a.click(); a.remove();
       setTimeout(()=>URL.revokeObjectURL(url), 800);
     });
-
     exportFeaturesCsvBtn.addEventListener('click', ()=>{
       if(!currentVideo){ showModal('Chưa có video.'); return; }
       const keys = ['kneeL','kneeR','hipL','hipR','elbowL','elbowR','shoulderL','shoulderR','torsoIncline'];
@@ -1412,16 +1178,15 @@
       setTimeout(()=>URL.revokeObjectURL(url), 800);
     });
 
+    /* ============== AI Heuristic (fallback) ============== */
     runModelBtn.addEventListener('click', async ()=>{
       if(!currentVideo){ showModal('Chưa có video.'); return; }
       const summary = results[currentVideo.id]?.features || summarizeFeatures();
-      
       function flat(obj, keys){ return keys.map(k=> (typeof obj[k]==='number')?obj[k]:0 ); }
       const angleKeys=['kneeL','kneeR','hipL','hipR','elbowL','elbowR','shoulderL','shoulderR','torsoIncline'];
       const romRanges = angleKeys.map(k=> summary.rom[k]?.range ?? 0);
       const inputVec = [ ...flat(summary.mean, angleKeys), ...flat(summary.std, angleKeys), ...romRanges, ...flat(summary.vmean, angleKeys), ...flat(summary.vstd, angleKeys) ];
       let alerts = [];
-
       if(aiAvailable && aiModel){
         try{
           const inp = tf.tensor2d([inputVec]);
@@ -1442,7 +1207,6 @@
         aiAlertsEl.innerHTML = `<ul>${alerts.map(a=>`<li>${a}</li>`).join('')}</ul>`;
       }
     });
-
     function heuristicAlerts(summary, sport){
       const a = [];
       const rom = summary.rom||{}, vmean=summary.vmean||{};
@@ -1466,9 +1230,10 @@
       return a;
     }
 
+    /* ============== Uploads ============== */
     videoUpload.addEventListener('change', async (e)=>{
       const files = Array.from(e.target.files);
-      for (const f of files) { // Use a for...of loop to handle async properly
+      for (const f of files) {
         const id = uidFromName(f.name + '_' + Date.now());
         const url = URL.createObjectURL(f);
         let tag = '';
@@ -1477,24 +1242,14 @@
         else if(ln.includes('nhay')||ln.includes('xax')||ln.includes('nhaycao')) tag='nhaycao';
         else if(ln.includes('nem')||ln.includes('nemta')) tag='nemta';
         if(!tag) tag = sportSel.value || 'xuatphat';
-        
         const videoData = {id, name:f.name, url, sportTag:tag, file: f};
         uploadedVideos.push(videoData);
-
-        try {
-            // We store the file object, not the blob URL which is temporary
-            await saveVideoToDB({id, name:f.name, sportTag:tag, file: f}); 
-        } catch (error) {
-            console.error('Failed to save video to DB:', error);
-            showModal('Lỗi khi lưu video. Video này sẽ không được giữ lại sau khi tải lại trang.');
-        }
+        try { await saveVideoToDB({id, name:f.name, sportTag:tag, file: f}); }
+        catch (error) { console.error('Failed to save video to DB:', error); showModal('Lỗi khi lưu video. Video này sẽ không được giữ lại sau khi tải lại trang.'); }
       }
       renderVideoList();
-      if(uploadedVideos.length>0 && !currentVideo){
-        openVideo(uploadedVideos[uploadedVideos.length-1]);
-      }
+      if(uploadedVideos.length>0 && !currentVideo){ openVideo(uploadedVideos[uploadedVideos.length-1]); }
     });
-
     imgUpload.addEventListener('change', (e)=>{
       const files = Array.from(e.target.files);
       const existing = JSON.parse(localStorage.getItem('thethaott_gallery')||'[]');
@@ -1506,79 +1261,95 @@
       });
     });
 
-    sportSel.addEventListener('change', ()=>{ renderVideoList(); renderChart(); });
-    viewSel.addEventListener('change', ()=>{});
-
-    analyzeBtn.addEventListener('click', async ()=>{
-      if(!currentVideo){ showModal('Chưa chọn video.'); return }
-      await runAnalysisIfNeeded(currentVideo,false);
-    });
+    /* ============== Buttons & sliders ============== */
+    sportSel.addEventListener('change', ()=>{ renderVideoList(); renderChart(); renderStandardsEditor(); });
+    viewSel.addEventListener('change', ()=>{ renderStandardsEditor(); });
+    analyzeBtn.addEventListener('click', async ()=>{ if(!currentVideo){ showModal('Chưa chọn video.'); return } await runAnalysisIfNeeded(currentVideo,false); });
     forceAnalyzeBtn.addEventListener('click', async ()=>{ if(!currentVideo){ showModal('Chưa chọn video.'); return } await runAnalysisIfNeeded(currentVideo,true); });
-
     clearStorageBtn.addEventListener('click', ()=>{ 
-      showModal(
-        'Bạn có chắc muốn xóa toàn bộ dữ liệu (kết quả phân tích, ảnh và video đã tải lên)?',
-        true,
-        async () => {
-          localStorage.removeItem('thethaott_results'); 
-          localStorage.removeItem('thethaott_gallery'); 
-          try {
-              await clearVideosFromDB();
-              uploadedVideos.forEach(v => URL.revokeObjectURL(v.url));
-              uploadedVideos = [];
-              renderVideoList();
-              console.log('Đã xóa tất cả video khỏi IndexedDB.');
-          } catch(e) {
-              console.error('Không thể xóa video khỏi DB', e);
-          }
-          results={}; 
-          renderGallery(); 
-          renderChart(); 
-          showAnalysisPanel(null);
-          player.src = '';
-          currentVideo = null;
-          showModal('Đã xóa toàn bộ dữ liệu thành công.');
-        }
-      );
+      showModal('Bạn có chắc muốn xóa toàn bộ dữ liệu (kết quả phân tích, ảnh và video đã tải lên)?', true, async () => {
+        localStorage.removeItem('thethaott_results'); 
+        localStorage.removeItem('thethaott_gallery'); 
+        try {
+          await clearVideosFromDB();
+          uploadedVideos.forEach(v => URL.revokeObjectURL(v.url));
+          uploadedVideos = [];
+          renderVideoList();
+        } catch(e) { console.error('Không thể xóa video khỏi DB', e); }
+        results={}; renderGallery(); renderChart(); showAnalysisPanel(null); player.src=''; currentVideo=null; showModal('Đã xóa toàn bộ dữ liệu thành công.');
+      });
     });
 
+    /* ============== Editor khung chuẩn & ngưỡng ============== */
+    function renderStandardsEditor(){
+      const wrap = document.getElementById('standardsEditor');
+      if (!wrap) return;
+      const sport = sportSel.value;
+      const v = (viewSel.value === 'auto') ? 'front' : viewSel.value;
+      const rules = USER_STANDARDS?.[sport]?.[v] || [];
+      if (!rules.length){ wrap.innerHTML = '<div class="muted">Chưa có luật cho môn này.</div>'; return; }
+      const rows = rules.map((r, idx) => `
+        <div style="display:grid;grid-template-columns:1.2fr repeat(3,0.6fr);gap:8px;align-items:center;padding:6px 0;border-bottom:1px dashed #eee">
+          <div><strong>${r.name}</strong> <span class="muted">${r.anySide?'(anySide)':''}</span></div>
+          <div><label class="small">want</label><input data-i="${idx}" data-k="want" type="number" step="1" value="${r.want}" style="width:100%"></div>
+          <div><label class="small">tol</label><input data-i="${idx}" data-k="tol" type="number" step="1" value="${r.tol}" style="width:100%"></div>
+          <div><label class="small">weight</label><input data-i="${idx}" data-k="weight" type="number" step="0.1" value="${r.weight ?? 1}" style="width:100%"></div>
+        </div>
+      `).join('');
+      wrap.innerHTML = `<div class="small" style="margin-bottom:6px">Đang chỉnh: <b>${sport}</b> / view <b>${v}</b></div>${rows}`;
+      wrap.querySelectorAll('input').forEach(inp=>{
+        inp.addEventListener('change', (e)=>{
+          const i = +e.target.dataset.i;
+          const k = e.target.dataset.k;
+          let val = parseFloat(e.target.value);
+          if (Number.isNaN(val)) return;
+          if (k === 'tol')  val = Math.max(0, val);
+          if (k === 'weight') val = Math.max(0.1, val);
+          USER_STANDARDS[sport][v][i][k] = val;
+          saveStandards();
+        });
+      });
+      const slider = document.getElementById('frameThreshSlider');
+      const label  = document.getElementById('threshLabel');
+      if (slider && label) {
+        slider.value = Math.round((getFrameThresh(sport) * 100));
+        label.textContent = `${slider.value}%`;
+        slider.oninput = () => { label.textContent = `${slider.value}%`; };
+        slider.onchange = () => { USER_THRESH[sport] = slider.value/100; saveStandards(); };
+      }
+      const resetBtn = document.getElementById('resetStandardsBtn');
+      if (resetBtn){
+        resetBtn.onclick = ()=>{ USER_STANDARDS = JSON.parse(JSON.stringify(BASE_STANDARDS)); USER_THRESH = { ...DEFAULT_THRESH }; saveStandards(); renderStandardsEditor(); };
+      }
+    }
+
+    /* ============== DOMContentLoaded init ============== */
     document.addEventListener('DOMContentLoaded', async () => {
-        try {
-            await initDB();
-            const storedVideos = await getVideosFromDB();
-            // Clean up old blob URLs before creating new ones
-            uploadedVideos.forEach(v => URL.revokeObjectURL(v.url)); 
-            
-            uploadedVideos = storedVideos.map(v => ({
-                ...v,
-                url: URL.createObjectURL(v.file)
-            }));
-            console.log(`Đã tải ${uploadedVideos.length} video từ IndexedDB.`);
-        } catch (error) {
-            console.error('Could not load videos from IndexedDB:', error);
-            showModal('Không thể tải video đã lưu. Dữ liệu có thể bị mất.');
-        }
+      try {
+        await initDB();
+        const storedVideos = await getVideosFromDB();
+        uploadedVideos = storedVideos.map(v => ({ ...v, url: URL.createObjectURL(v.file) }));
+      } catch (error) {
+        console.error('Could not load videos from IndexedDB:', error);
+        showModal('Không thể tải video đã lưu. Dữ liệu có thể bị mất.');
+      }
+      loadStandards();
+      ensureMpPose(); 
+      renderGallery(); 
+      renderVideoList(); 
+      renderChart();
+      renderStandardsEditor();
 
-        ensureMpPose(); 
-        renderGallery(); 
-        renderVideoList(); 
-        renderChart();
-
-        // Lấy thông tin VĐV từ URL và cập nhật tiêu đề
-        const urlParams = new URLSearchParams(window.location.search);
-        const athleteName = urlParams.get('athleteName');
-        const athleteId = urlParams.get('athleteId');
-
-        if (athleteName) {
-            const titleEl = document.getElementById('main-title');
-            if (titleEl) {
-                titleEl.textContent = `Phân tích tư thế cho VĐV: ${decodeURIComponent(athleteName)}`;
-            }
-        }
+      // tiêu đề theo URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const athleteName = urlParams.get('athleteName');
+      if (athleteName) {
+        const titleEl = document.getElementById('main-title');
+        if (titleEl) titleEl.textContent = `Phân tích tư thế cho VĐV: ${decodeURIComponent(athleteName)}`;
+      }
     });
 
     window.addEventListener('beforeunload', ()=>{ uploadedVideos.forEach(v=>{ try{ URL.revokeObjectURL(v.url);}catch(e){} }); });
   </script>
 </body>
 </html>
-
