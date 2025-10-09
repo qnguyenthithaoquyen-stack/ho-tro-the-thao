@@ -188,6 +188,7 @@
             position: relative;
             background-size: cover;
             background-position: center;
+            cursor: pointer; /* Thêm con trỏ chuột để báo hiệu có thể nhấp */
         }
         .slide::before {
             content: '';
@@ -250,6 +251,43 @@
             background-color: #fff;
             transform: scale(1.2);
         }
+
+        /* === CSS CHO CHỨC NĂNG FULL-SIZE MỚI === */
+        .lightbox {
+            display: none; /* Ẩn mặc định */
+            position: fixed;
+            z-index: 1000;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .lightbox-content {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: 20px;
+            right: 35px;
+            color: #fff;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .lightbox-close:hover {
+            color: #ccc;
+        }
+        /* === KẾT THÚC CSS MỚI === */
+
     </style>
 </head>
 <body>
@@ -269,7 +307,7 @@
                     <span>Đăng nhập</span>
                 </a>
                 <a href="dangki.html" id="register-link">
-                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="17" y1="11" x2="23" y2="11"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="17" y1="11" x2="23" y2="11"/></svg>
                     <span>Đăng ký</span>
                 </a>
                 <a href="#" id="logout-link" style="display: none;">
@@ -309,9 +347,14 @@
             <div class="carousel-dots" id="dots"></div>
         </div>
     </div>
-    
+
+    <div id="lightbox" class="lightbox">
+        <span id="lightbox-close" class="lightbox-close">&times;</span>
+        <img id="lightbox-content" class="lightbox-content">
+    </div>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            // --- Chức năng Carousel (Giữ nguyên) ---
             const slides = document.getElementById('slides');
             const dotsContainer = document.getElementById('dots');
             const slideElements = document.querySelectorAll('.slide');
@@ -377,6 +420,43 @@
             
             goToSlide(0);
             startInterval();
+
+            // --- JAVASCRIPT CHO CHỨC NĂNG FULL-SIZE MỚI ---
+            const lightbox = document.getElementById('lightbox');
+            const lightboxContent = document.getElementById('lightbox-content');
+            const lightboxClose = document.getElementById('lightbox-close');
+
+            // Mở lightbox
+            slideElements.forEach(slide => {
+                slide.addEventListener('click', () => {
+                    // Trích xuất URL từ thuộc tính style
+                    const style = slide.style.backgroundImage;
+                    const imageUrl = style.slice(5, -2); // Bỏ đi 'url("' và '")'
+
+                    lightboxContent.src = imageUrl;
+                    lightbox.style.display = 'flex';
+                });
+            });
+
+            // Đóng lightbox khi nhấn nút X
+            lightboxClose.addEventListener('click', () => {
+                lightbox.style.display = 'none';
+            });
+
+            // Đóng lightbox khi nhấn vào nền
+            lightbox.addEventListener('click', (e) => {
+                if (e.target === lightbox) {
+                    lightbox.style.display = 'none';
+                }
+            });
+
+            // Đóng lightbox khi nhấn phím Escape
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && lightbox.style.display === 'flex') {
+                    lightbox.style.display = 'none';
+                }
+            });
+            // --- KẾT THÚC JAVASCRIPT MỚI ---
         });
     </script>
 
