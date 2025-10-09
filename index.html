@@ -23,20 +23,40 @@
             opacity: 1;
         }
 
-        .container {
+        /* Container chỉ áp dụng cho nội dung chính, không áp dụng cho header/nav nữa */
+        .main-content-container {
             max-width: 1200px;
             margin: 0 auto;
             background-color: #fff;
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.07);
         }
 
+        /* Header và Navbar giờ sẽ full chiều rộng */
         .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 30px;
             background-color: var(--primary-color);
             color: #fff;
+        }
+
+        .navbar {
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,.05);
+        }
+        
+        /* Wrapper mới để giữ nội dung bên trong header/nav căn giữa 1200px */
+        .header-content, .navbar-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+        }
+
+        .header-content {
+            justify-content: space-between;
+            padding: 15px 30px;
+        }
+
+        .navbar-content {
+            padding: 0 30px;
         }
 
         .header-left {
@@ -105,13 +125,6 @@
         }
         #register-link:hover, #logout-link:hover {
             background-color: rgba(255, 255, 255, 0.9);
-        }
-
-        .navbar {
-            display: flex;
-            background-color: #fff;
-            box-shadow: 0 2px 4px rgba(0,0,0,.05);
-            padding: 0 30px;
         }
 
         .navbar a {
@@ -188,7 +201,7 @@
             position: relative;
             background-size: cover;
             background-position: center;
-            cursor: pointer; /* Thêm con trỏ chuột để báo hiệu có thể nhấp */
+            cursor: pointer;
         }
         .slide::before {
             content: '';
@@ -252,9 +265,9 @@
             transform: scale(1.2);
         }
 
-        /* === CSS CHO CHỨC NĂNG FULL-SIZE MỚI === */
+        /* === CSS CHO CHỨC NĂNG FULL-SIZE === */
         .lightbox {
-            display: none; /* Ẩn mặc định */
+            display: none;
             position: fixed;
             z-index: 1000;
             top: 0;
@@ -286,14 +299,12 @@
         .lightbox-close:hover {
             color: #ccc;
         }
-        /* === KẾT THÚC CSS MỚI === */
-
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <header class="header">
+    <header class="header">
+        <div class="header-content">
             <div class="header-left">
                 <div class="logo">LOGO</div>
                 <div class="project-info">
@@ -315,14 +326,18 @@
                     <span>Đăng xuất</span>
                 </a>
             </div>
-        </header>
+        </div>
+    </header>
 
-        <nav class="navbar">
+    <nav class="navbar">
+        <div class="navbar-content">
             <a href="index.html" class="active">Trang chủ</a>
             <a href="gioithieu.html">Giới thiệu</a>
             <a href="#" id="dashboard-link" style="display: none;">Bảng điều khiển</a>
-        </nav>
+        </div>
+    </nav>
 
+    <div class="main-content-container">
         <section class="welcome-section">
             <h1>Chào mừng đến với hệ thống Hỗ trợ Huấn luyện Thể thao!</h1>
             <p>Nền tảng giúp tối ưu hóa hiệu suất và bảo vệ sức khỏe cho vận động viên.</p>
@@ -352,6 +367,7 @@
         <span id="lightbox-close" class="lightbox-close">&times;</span>
         <img id="lightbox-content" class="lightbox-content">
     </div>
+    
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             // --- Chức năng Carousel (Giữ nguyên) ---
@@ -421,42 +437,35 @@
             goToSlide(0);
             startInterval();
 
-            // --- JAVASCRIPT CHO CHỨC NĂNG FULL-SIZE MỚI ---
+            // --- JAVASCRIPT CHO CHỨC NĂNG FULL-SIZE ---
             const lightbox = document.getElementById('lightbox');
             const lightboxContent = document.getElementById('lightbox-content');
             const lightboxClose = document.getElementById('lightbox-close');
 
-            // Mở lightbox
             slideElements.forEach(slide => {
                 slide.addEventListener('click', () => {
-                    // Trích xuất URL từ thuộc tính style
                     const style = slide.style.backgroundImage;
-                    const imageUrl = style.slice(5, -2); // Bỏ đi 'url("' và '")'
-
+                    const imageUrl = style.slice(5, -2);
                     lightboxContent.src = imageUrl;
                     lightbox.style.display = 'flex';
                 });
             });
 
-            // Đóng lightbox khi nhấn nút X
-            lightboxClose.addEventListener('click', () => {
+            const closeLightbox = () => {
                 lightbox.style.display = 'none';
-            });
+            };
 
-            // Đóng lightbox khi nhấn vào nền
+            lightboxClose.addEventListener('click', closeLightbox);
             lightbox.addEventListener('click', (e) => {
                 if (e.target === lightbox) {
-                    lightbox.style.display = 'none';
+                    closeLightbox();
                 }
             });
-
-            // Đóng lightbox khi nhấn phím Escape
             document.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape' && lightbox.style.display === 'flex') {
-                    lightbox.style.display = 'none';
+                    closeLightbox();
                 }
             });
-            // --- KẾT THÚC JAVASCRIPT MỚI ---
         });
     </script>
 
@@ -464,7 +473,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
         import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
-
 
         const firebaseConfig = {
             apiKey: "AIzaSyA2dXWCyjL2xgCSyeW9QQ7RvjI_O7kFHJw",
