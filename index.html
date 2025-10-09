@@ -3,114 +3,83 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Trang chủ - Hỗ Trợ Huấn Luyện Thể Thao</title>
+  <title>Trang chủ - Hỗ Trợ Huấn Luyện Thể Thao (edge-pinned)</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
     :root { --primary-color:#008080; }
+    *{ box-sizing:border-box; }
+    html,body{ margin:0; overflow-x:hidden; }
+    body{ font-family:'Roboto',sans-serif; background:#f0f2f5; opacity:0; transition:opacity .4s ease; }
+    body.loaded{ opacity:1; }
 
-    * { box-sizing: border-box; }
-
-    body {
-      font-family:'Roboto',sans-serif; margin:0; background:#f0f2f5;
-      opacity:0; transition:opacity .5s ease-in-out;
+    /* ===== FULL-BLEED STRIPES (with !important to beat themes) ===== */
+    .header, .navbar{
+      position:relative !important;
+      left:50% !important; right:50% !important;
+      margin-left:calc(-50vw + 0px) !important;
+      margin-right:calc(-50vw + 0px) !important;
+      width:100vw !important;
     }
-    body.loaded { opacity:1; }
-    html, body { overflow-x:hidden; }
-
-    /* Nội dung chính vẫn căn giữa 1200px */
-    .main-content-container {
-      max-width:1200px; margin:0 auto; background:#fff;
-      box-shadow:0 0 15px rgba(0,0,0,.07);
-    }
-
-    /* Thanh header + navbar full-bleed */
     .header{ background:var(--primary-color); color:#fff; }
     .navbar{ background:#fff; box-shadow:0 2px 4px rgba(0,0,0,.05); }
 
-    /* LỚP NỘI DUNG TRONG HEADER/NAVBAR: chiếm 100% bề ngang viewport */
+    /* ===== EDGE-PINNED CONTENT ===== */
     .header-content, .navbar-content{
-      /* bỏ max-width 1200 để bám mép trái-phải */
-      max-width:none; width:100%; padding:0 30px;
-      margin:0; display:flex; align-items:center; gap:16px;
+      max-width:unset !important; width:100% !important;
+      margin:0 !important; padding:0 12px !important;
+      display:flex !important; align-items:center !important;
     }
+    .header-content{ min-height:68px; justify-content:space-between !important; gap:16px; }
+    .header-left{ display:flex; align-items:center; gap:12px; min-width:0; }
+    .logo{ background:#fff; color:var(--primary-color); font-weight:700; padding:10px 12px; border-radius:6px; }
+    .project-info h1{ margin:0; font-weight:700; font-size:22px; white-space:nowrap; }
+    .project-info p{ margin:0; font-size:12px; opacity:.9; }
 
-    /* Đưa 2 cụm về 2 góc: trái = header-left (flex:1), phải = user-actions (auto) */
-    .header-content{ min-height:70px; }
-    .header-left{ display:flex; align-items:center; gap:15px; flex:1 1 auto; }
-    .user-actions{ display:flex; align-items:center; gap:12px; margin-left:auto; }
-
-    .logo{ background:#fff; color:var(--primary-color); font-weight:700; padding:10px; border-radius:5px; }
-
-    .project-info h1{ font-size:24px; margin:0; font-weight:700; white-space:nowrap; }
-    .project-info p{ font-size:12px; margin:0; opacity:.9; }
-
+    .user-actions{ display:flex; gap:10px; }
     .user-actions a{
-      display:inline-flex; align-items:center; justify-content:center; gap:8px;
-      padding:9px 22px; font-size:14px; font-weight:500; border-radius:50px;
-      text-decoration:none; border:1.5px solid #fff; transition:background-color .3s,color .3s;
-      white-space:nowrap;
+      display:inline-flex; align-items:center; gap:8px; white-space:nowrap;
+      padding:9px 18px; font-size:14px; font-weight:500; border-radius:999px;
+      text-decoration:none; border:1.5px solid #fff;
+      transition:background .25s,color .25s;
     }
     .user-actions a svg{ width:16px; height:16px; }
-
     #login-link{ background:transparent; color:#fff; }
     #login-link:hover{ background:#fff; color:var(--primary-color); }
     #register-link,#logout-link{ background:#fff; color:var(--primary-color); }
     #register-link:hover,#logout-link:hover{ background:rgba(255,255,255,.9); }
 
-    .navbar-content{ padding:0 30px; }
-    .navbar a{
-      padding:15px 25px; text-decoration:none; color:#333; font-weight:500;
-      position:relative; transition:color .3s ease;
-    }
-    .navbar a::after{
-      content:''; position:absolute; bottom:0; left:50%; transform:translateX(-50%);
-      width:0; height:3px; background:var(--primary-color); transition:width .3s ease;
-    }
+    .navbar-content{ justify-content:flex-start; padding:0 12px !important; }
+    .navbar a{ padding:14px 22px; color:#333; text-decoration:none; font-weight:500; position:relative; transition:color .25s; }
+    .navbar a::after{ content:''; position:absolute; bottom:0; left:50%; transform:translateX(-50%); width:0; height:3px; background:var(--primary-color); transition:width .25s; }
     .navbar a:hover, .navbar a.active{ color:var(--primary-color); }
     .navbar a.active::after{ width:70%; }
 
-    .welcome-section{
-      background:linear-gradient(135deg,#f5f7fa 0%,#c3cfe2 100%);
-      text-align:center; padding:60px 20px;
-    }
-    .welcome-section h1{ font-size:42px; margin:0 0 15px; font-weight:700; color:#2c3e50; }
+    /* MAIN container unchanged */
+    .main-content-container{ max-width:1200px; margin:0 auto; background:#fff; box-shadow:0 0 15px rgba(0,0,0,.07); }
+
+    .welcome-section{ background:linear-gradient(135deg,#f5f7fa 0%,#c3cfe2 100%); text-align:center; padding:60px 20px; }
+    .welcome-section h1{ font-size:42px; margin:0 0 15px; color:#2c3e50; }
     .welcome-section p{ font-size:18px; color:#34495e; margin:0; max-width:700px; margin-left:auto; margin-right:auto; }
 
     .carousel-container{ position:relative; max-width:1200px; margin:0 auto; overflow:hidden; }
     .carousel-slides{ display:flex; transition:transform .7s cubic-bezier(.25,.8,.25,1); }
-    .slide{
-      flex-shrink:0; width:100%; height:450px; display:flex; justify-content:center; align-items:center;
-      color:#fff; font-size:48px; font-weight:700; text-shadow:2px 2px 8px rgba(0,0,0,.7);
-      position:relative; background-size:cover; background-position:center; cursor:pointer;
-    }
+    .slide{ flex-shrink:0; width:100%; height:450px; display:flex; justify-content:center; align-items:center; color:#fff; font-size:48px; font-weight:700; text-shadow:2px 2px 8px rgba(0,0,0,.7); position:relative; background-size:cover; background-position:center; cursor:pointer; }
     .slide::before{ content:''; position:absolute; inset:0; background:rgba(0,0,0,.4); }
     .slide-content{ position:relative; z-index:2; }
 
-    .carousel-btn{
-      position:absolute; top:50%; transform:translateY(-50%);
-      background:rgba(255,255,255,.1); color:#fff; border:1px solid rgba(255,255,255,.5);
-      font-size:28px; width:50px; height:50px; border-radius:50%; cursor:pointer; z-index:10; user-select:none; transition:all .3s;
-      display:flex; align-items:center; justify-content:center;
-    }
+    .carousel-btn{ position:absolute; top:50%; transform:translateY(-50%); background:rgba(255,255,255,.1); color:#fff; border:1px solid rgba(255,255,255,.5); font-size:28px; width:50px; height:50px; border-radius:50%; cursor:pointer; z-index:10; user-select:none; display:flex; align-items:center; justify-content:center; transition:all .25s; }
     .carousel-btn:hover{ background:rgba(255,255,255,.3); }
     .carousel-btn.left{ left:30px; } .carousel-btn.right{ right:30px; }
 
     .carousel-dots{ position:absolute; bottom:25px; left:50%; transform:translateX(-50%); display:flex; z-index:10; }
-    .dot{ width:12px; height:12px; background:rgba(255,255,255,.5); border-radius:50%; margin:0 6px; cursor:pointer; transition:all .3s; }
+    .dot{ width:12px; height:12px; background:rgba(255,255,255,.5); border-radius:50%; margin:0 6px; cursor:pointer; transition:all .25s; }
     .dot.active{ background:#fff; transform:scale(1.2); }
 
     .lightbox{ display:none; position:fixed; z-index:1000; inset:0; background:rgba(0,0,0,.85); justify-content:center; align-items:center; }
     .lightbox-content{ max-width:90%; max-height:90%; object-fit:contain; }
-    .lightbox-close{ position:absolute; top:20px; right:35px; color:#fff; font-size:40px; font-weight:bold; cursor:pointer; transition:color .3s; }
+    .lightbox-close{ position:absolute; top:20px; right:35px; color:#fff; font-size:40px; font-weight:bold; cursor:pointer; transition:color .25s; }
     .lightbox-close:hover{ color:#ccc; }
 
-    /* FULL-WIDTH FIX: ép thanh phủ viewport */
-    .header, .navbar{
-      position:relative; left:50%; right:50%;
-      margin-left:-50vw; margin-right:-50vw; width:100vw;
-    }
-
-    /* Đảm bảo hiển thị tốt khi thu nhỏ: xếp dọc các nút nếu không đủ chỗ */
     @media (max-width: 720px){
       .project-info h1{ font-size:18px; }
       .user-actions{ flex-wrap:wrap; gap:8px; }
