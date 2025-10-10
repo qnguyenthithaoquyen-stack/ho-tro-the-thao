@@ -1,420 +1,443 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bảng điều khiển VĐV - Hỗ Trợ Huấn Luyện Thể Thao</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
-        
-        :root {
-            --primary-color: #008080;
-            --background-color: #f0f4f8;
-            --card-bg-color: #ffffff;
-            --text-color: #333;
-            --text-light-color: #6c757d;
-            --border-color: #e9ecef;
-            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.07);
-            --run-color: #1890ff;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bảng điều khiển VĐV - Hỗ Trợ Huấn Luyện Thể Thao</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
 
-        body { 
-            font-family: 'Roboto', sans-serif; 
-            margin: 0; 
-            background-color: var(--background-color); 
-            color: var(--text-color);
-            opacity: 0;
-            transition: opacity 0.5s ease-in-out;
-        }
-        body.loaded { opacity: 1; }
+    :root{
+      --primary-color:#008080;
+      --background-color:#f0f4f8;
+      --card-bg-color:#ffffff;
+      --text-color:#333;
+      --text-light-color:#6c757d;
+      --border-color:#e9ecef;
+      --shadow:0 10px 25px -5px rgba(0,0,0,0.07);
+      --run-color:#1890ff;
+    }
 
-        .container { max-width: 1200px; margin: 0 auto; background-color: #fff; }
-        
-        .header { display: flex; justify-content: space-between; align-items: center; padding: 15px 30px; background-color: var(--primary-color); color: #fff; }
-        .header-left { display: flex; align-items: center; gap: 15px; }
-        .logo { background-color: #fff; color: var(--primary-color); font-weight: 700; padding: 10px; border-radius: 8px; }
-        .project-info h1 { font-size: 24px; margin: 0; font-weight: 700; }
-        .project-info p { font-size: 12px; margin: 0; opacity: 0.9; }
-        .user-actions { display: flex; align-items: center; gap: 12px; }
-        .user-actions a { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 9px 22px; font-size: 14px; font-weight: 500; border-radius: 50px; text-decoration: none; border: 1.5px solid #fff; transition: background-color 0.3s, color 0.3s; }
-        .user-actions a svg { width: 16px; height: 16px; }
-        #logout-link { background-color: #fff; color: var(--primary-color); }
-        #logout-link:hover { background-color: rgba(255, 255, 255, 0.9); }
-        .navbar { display: flex; background-color: #fff; box-shadow: 0 2px 4px rgba(0,0,0,.05); padding: 0 30px; }
-        .navbar a { padding: 15px 25px; text-decoration: none; color: #333; font-weight: 500; position: relative; transition: color 0.3s ease; }
-        .navbar a.active { color: var(--primary-color); }
-        .navbar a.active::after { content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 70%; height: 3px; background-color: var(--primary-color); }
+    *{ box-sizing:border-box; }
+    html,body{ margin:0; }
+    body{
+      font-family:'Roboto',sans-serif;
+      background-color:var(--background-color);
+      color:var(--text-color);
+      opacity:0; transition:opacity .5s ease-in-out;
+    }
+    body.loaded{ opacity:1; }
 
-        .main-content { padding: 30px; }
-        .loader-container { display: flex; justify-content: center; align-items: center; min-height: 50vh; color: var(--text-light-color); }
-        
-        .dashboard-grid { 
-            display: grid; 
-            grid-template-columns: 1fr;
-            gap: 30px; 
-        }
+    /* ===== FULL-BLEED HEADER + NAVBAR (như các trang trước) ===== */
+    .header, .navbar{
+      position:relative !important;
+      left:50% !important; right:50% !important;
+      margin-left:calc(-50vw + 0px) !important;
+      margin-right:calc(-50vw + 0px) !important;
+      width:100vw !important;
+    }
 
-        .daily-goals, .quick-stats, .health-metrics { background-color: var(--card-bg-color); border-radius: 16px; padding: 30px; box-shadow: var(--shadow); }
-        .daily-goals h2, .quick-stats h2, .health-metrics h2 { margin-top: 0; font-size: 24px; color: var(--text-color); border-bottom: 1px solid var(--border-color); padding-bottom: 15px; margin-bottom: 20px; }
-        
-        .task-item { display: flex; align-items: center; justify-content: space-between; padding: 20px; border-radius: 12px; margin-bottom: 15px; transition: all 0.3s; border: 1px solid transparent; }
-        .task-item.run { background-color: #e6f7ff; border-color: #91d5ff; }
-        .task-item:hover { transform: translateY(-4px); box-shadow: 0 8px 20px -5px rgba(0,0,0,0.12); }
-        .task-info { display: flex; align-items: center; gap: 20px; }
-        .task-icon { width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-        .task-icon svg { width: 28px; height: 28px; stroke: var(--run-color);}
-        .task-details h3 { margin: 0; font-size: 16px; font-weight: 500; }
-        .task-details p { margin: 4px 0 0; font-size: 14px; color: var(--text-light-color); }
-        .task-action button { color: #fff; background-color: var(--run-color); border: none; padding: 10px 25px; border-radius: 20px; cursor: pointer; font-weight: 500; transition: all 0.3s; }
-        .task-action button:hover { filter: brightness(1.1); }
-        .task-action button:disabled { background-color: #b0bec5; cursor: not-allowed; }
-        
-        .main-functions { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 0; }
-        .function-button { padding: 20px; border-radius: 16px; text-align: center; color: #fff; font-weight: 700; font-size: 16px; cursor: pointer; transition: transform 0.2s, box-shadow 0.3s; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; box-shadow: var(--shadow); position: relative; overflow: hidden; background-size: cover; background-position: center; text-decoration: none; }
-        .function-button:hover { transform: translateY(-5px); box-shadow: 0 12px 30px -5px rgba(0,0,0,0.15); }
-        .function-button svg { width: 32px; height: 32px; stroke-width: 1.5; z-index: 2; }
-        .function-button span { z-index: 2; }
-        .function-button::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; transition: background-color 0.3s; }
-        .function-button:hover::before { background-color: rgba(0,0,0,0.2); }
-        .btn-blue { background-image: url('https://images.pexels.com/photos/3757374/pexels-photo-3757374.jpeg?auto=compress&cs=tinysrgb&w=600'); }
-        .btn-blue::before { background-color: rgba(13, 110, 253, 0.7); }
-        .btn-green { background-image: url('https://images.pexels.com/photos/590022/pexels-photo-590022.jpeg?auto=compress&cs=tinysrgb&w=600'); }
-        .btn-green::before { background-color: rgba(25, 135, 84, 0.7); }
-        .btn-yellow { background-image: url('https://images.pexels.com/photos/4098228/pexels-photo-4098228.jpeg?auto=compress&cs=tinysrgb&w=600'); color: #fff; }
-        .btn-yellow::before { background-color: rgba(255, 193, 7, 0.7); }
-        .btn-red { background-image: url('https://images.pexels.com/photos/7991379/pexels-photo-7991379.jpeg?auto=compress&cs=tinysrgb&w=600'); }
-        .btn-red::before { background-color: rgba(220, 53, 69, 0.7); }
-        .btn-purple { background-image: url('https://images.pexels.com/photos/224924/pexels-photo-224924.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'); }
-        .btn-purple::before { background-color: rgba(111, 66, 193, 0.7); }
-        
-        /* Thống kê nhanh */
-        .stats-card-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-        }
+    .header{ background:var(--primary-color); color:#fff; }
+    .header-inner{
+      width:100%; max-width:unset !important; margin:0 !important;
+      padding:15px 30px;
+      display:flex; justify-content:space-between; align-items:center; gap:16px;
+    }
+    .header-left{ display:flex; align-items:center; gap:15px; }
+    .logo{ background:#fff; color:var(--primary-color); font-weight:700; padding:10px; border-radius:8px; }
+    .project-info h1{ font-size:24px; margin:0; font-weight:700; }
+    .project-info p{ font-size:12px; margin:0; opacity:.9; }
+    .user-actions{ display:flex; align-items:center; gap:12px; }
+    .user-actions a{ display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:9px 22px; font-size:14px; font-weight:500; border-radius:50px; text-decoration:none; border:1.5px solid #fff; transition:.3s; }
+    .user-actions a svg{ width:16px; height:16px; }
+    #logout-link{ background:#fff; color:var(--primary-color); }
+    #logout-link:hover{ background:rgba(255,255,255,.9); }
 
-        .stat-card { 
-            display: flex; 
-            align-items: center; 
-            gap: 15px; 
-            padding: 18px;
-            border-radius: 12px; 
-            color: white; 
-            transition: transform 0.2s, box-shadow 0.3s; 
-        }
+    .navbar{ background:#fff; box-shadow:0 2px 4px rgba(0,0,0,.05); }
+    .navbar-inner{
+      width:100%; max-width:unset !important; margin:0 !important;
+      padding:0 30px; display:flex; align-items:center;
+    }
+    .navbar a{ padding:15px 25px; text-decoration:none; color:#333; font-weight:500; position:relative; transition:color .3s ease; }
+    .navbar a.active{ color:var(--primary-color); }
+    .navbar a.active::after{ content:''; position:absolute; bottom:0; left:50%; transform:translateX(-50%); width:70%; height:3px; background:var(--primary-color); }
 
-        .stat-card-info h3 { margin: 0 0 5px 0; font-size: 14px; font-weight: 500; opacity: 0.9; }
-        .stat-card-info .value { font-size: 26px; font-weight: 700; }
-        .stat-distance { background: linear-gradient(45deg, #0d6efd, #0a58ca); }
-        .stat-time { background: linear-gradient(45deg, #198754, #146c43); }
-        .stat-calories { background: linear-gradient(45deg, #ffc107, #d39e00); }
-        .stat-today-distance { background: linear-gradient(45deg, #fd7e14, #c8630c); }
+    /* ===== Main container giữ 1200px ===== */
+    .container{ max-width:1200px; margin:0 auto; background:#fff; }
 
-        /* Chỉ số sức khỏe */
-        .health-metrics { 
-            margin-top: 30px; 
-        }
-        
-        .stats-grid { 
-            display: grid; 
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px; 
-        }
+    .main-content{ padding:30px; }
+    .loader-container{ display:flex; justify-content:center; align-items:center; min-height:50vh; color:var(--text-light-color); }
 
-        .health-stat-card { display: flex; align-items: center; gap: 15px; background-color: #f8f9fa; border-radius: 12px; padding: 15px; border: 1px solid var(--border-color); }
-        .detail-label { font-size: 13px; color: var(--text-light-color); margin-bottom: 2px; display: block; }
-        .detail-value { font-size: 22px; font-weight: 700; margin: 0; word-wrap: break-word; color: var(--text-color); }
-        .detail-icon-wrapper { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-        .detail-icon-wrapper svg { width: 24px; height: 24px; stroke-width: 1.5; }
-        .icon-heart { background-color: #ffebee; color: #e53935; }
-        .icon-spo2 { background-color: #e3f2fd; color: #1e88e5; }
-        .icon-bp { background-color: #f3e5f5; color: #8e24aa; }
-        .icon-accel { background-color: #e8f5e9; color: #43a047; }
-        
-        .access-denied { text-align: center; padding: 50px; }
-        .access-denied h2 { color: var(--primary-color); }
+    .dashboard-grid{ display:grid; grid-template-columns:1fr; gap:30px; }
+    .daily-goals, .quick-stats, .health-metrics{ background:var(--card-bg-color); border-radius:16px; padding:30px; box-shadow:var(--shadow); }
+    .daily-goals h2, .quick-stats h2, .health-metrics h2{ margin-top:0; font-size:24px; color:var(--text-color); border-bottom:1px solid var(--border-color); padding-bottom:15px; margin-bottom:20px; }
 
-        @media (max-width: 992px) { 
-            .dashboard-grid, .main-functions, .stats-grid, .stats-card-grid { 
-                grid-template-columns: 1fr; 
-            }
-        }
-    </style>
+    .task-item{ display:flex; align-items:center; justify-content:space-between; padding:20px; border-radius:12px; margin-bottom:15px; transition:.3s; border:1px solid transparent; }
+    .task-item.run{ background-color:#e6f7ff; border-color:#91d5ff; }
+    .task-item:hover{ transform:translateY(-4px); box-shadow:0 8px 20px -5px rgba(0,0,0,0.12); }
+    .task-info{ display:flex; align-items:center; gap:20px; }
+    .task-icon{ width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; }
+    .task-icon svg{ width:28px; height:28px; stroke:var(--run-color); }
+    .task-details h3{ margin:0; font-size:16px; font-weight:500; }
+    .task-details p{ margin:4px 0 0; font-size:14px; color:var(--text-light-color); }
+    .task-action button{ color:#fff; background:var(--run-color); border:none; padding:10px 25px; border-radius:20px; cursor:pointer; font-weight:500; transition:.3s; }
+    .task-action button:hover{ filter:brightness(1.1); }
+    .task-action button:disabled{ background:#b0bec5; cursor:not-allowed; }
+
+    .main-functions{ display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:20px; margin-top:0; }
+    .function-button{ padding:20px; border-radius:16px; text-align:center; color:#fff; font-weight:700; font-size:16px; cursor:pointer; transition:transform .2s, box-shadow .3s; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; box-shadow:var(--shadow); position:relative; overflow:hidden; background-size:cover; background-position:center; text-decoration:none; }
+    .function-button:hover{ transform:translateY(-5px); box-shadow:0 12px 30px -5px rgba(0,0,0,0.15); }
+    .function-button svg{ width:32px; height:32px; stroke-width:1.5; z-index:2; }
+    .function-button span{ z-index:2; }
+    .function-button::before{ content:''; position:absolute; inset:0; z-index:1; transition:background-color .3s; }
+    .function-button:hover::before{ background-color:rgba(0,0,0,0.2); }
+    .btn-blue{ background-image:url('https://images.pexels.com/photos/3757374/pexels-photo-3757374.jpeg?auto=compress&cs=tinysrgb&w=600'); }
+    .btn-blue::before{ background-color:rgba(13,110,253,.7); }
+    .btn-green{ background-image:url('https://images.pexels.com/photos/590022/pexels-photo-590022.jpeg?auto=compress&cs=tinysrgb&w=600'); }
+    .btn-green::before{ background-color:rgba(25,135,84,.7); }
+    .btn-yellow{ background-image:url('https://images.pexels.com/photos/4098228/pexels-photo-4098228.jpeg?auto=compress&cs=tinysrgb&w=600'); color:#fff; }
+    .btn-yellow::before{ background-color:rgba(255,193,7,.7); }
+    .btn-red{ background-image:url('https://images.pexels.com/photos/7991379/pexels-photo-7991379.jpeg?auto=compress&cs=tinysrgb&w=600'); }
+    .btn-red::before{ background-color:rgba(220,53,69,.7); }
+    .btn-purple{ background-image:url('https://images.pexels.com/photos/224924/pexels-photo-224924.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'); }
+    .btn-purple::before{ background-color:rgba(111,66,193,.7); }
+
+    .stats-card-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:15px; }
+    .stat-card{ display:flex; align-items:center; gap:15px; padding:18px; border-radius:12px; color:#fff; transition:transform .2s, box-shadow .3s; }
+    .stat-card-info h3{ margin:0 0 5px 0; font-size:14px; font-weight:500; opacity:.9; }
+    .stat-card-info .value{ font-size:26px; font-weight:700; }
+    .stat-distance{ background:linear-gradient(45deg,#0d6efd,#0a58ca); }
+    .stat-time{ background:linear-gradient(45deg,#198754,#146c43); }
+    .stat-calories{ background:linear-gradient(45deg,#ffc107,#d39e00); }
+    .stat-today-distance{ background:linear-gradient(45deg,#fd7e14,#c8630c); }
+
+    .health-metrics{ margin-top:30px; }
+    .stats-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:15px; }
+    .health-stat-card{ display:flex; align-items:center; gap:15px; background:#f8f9fa; border-radius:12px; padding:15px; border:1px solid var(--border-color); }
+    .detail-label{ font-size:13px; color:var(--text-light-color); margin-bottom:2px; display:block; }
+    .detail-value{ font-size:22px; font-weight:700; margin:0; word-wrap:break-word; color:var(--text-color); }
+    .detail-icon-wrapper{ width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .detail-icon-wrapper svg{ width:24px; height:24px; stroke-width:1.5; }
+    .icon-heart{ background:#ffebee; color:#e53935; }
+    .icon-spo2{ background:#e3f2fd; color:#1e88e5; }
+    .icon-bp{ background:#f3e5f5; color:#8e24aa; }
+    .icon-accel{ background:#e8f5e9; color:#43a047; }
+
+    .access-denied{ text-align:center; padding:50px; }
+    .access-denied h2{ color:var(--primary-color); }
+
+    @media (max-width:992px){
+      .dashboard-grid, .main-functions, .stats-grid, .stats-card-grid{ grid-template-columns:1fr; }
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <header class="header">
-            <div class="header-left">
-                <div class="logo">LOGO</div>
-                <div class="project-info"><h1>HỖ TRỢ HUẤN LUYỆN THỂ THAO</h1><p>DỰ ÁN KHOA HỌC KỸ THUẬT</p></div>
-            </div>
-            <div class="user-actions">
-                <a href="#" id="logout-link" style="display: none;">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-                    <span>Đăng xuất</span>
-                </a>
-            </div>
-        </header>
-        <nav class="navbar">
-            <a href="index.html">Trang chủ</a>
-            <a href="gioithieu.html">Giới thiệu</a>
-            <a href="bangdieukhien.html" class="active">Bảng điều khiển</a>
-        </nav>
-        <main class="main-content" id="content-area">
-            <div class="loader-container">
-                <p>Đang tải dữ liệu vận động viên...</p>
-            </div>
-        </main>
+  <!-- Header full-bleed -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="header-left">
+        <div class="logo">LOGO</div>
+        <div class="project-info">
+          <h1>HỖ TRỢ HUẤN LUYỆN THỂ THAO</h1>
+          <p>DỰ ÁN KHOA HỌC KỸ THUẬT</p>
+        </div>
+      </div>
+      <div class="user-actions">
+        <a href="#" id="logout-link" style="display:none;">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          <span>Đăng xuất</span>
+        </a>
+      </div>
     </div>
+  </header>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc, onSnapshot, collection, query, orderBy, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+  <!-- Navbar full-bleed -->
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a href="index.html">Trang chủ</a>
+      <a href="gioithieu.html">Giới thiệu</a>
+      <a href="bangdieukhien.html" class="active">Bảng điều khiển</a>
+    </div>
+  </nav>
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyA2dXWCyjL2xgCSyeW9QQ7RvjI_O7kFHJw",
-            authDomain: "sporthealthdata.firebaseapp.com",
-            projectId: "sporthealthdata",
-            storageBucket: "sporthealthdata.appspot.com",
-            messagingSenderId: "789054240877",
-            appId: "1:789054240877:web:04a400c9ea586523a86764",
-        };
+  <!-- Main container 1200px -->
+  <div class="container">
+    <main class="main-content" id="content-area">
+      <div class="loader-container">
+        <p>Đang tải dữ liệu vận động viên...</p>
+      </div>
+    </main>
+  </div>
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc, onSnapshot, collection, query, orderBy, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
-        const logoutLink = document.getElementById('logout-link');
-        const contentArea = document.getElementById('content-area');
-        
-        function renderDashboard(userData) {
-            const userName = userData.fullName || "Vận động viên";
-            contentArea.innerHTML = `
-                <div class="dashboard-grid">
-                    <div class="daily-goals">
-                        <div id="goals-list">
-                            <h2>Mục tiêu của <span>${userName}</span></h2>
-                        </div>
-                    </div>
+    const firebaseConfig = {
+      apiKey: "AIzaSyA2dXWCyjL2xgCSyeW9QQ7RvjI_O7kFHJw",
+      authDomain: "sporthealthdata.firebaseapp.com",
+      projectId: "sporthealthdata",
+      storageBucket: "sporthealthdata.appspot.com",
+      messagingSenderId: "789054240877",
+      appId: "1:789054240877:web:04a400c9ea586523a86764",
+    };
 
-                    <div class="stats-container">
-                        
-                        <div class="health-metrics">
-                            <h2>Chỉ số sức khỏe</h2>
-                            <div class="stats-grid">
-                                <div class="health-stat-card"><div class="detail-icon-wrapper icon-heart"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" /></svg></div><div><span class="detail-label">Nhịp tim (bpm)</span><p id="heartRate" class="detail-value">--</p></div></div>
-                                <div class="health-stat-card"><div class="detail-icon-wrapper icon-spo2"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" /></svg></div><div><span class="detail-label">Oxi trong máu (%)</span><p id="spo2" class="detail-value">--</p></div></div>
-                                <div class="health-stat-card"><div class="detail-icon-wrapper icon-bp"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z" /></svg></div><div><span class="detail-label">Huyết áp</span><p id="bloodPressure" class="detail-value">--</p></div></div>
-                                <div class="health-stat-card"><div class="detail-icon-wrapper icon-accel"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.28m5.94 2.28-2.28 5.941" /></svg></div><div><span class="detail-label">Tốc độ (m/s)</span><p id="acceleration" class="detail-value">--</p></div></div>
-                            </div>
-                        </div>
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-                        <div class="quick-stats">
-                            <h2>Thống kê nhanh</h2>
-                            <div class="stats-card-grid">
-                                <div class="stat-card stat-distance"><div class="stat-card-info"><h3>Tổng quãng đường (tuần)</h3><p class="value" id="stat-weekly-distance">-- km</p></div></div>
-                                <div class="stat-card stat-today-distance"><div class="stat-card-info"><h3>Tổng quãng đường (hôm nay)</h3><p class="value" id="stat-today-distance">-- km</p></div></div>
-                                <div class="stat-card stat-time"><div class="stat-card-info"><h3>Thời gian tập (tuần)</h3><p class="value" id="stat-weekly-duration">--h --m</p></div></div>
-                                <div class="stat-card stat-calories"><div class="stat-card-info"><h3>Calo tiêu thụ (hôm nay)</h3><p class="value" id="stat-today-calories">-- kcal</p></div></div>
-                            </div>
-                        </div>
-                    </div>
+    const logoutLink = document.getElementById('logout-link');
+    const contentArea = document.getElementById('content-area');
 
-                    <div class="main-functions">
-                        <a href="#" id="pose-analysis-btn" class="function-button btn-blue">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 1.5a10.5 10.5 0 1 0 0 21 10.5 10.5 0 0 0 0-21z"/><path d="M12 12a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9z"/><path d="M12 12a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/></svg>
-                            <span>Phân tích tư thế</span>
-                        </a>
-                        <a href="#" id="history-btn" class="function-button btn-green">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3v18h18"/><path d="m18.7 8-5.1 5.2-2.8-2.7L7 14.3"/></svg>
-                            <span>Lịch sử thành tích</span>
-                        </a>
-                        <a href="#" id="chat-with-coach-btn" class="function-button btn-yellow">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                            <span>Chat với HLV</span>
-                        </a>
-                        <a href="#" id="injury-warning-btn" class="function-button btn-red">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m21.73 18-8-14a2 2 0 0 0-3.46 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                            <span>Cảnh báo chấn thương</span>
-                        </a>
-                         <a href="khongcoten.html" class="function-button btn-purple">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.898 20.572L16.5 21.75l-.398-1.178a3.375 3.375 0 00-2.3-2.3L12.75 18l1.178-.398a3.375 3.375 0 002.3-2.3L16.5 14.25l.398 1.178a3.375 3.375 0 002.3 2.3l1.178.398-1.178.398a3.375 3.375 0 00-2.3 2.3z" />
-                            </svg>
-                            <span>Tính năng mới</span>
-                        </a>
-                    </div>
-                </div>`;
-        }
+    function renderDashboard(userData){
+      const userName = userData.fullName || "Vận động viên";
+      contentArea.innerHTML = `
+        <div class="dashboard-grid">
+          <div class="daily-goals">
+            <div id="goals-list">
+              <h2>Mục tiêu của <span>${userName}</span></h2>
+            </div>
+          </div>
 
-        function renderAccessDenied() {
-            contentArea.innerHTML = `<div class="access-denied"><h2>Truy cập bị từ chối</h2><p>Trang này chỉ dành cho tài khoản Vận động viên.</p></div>`;
-        }
-        
-        function listenForExercises(athleteId) {
-            const goalsListContainer = document.getElementById('goals-list');
-            if (!goalsListContainer) return;
-            const exercisesColRef = collection(db, "users", athleteId, "exercises");
-            const q = query(exercisesColRef, orderBy("createdAt", "desc"));
-            onSnapshot(q, (snapshot) => {
-                const existingTasks = goalsListContainer.querySelectorAll('.task-item, .no-exercise-msg');
-                existingTasks.forEach(task => task.remove());
-                if (snapshot.empty) {
-                    const noExerciseItem = document.createElement('p');
-                    noExerciseItem.textContent = 'Bạn chưa có bài tập nào được giao.';
-                    noExerciseItem.className = 'no-exercise-msg';
-                    noExerciseItem.style.color = 'var(--text-light-color)';
-                    goalsListContainer.appendChild(noExerciseItem);
-                } else {
-                    snapshot.forEach(doc => {
-                        const exercise = doc.data();
-                        const exerciseId = doc.id;
-                        const exerciseDiv = document.createElement('div');
-                        exerciseDiv.className = 'task-item run';
-                        exerciseDiv.innerHTML = `<div class="task-info"><div class="task-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><div class="task-details"><h3>${exercise.title || 'Bài tập mới'}</h3><p>Hạn chót: ${exercise.dueDate || 'Chưa có'}</p></div></div><div class="task-action"><button>Thực hiện</button></div>`;
-                        
-                        goalsListContainer.appendChild(exerciseDiv);
+          <div class="stats-container">
+            <div class="health-metrics">
+              <h2>Chỉ số sức khỏe</h2>
+              <div class="stats-grid">
+                <div class="health-stat-card">
+                  <div class="detail-icon-wrapper icon-heart">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/></svg>
+                  </div>
+                  <div>
+                    <span class="detail-label">Nhịp tim (bpm)</span>
+                    <p id="heartRate" class="detail-value">--</p>
+                  </div>
+                </div>
+                <div class="health-stat-card">
+                  <div class="detail-icon-wrapper icon-spo2">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"/></svg>
+                  </div>
+                  <div>
+                    <span class="detail-label">Oxi trong máu (%)</span>
+                    <p id="spo2" class="detail-value">--</p>
+                  </div>
+                </div>
+                <div class="health-stat-card">
+                  <div class="detail-icon-wrapper icon-bp">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z"/></svg>
+                  </div>
+                  <div>
+                    <span class="detail-label">Huyết áp</span>
+                    <p id="bloodPressure" class="detail-value">--</p>
+                  </div>
+                </div>
+                <div class="health-stat-card">
+                  <div class="detail-icon-wrapper icon-accel">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.28m5.94 2.28-2.28 5.941"/></svg>
+                  </div>
+                  <div>
+                    <span class="detail-label">Tốc độ (m/s)</span>
+                    <p id="acceleration" class="detail-value">--</p>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-                        const executeButton = exerciseDiv.querySelector('.task-action button');
-                        if (exercise.status === 'completed') {
-                            exerciseDiv.style.opacity = '0.6';
-                            if(executeButton) {
-                                executeButton.textContent = 'Đã hoàn thành';
-                                executeButton.disabled = true;
-                            }
-                        } else {
-                            if(executeButton) {
-                                executeButton.addEventListener('click', async () => {
-                                    executeButton.disabled = true;
-                                    executeButton.textContent = 'Đang cập nhật...';
-                                    const exerciseDocRef = doc(db, "users", athleteId, "exercises", exerciseId);
-                                    try {
-                                        await updateDoc(exerciseDocRef, {
-                                            status: 'completed',
-                                            completedAt: serverTimestamp()
-                                        });
-                                    } catch (error) {
-                                        console.error("Lỗi khi cập nhật bài tập: ", error);
-                                        alert("Không thể cập nhật trạng thái. Vui lòng thử lại.");
-                                        executeButton.disabled = false;
-                                        executeButton.textContent = 'Thực hiện';
-                                    }
-                                });
-                            }
-                        }
-                    });
-                }
-            });
-        }
+            <div class="quick-stats">
+              <h2>Thống kê nhanh</h2>
+              <div class="stats-card-grid">
+                <div class="stat-card stat-distance"><div class="stat-card-info"><h3>Tổng quãng đường (tuần)</h3><p class="value" id="stat-weekly-distance">-- km</p></div></div>
+                <div class="stat-card stat-today-distance"><div class="stat-card-info"><h3>Tổng quãng đường (hôm nay)</h3><p class="value" id="stat-today-distance">-- km</p></div></div>
+                <div class="stat-card stat-time"><div class="stat-card-info"><h3>Thời gian tập (tuần)</h3><p class="value" id="stat-weekly-duration">--h --m</p></div></div>
+                <div class="stat-card stat-calories"><div class="stat-card-info"><h3>Calo tiêu thụ (hôm nay)</h3><p class="value" id="stat-today-calories">-- kcal</p></div></div>
+              </div>
+            </div>
+          </div>
 
-        function listenForAthleteStats(athleteId) {
-            const weeklyDistanceEl = document.getElementById('stat-weekly-distance');
-            const todayDistanceEl = document.getElementById('stat-today-distance');
-            const weeklyDurationEl = document.getElementById('stat-weekly-duration');
-            const todayCaloriesEl = document.getElementById('stat-today-calories');
-            const statsDocRef = doc(db, "athlete_stats", athleteId);
-            onSnapshot(statsDocRef, (docSnap) => {
-                if (docSnap.exists()) {
-                    const stats = docSnap.data();
-                    weeklyDistanceEl.textContent = `${stats.weekly_distance_km ?? '--'} km`;
-                    todayDistanceEl.textContent = `${stats.today_distance_km ?? '--'} km`;
-                    todayCaloriesEl.textContent = `${stats.today_calories_kcal ?? '--'} kcal`;
-                    if (stats.weekly_duration_minutes !== undefined) {
-                        const hours = Math.floor(stats.weekly_duration_minutes / 60);
-                        const minutes = stats.weekly_duration_minutes % 60;
-                        weeklyDurationEl.textContent = `${hours}h ${minutes}m`;
-                    } else {
-                        weeklyDurationEl.textContent = '--h --m';
-                    }
-                } else {
-                    weeklyDistanceEl.textContent = '-- km';
-                    todayDistanceEl.textContent = '-- km';
-                    weeklyDurationEl.textContent = '--h --m';
-                    todayCaloriesEl.textContent = '-- kcal';
-                }
-            });
-        }
-        
-        function listenForSensorData(athleteId) {
-            const heartRateEl = document.getElementById('heartRate');
-            const spo2El = document.getElementById('spo2');
-            const bloodPressureEl = document.getElementById('bloodPressure');
-            const accelerationEl = document.getElementById('acceleration');
-            const sensorDocRef = doc(db, "sensor_data", athleteId);
-            onSnapshot(sensorDocRef, (docSnap) => {
-                if (docSnap.exists()) {
-                    const data = docSnap.data();
-                    heartRateEl.textContent = data.heart_rate || '--';
-                    spo2El.textContent = data.spo2 || '--';
-                    bloodPressureEl.textContent = data.blood_pressure || '--';
-                    accelerationEl.textContent = data.acceleration || '--';
-                } else {
-                    heartRateEl.textContent = '--';
-                    spo2El.textContent = '--';
-                    bloodPressureEl.textContent = '--';
-                    accelerationEl.textContent = '--';
-                }
-            });
-        }
+          <div class="main-functions">
+            <a href="#" id="pose-analysis-btn" class="function-button btn-blue">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 1.5a10.5 10.5 0 1 0 0 21 10.5 10.5 0 0 0 0-21z"/><path d="M12 12a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9z"/><path d="M12 12a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/></svg>
+              <span>Phân tích tư thế</span>
+            </a>
+            <a href="#" id="history-btn" class="function-button btn-green">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3v18h18"/><path d="m18.7 8-5.1 5.2-2.8-2.7L7 14.3"/></svg>
+              <span>Lịch sử thành tích</span>
+            </a>
+            <a href="#" id="chat-with-coach-btn" class="function-button btn-yellow">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              <span>Chat với HLV</span>
+            </a>
+            <a href="#" id="injury-warning-btn" class="function-button btn-red">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m21.73 18-8-14a2 2 0 0 0-3.46 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              <span>Cảnh báo chấn thương</span>
+            </a>
+            <a href="khongcoten.html" class="function-button btn-purple">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.898 20.572L16.5 21.75l-.398-1.178a3.375 3.375 0 00-2.3-2.3L12.75 18l1.178-.398a3.375 3.375 0 002.3-2.3L16.5 14.25l.398 1.178a3.375 3.375 0 002.3 2.3l1.178.398-1.178.398a3.375 3.375 0 00-2.3 2.3z" />
+              </svg>
+              <span>Tính năng mới</span>
+            </a>
+          </div>
+        </div>`;
+    }
 
-        onAuthStateChanged(auth, async (user) => {
-            document.body.classList.add('loaded');
-            if (user) {
-                logoutLink.style.display = 'inline-flex';
-                const userDocRef = doc(db, "users", user.uid);
-                const userDoc = await getDoc(userDocRef);
-                if (userDoc.exists() && userDoc.data().role === 'athlete') {
-                    const userData = userDoc.data();
-                    renderDashboard(userData);
-                    listenForExercises(user.uid);
-                    listenForAthleteStats(user.uid);
-                    listenForSensorData(user.uid);
-                    
-                    const coachId = userData.managedBy;
-                    const chatBtn = document.getElementById('chat-with-coach-btn');
-                    if(chatBtn) {
-                        if (coachId) {
-                            chatBtn.href = `chat.html?with=${coachId}`;
-                        } else {
-                            chatBtn.style.opacity = '0.5';
-                            chatBtn.style.cursor = 'not-allowed';
-                            chatBtn.title = 'Bạn chưa được gán cho HLV nào.';
-                            chatBtn.addEventListener('click', (e) => e.preventDefault());
-                        }
-                    }
+    function renderAccessDenied(){
+      contentArea.innerHTML = `<div class="access-denied"><h2>Truy cập bị từ chối</h2><p>Trang này chỉ dành cho tài khoản Vận động viên.</p></div>`;
+    }
 
-                    const poseBtn = document.getElementById('pose-analysis-btn');
-                    if(poseBtn) {
-                        poseBtn.href = `bất lực.html?athleteId=${user.uid}&athleteName=${encodeURIComponent(userData.fullName || 'VĐV')}`;
-                    }
-                    
-                    const historyBtn = document.getElementById('history-btn');
-                    if(historyBtn) {
-                        historyBtn.href = `lichsu-thanhtich.html?athleteId=${user.uid}`;
-                    }
+    function listenForExercises(athleteId){
+      const goalsListContainer = document.getElementById('goals-list');
+      if(!goalsListContainer) return;
+      const exercisesColRef = collection(db, "users", athleteId, "exercises");
+      const q = query(exercisesColRef, orderBy("createdAt","desc"));
+      onSnapshot(q, (snapshot)=>{
+        const existingTasks = goalsListContainer.querySelectorAll('.task-item, .no-exercise-msg');
+        existingTasks.forEach(task=>task.remove());
+        if(snapshot.empty){
+          const noExerciseItem = document.createElement('p');
+          noExerciseItem.textContent = 'Bạn chưa có bài tập nào được giao.';
+          noExerciseItem.className = 'no-exercise-msg';
+          noExerciseItem.style.color = 'var(--text-light-color)';
+          goalsListContainer.appendChild(noExerciseItem);
+        }else{
+          snapshot.forEach(docSnap=>{
+            const exercise = docSnap.data();
+            const exerciseId = docSnap.id;
+            const exerciseDiv = document.createElement('div');
+            exerciseDiv.className = 'task-item run';
+            exerciseDiv.innerHTML = `<div class="task-info"><div class="task-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><div class="task-details"><h3>${exercise.title || 'Bài tập mới'}</h3><p>Hạn chót: ${exercise.dueDate || 'Chưa có'}</p></div></div><div class="task-action"><button>Thực hiện</button></div>`;
+            goalsListContainer.appendChild(exerciseDiv);
 
-                    const injuryWarningBtn = document.getElementById('injury-warning-btn');
-                    if (injuryWarningBtn) {
-                        injuryWarningBtn.href = `canhbao-chanthuong.html?athleteId=${user.uid}`;
-                    }
-
-                } else {
-                    renderAccessDenied();
-                }
-            } else {
-                window.location.href = './dangnhap.html';
+            const executeButton = exerciseDiv.querySelector('.task-action button');
+            if(exercise.status === 'completed'){
+              exerciseDiv.style.opacity = '0.6';
+              if(executeButton){ executeButton.textContent='Đã hoàn thành'; executeButton.disabled=true; }
+            }else{
+              if(executeButton){
+                executeButton.addEventListener('click', async ()=>{
+                  executeButton.disabled = true;
+                  executeButton.textContent = 'Đang cập nhật...';
+                  const exerciseDocRef = doc(db, "users", athleteId, "exercises", exerciseId);
+                  try{
+                    await updateDoc(exerciseDocRef, { status:'completed', completedAt: serverTimestamp() });
+                  }catch(err){
+                    console.error("Lỗi khi cập nhật bài tập: ", err);
+                    alert("Không thể cập nhật trạng thái. Vui lòng thử lại.");
+                    executeButton.disabled = false;
+                    executeButton.textContent = 'Thực hiện';
+                  }
+                });
+              }
             }
-        });
-
-        if (logoutLink) {
-            logoutLink.addEventListener('click', (e) => {
-                e.preventDefault();
-                signOut(auth).catch((error) => console.error('Lỗi khi đăng xuất:', error));
-            });
+          });
         }
-    </script>
+      });
+    }
+
+    function listenForAthleteStats(athleteId){
+      const weeklyDistanceEl = document.getElementById('stat-weekly-distance');
+      const todayDistanceEl = document.getElementById('stat-today-distance');
+      const weeklyDurationEl = document.getElementById('stat-weekly-duration');
+      const todayCaloriesEl = document.getElementById('stat-today-calories');
+      const statsDocRef = doc(db, "athlete_stats", athleteId);
+      onSnapshot(statsDocRef, (docSnap)=>{
+        if(docSnap.exists()){
+          const stats = docSnap.data();
+          weeklyDistanceEl.textContent = `${stats.weekly_distance_km ?? '--'} km`;
+          todayDistanceEl.textContent = `${stats.today_distance_km ?? '--'} km`;
+          todayCaloriesEl.textContent = `${stats.today_calories_kcal ?? '--'} kcal`;
+          if(stats.weekly_duration_minutes !== undefined){
+            const hours = Math.floor(stats.weekly_duration_minutes / 60);
+            const minutes = stats.weekly_duration_minutes % 60;
+            weeklyDurationEl.textContent = `${hours}h ${minutes}m`;
+          }else{
+            weeklyDurationEl.textContent = '--h --m';
+          }
+        }else{
+          weeklyDistanceEl.textContent='-- km';
+          todayDistanceEl.textContent='-- km';
+          weeklyDurationEl.textContent='--h --m';
+          todayCaloriesEl.textContent='-- kcal';
+        }
+      });
+    }
+
+    function listenForSensorData(athleteId){
+      const heartRateEl = document.getElementById('heartRate');
+      const spo2El = document.getElementById('spo2');
+      const bloodPressureEl = document.getElementById('bloodPressure');
+      const accelerationEl = document.getElementById('acceleration');
+      const sensorDocRef = doc(db, "sensor_data", athleteId);
+      onSnapshot(sensorDocRef, (docSnap)=>{
+        if(docSnap.exists()){
+          const data = docSnap.data();
+          heartRateEl.textContent = data.heart_rate || '--';
+          spo2El.textContent = data.spo2 || '--';
+          bloodPressureEl.textContent = data.blood_pressure || '--';
+          accelerationEl.textContent = data.acceleration || '--';
+        }else{
+          heartRateEl.textContent='--';
+          spo2El.textContent='--';
+          bloodPressureEl.textContent='--';
+          accelerationEl.textContent='--';
+        }
+      });
+    }
+
+    onAuthStateChanged(auth, async (user)=>{
+      document.body.classList.add('loaded');
+      if(user){
+        logoutLink.style.display='inline-flex';
+        const userDocRef = doc(db, "users", user.uid);
+        const userDoc = await getDoc(userDocRef);
+        if(userDoc.exists() && userDoc.data().role === 'athlete'){
+          const userData = userDoc.data();
+          renderDashboard(userData);
+          listenForExercises(user.uid);
+          listenForAthleteStats(user.uid);
+          listenForSensorData(user.uid);
+
+          const coachId = userData.managedBy;
+          const chatBtn = document.getElementById('chat-with-coach-btn');
+          if(chatBtn){
+            if(coachId){
+              chatBtn.href = `chat.html?with=${coachId}`;
+            }else{
+              chatBtn.style.opacity='0.5';
+              chatBtn.style.cursor='not-allowed';
+              chatBtn.title='Bạn chưa được gán cho HLV nào.';
+              chatBtn.addEventListener('click', e=>e.preventDefault());
+            }
+          }
+
+          const poseBtn = document.getElementById('pose-analysis-btn');
+          if(poseBtn){
+            poseBtn.href = `bất lực.html?athleteId=${user.uid}&athleteName=${encodeURIComponent(userData.fullName || 'VĐV')}`;
+          }
+
+          const historyBtn = document.getElementById('history-btn');
+          if(historyBtn){
+            historyBtn.href = `lichsu-thanhtich.html?athleteId=${user.uid}`;
+          }
+
+          const injuryWarningBtn = document.getElementById('injury-warning-btn');
+          if(injuryWarningBtn){
+            injuryWarningBtn.href = `canhbao-chanthuong.html?athleteId=${user.uid}`;
+          }
+        }else{
+          renderAccessDenied();
+        }
+      }else{
+        window.location.href = './dangnhap.html';
+      }
+    });
+
+    if(logoutLink){
+      logoutLink.addEventListener('click', (e)=>{
+        e.preventDefault();
+        signOut(auth).catch(err=>console.error('Lỗi khi đăng xuất:', err));
+      });
+    }
+  </script>
 </body>
 </html>
-
