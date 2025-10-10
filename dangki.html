@@ -1,241 +1,276 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đăng ký - Hỗ Trợ Huấn Luyện Thể Thao</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
-        body { font-family: 'Roboto', sans-serif; margin: 0; background-color: #f0f2f5; color: #333; }
-        .container { max-width: 1200px; margin: 0 auto; background-color: #fff; box-shadow: 0 0 15px rgba(0, 0, 0, 0.07); }
-        .header { display: flex; justify-content: space-between; align-items: center; padding: 15px 30px; background-color: #008080; color: #fff; }
-        .header-left { display: flex; align-items: center; }
-        .logo { background-color: #fff; color: #008080; font-weight: 700; padding: 10px; border-radius: 5px; margin-right: 15px; }
-        .project-info h1 { font-size: 24px; margin: 0; font-weight: 700; }
-        .project-info p { font-size: 12px; margin: 0; opacity: 0.9; }
-        .login-btn-header { background-color: #fff; color: #008080; border: none; padding: 10px 20px; border-radius: 20px; cursor: pointer; font-weight: 700; text-decoration: none; font-size: 14px; }
-        .navbar { display: flex; background-color: #fff; box-shadow: 0 2px 4px rgba(0,0,0,.05); padding: 0 30px; }
-        .navbar a { padding: 15px 25px; text-decoration: none; color: #333; font-weight: 500; }
-        .navbar a.active { color: #008080; font-weight: 700; }
-        .main-content { padding: 40px 30px; display: flex; justify-content: center; align-items: center; }
-        .signup-form-container { background-color: #fff; border-radius: 16px; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1); padding: 40px; width: 100%; max-width: 600px; }
-        .signup-form-container h2 { font-size: 28px; font-weight: 700; color: #008080; text-align: center; margin-top: 0; margin-bottom: 30px; }
-        .form-row { display: flex; gap: 20px; }
-        .form-group { margin-bottom: 20px; flex: 1; }
-        .form-group label { display: block; font-size: 14px; font-weight: 500; color: #555; margin-bottom: 8px; }
-        .form-group input, .form-group select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; box-sizing: border-box; }
-        .submit-btn { background-color: #008080; color: #fff; border: none; padding: 14px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 16px; width: 100%; transition: background-color 0.3s; margin-top: 10px; }
-        .submit-btn:disabled { background-color: #ccc; cursor: not-allowed; }
-        .login-link { text-align: center; margin-top: 20px; font-size: 14px; color: #555; }
-        .login-link a { color: #008080; font-weight: 700; text-decoration: none; }
-        .message-div { padding: 10px; margin-bottom: 20px; border-radius: 8px; display: none; }
-        .error-message { background-color: #f8d7da; color: #842029; }
-        .success-message { background-color: #d1e7dd; color: #0f5132; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Đăng ký - Hỗ Trợ Huấn Luyện Thể Thao</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+    :root { --primary-color:#008080; }
+    *{ box-sizing:border-box; }
+    html, body { margin:0; overflow-x:hidden; }
+    body { font-family:'Roboto',sans-serif; background:#f0f2f5; color:#333; }
+
+    /* === FULL-BLEED HEADER & NAVBAR (match index.html) === */
+    .header, .navbar{
+      position:relative !important;
+      left:50% !important; right:50% !important;
+      margin-left:calc(-50vw + 0px) !important;
+      margin-right:calc(-50vw + 0px) !important;
+      width:100vw !important;
+    }
+
+    /* Header strip */
+    .header{ background:var(--primary-color); color:#fff; }
+    .header-inner{
+      width:100%; max-width:unset !important; margin:0 !important;
+      padding:15px 30px; display:flex; justify-content:space-between; align-items:center; gap:16px;
+    }
+    .header-left{ display:flex; align-items:center; gap:15px; min-width:0; }
+    .logo{ background:#fff; color:var(--primary-color); font-weight:700; padding:10px; border-radius:5px; }
+    .project-info h1{ font-size:24px; margin:0; font-weight:700; white-space:nowrap; }
+    .project-info p{ font-size:12px; margin:0; opacity:.9; }
+
+    .login-btn-header{
+      background:#fff; color:var(--primary-color); border:none; padding:10px 20px;
+      border-radius:20px; cursor:pointer; font-weight:700; text-decoration:none; font-size:14px; white-space:nowrap;
+    }
+
+    /* Navbar strip */
+    .navbar{ background:#fff; box-shadow:0 2px 4px rgba(0,0,0,.05); }
+    .navbar-inner{
+      width:100%; max-width:unset !important; margin:0 !important; padding:0 30px;
+      display:flex; align-items:center;
+    }
+    .navbar a{ padding:15px 25px; text-decoration:none; color:#333; font-weight:500; position:relative; transition:color .3s; }
+    .navbar a::after{ content:''; position:absolute; bottom:0; left:50%; transform:translateX(-50%); width:0; height:3px; background:var(--primary-color); transition:width .3s; }
+    .navbar a:hover, .navbar a.active{ color:var(--primary-color); }
+    .navbar a.active::after{ width:70%; }
+
+    /* Main area keeps 1200px container */
+    .container { max-width:1200px; margin:0 auto; background:#fff; box-shadow:0 0 15px rgba(0,0,0,.07); }
+    .main-content { padding:40px 30px; display:flex; justify-content:center; align-items:center; }
+    .signup-form-container { background:#fff; border-radius:16px; box-shadow:0 8px 25px rgba(0, 0, 0, 0.1); padding:40px; width:100%; max-width:600px; }
+    .signup-form-container h2 { font-size:28px; font-weight:700; color:var(--primary-color); text-align:center; margin-top:0; margin-bottom:30px; }
+    .form-row { display:flex; gap:20px; }
+    .form-group { margin-bottom:20px; flex:1; }
+    .form-group label { display:block; font-size:14px; font-weight:500; color:#555; margin-bottom:8px; }
+    .form-group input, .form-group select { width:100%; padding:12px; border:1px solid #ddd; border-radius:8px; font-size:16px; }
+    .submit-btn { background:var(--primary-color); color:#fff; border:none; padding:14px; border-radius:8px; cursor:pointer; font-weight:700; font-size:16px; width:100%; transition:background-color .3s; margin-top:10px; }
+    .submit-btn:disabled { background:#ccc; cursor:not-allowed; }
+    .login-link { text-align:center; margin-top:20px; font-size:14px; color:#555; }
+    .login-link a { color:var(--primary-color); font-weight:700; text-decoration:none; }
+    .message-div { padding:10px; margin-bottom:20px; border-radius:8px; display:none; }
+    .error-message { background:#f8d7da; color:#842029; }
+    .success-message { background:#d1e7dd; color:#0f5132; }
+
+    @media (max-width:640px){
+      .project-info h1{ font-size:18px; }
+      .navbar a{ padding:12px 16px; }
+    }
+  </style>
 </head>
 <body>
 
-    <div class="container">
-        <header class="header">
-            <div class="header-left">
-                <div class="logo">LOGO</div>
-                <div class="project-info">
-                    <h1>HỖ TRỢ HUẤN LUYỆN THỂ THAO</h1>
-                    <p>DỰ ÁN KHOA HỌC KỸ THUẬT - ỨNG DỤNG THEO DÕI CHỈ SỐ VẬN ĐỘNG VIÊN</p>
-                </div>
-            </div>
-            <a href="dangnhap.html" class="login-btn-header">Đăng nhập</a>
-        </header>
-
-        <nav class="navbar">
-            <a href="index.html">Trang chủ</a>
-            <a href="gioithieu.html">Giới thiệu</a>
-            <a href="#">Bảng điều khiển</a>
-        </nav>
-
-        <main class="main-content">
-            <div class="signup-form-container">
-                <form id="signupForm">
-                    <h2>Đăng ký tài khoản mới</h2>
-                    <div id="message-div" class="message-div"></div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="fullName">Tên đầy đủ</label>
-                            <input type="text" id="fullName" name="fullName" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="username">Tên đăng nhập</label>
-                            <input type="text" id="username" name="username" required>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" id="email" name="email" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="password">Mật khẩu</label>
-                        <input type="password" id="password" name="password" required>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="dateOfBirth">Ngày sinh</label>
-                            <input type="date" id="dateOfBirth" name="dateOfBirth" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="city">Tỉnh thành</label>
-                            <select id="city" name="city" required>
-                                <option value="" disabled selected>Chọn tỉnh thành</option>
-                                <option value="angiang">An Giang</option>
-                                <option value="bacninh">Bắc Ninh</option>
-                                <option value="camau">Cà Mau</option>
-                                <option value="caobang">Cao Bằng</option>
-                                <option value="cantho">TP. Cần Thơ</option>
-                                <option value="danang">TP. Đà Nẵng</option>
-                                <option value="daklak">Đắk Lắk</option>
-                                <option value="dienbien">Điện Biên</option>
-                                <option value="dongnai">Đồng Nai</option>
-                                <option value="dongthap">Đồng Tháp</option>
-                                <option value="gialai">Gia Lai</option>
-                                <option value="hanoi">TP. Hà Nội</option>
-                                <option value="hatinh">Hà Tĩnh</option>
-                                <option value="haiphong">TP. Hải Phòng</option>
-                                <option value="hochiminh">TP. Hồ Chí Minh</option>
-                                <option value="hue">TP. Huế</option>
-                                <option value="hungyen">Hưng Yên</option>
-                                <option value="khanhhoa">Khánh Hoà</option>
-                                <option value="laichau">Lai Châu</option>
-                                <option value="langson">Lạng Sơn</option>
-                                <option value="laocai">Lào Cai</option>
-                                <option value="lamdong">Lâm Đồng</option>
-                                <option value="nghean">Nghệ An</option>
-                                <option value="ninhbinh">Ninh Bình</option>
-                                <option value="phutho">Phú Thọ</option>
-                                <option value="quangngai">Quảng Ngãi</option>
-                                <option value="quangninh">Quảng Ninh</option>
-                                <option value="quangtri">Quảng Trị</option>
-                                <option value="sonla">Sơn La</option>
-                                <option value="tayninh">Tây Ninh</option>
-                                <option value="thainguyen">Thái Nguyên</option>
-                                <option value="thanhhoa">Thanh Hóa</option>
-                                <option value="tuyenquang">Tuyên Quang</option>
-                                <option value="vinhlong">Vĩnh Long</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="role">Vai trò của bạn</label>
-                        <select id="role" name="role" required>
-                            <option value="athlete">Vận Động Viên</option>
-                            <option value="coach">Huấn Luyện Viên</option>
-                        </select>
-                    </div>
-                    <button type="submit" class="submit-btn">Đăng Ký</button>
-                </form>
-                <div class="login-link">
-                    Đã có tài khoản? <a href="dangnhap.html">Đăng nhập</a>
-                </div>
-            </div>
-        </main>
+  <!-- Header full-bleed -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="header-left">
+        <div class="logo">LOGO</div>
+        <div class="project-info">
+          <h1>HỖ TRỢ HUẤN LUYỆN THỂ THAO</h1>
+          <p>DỰ ÁN KHOA HỌC KỸ THUẬT - ỨNG DỤNG THEO DÕI CHỈ SỐ VẬN ĐỘNG VIÊN</p>
+        </div>
+      </div>
+      <a href="dangnhap.html" class="login-btn-header">Đăng nhập</a>
     </div>
+  </header>
 
-    <script type="module">
-        // Import các hàm cần thiết từ Firebase SDK
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+  <!-- Navbar full-bleed -->
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a href="index.html">Trang chủ</a>
+      <a href="gioithieu.html">Giới thiệu</a>
+      <a href="#">Bảng điều khiển</a>
+    </div>
+  </nav>
 
-        // --- Cấu hình Firebase ---
-        const firebaseConfig = {
-            apiKey: "AIzaSyA2dXWCyjL2xgCSyeW9QQ7RvjI_O7kFHJw",
-            authDomain: "sporthealthdata.firebaseapp.com",
-            projectId: "sporthealthdata",
-            storageBucket: "sporthealthdata.appspot.com",
-            messagingSenderId: "789054240877",
-            appId: "1:789054240877:web:04a400c9ea586523a86764",
-        };
+  <!-- Main container 1200px -->
+  <div class="container">
+    <main class="main-content">
+      <div class="signup-form-container">
+        <form id="signupForm">
+          <h2>Đăng ký tài khoản mới</h2>
+          <div id="message-div" class="message-div"></div>
 
-        // --- Khởi tạo Firebase ---
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+          <div class="form-row">
+            <div class="form-group">
+              <label for="fullName">Tên đầy đủ</label>
+              <input type="text" id="fullName" name="fullName" required>
+            </div>
+            <div class="form-group">
+              <label for="username">Tên đăng nhập</label>
+              <input type="text" id="username" name="username" required>
+            </div>
+          </div>
 
-        // --- Lấy các phần tử HTML ---
-        const signupForm = document.getElementById('signupForm');
-        const fullNameInput = document.getElementById('fullName');
-        const messageDiv = document.getElementById('message-div');
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required>
+          </div>
 
-        // --- Tự động viết hoa tên ---
-        fullNameInput.addEventListener('input', () => {
-            const words = fullNameInput.value.toLowerCase().split(' ');
-            for (let i = 0; i < words.length; i++) {
-                if (words[i]) {
-                    words[i] = words[i].charAt(0).toUpperCase() + words[i].slice(1);
-                }
-            }
-            fullNameInput.value = words.join(' ');
+          <div class="form-group">
+            <label for="password">Mật khẩu</label>
+            <input type="password" id="password" name="password" required>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="dateOfBirth">Ngày sinh</label>
+              <input type="date" id="dateOfBirth" name="dateOfBirth" required>
+            </div>
+            <div class="form-group">
+              <label for="city">Tỉnh thành</label>
+              <select id="city" name="city" required>
+                <option value="" disabled selected>Chọn tỉnh thành</option>
+                <option value="angiang">An Giang</option>
+                <option value="bacninh">Bắc Ninh</option>
+                <option value="camau">Cà Mau</option>
+                <option value="caobang">Cao Bằng</option>
+                <option value="cantho">TP. Cần Thơ</option>
+                <option value="danang">TP. Đà Nẵng</option>
+                <option value="daklak">Đắk Lắk</option>
+                <option value="dienbien">Điện Biên</option>
+                <option value="dongnai">Đồng Nai</option>
+                <option value="dongthap">Đồng Tháp</option>
+                <option value="gialai">Gia Lai</option>
+                <option value="hanoi">TP. Hà Nội</option>
+                <option value="hatinh">Hà Tĩnh</option>
+                <option value="haiphong">TP. Hải Phòng</option>
+                <option value="hochiminh">TP. Hồ Chí Minh</option>
+                <option value="hue">TP. Huế</option>
+                <option value="hungyen">Hưng Yên</option>
+                <option value="khanhhoa">Khánh Hoà</option>
+                <option value="laichau">Lai Châu</option>
+                <option value="langson">Lạng Sơn</option>
+                <option value="laocai">Lào Cai</option>
+                <option value="lamdong">Lâm Đồng</option>
+                <option value="nghean">Nghệ An</option>
+                <option value="ninhbinh">Ninh Bình</option>
+                <option value="phutho">Phú Thọ</option>
+                <option value="quangngai">Quảng Ngãi</option>
+                <option value="quangninh">Quảng Ninh</option>
+                <option value="quangtri">Quảng Trị</option>
+                <option value="sonla">Sơn La</option>
+                <option value="tayninh">Tây Ninh</option>
+                <option value="thainguyen">Thái Nguyên</option>
+                <option value="thanhhoa">Thanh Hóa</option>
+                <option value="tuyenquang">Tuyên Quang</option>
+                <option value="vinhlong">Vĩnh Long</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="role">Vai trò của bạn</label>
+            <select id="role" name="role" required>
+              <option value="athlete">Vận Động Viên</option>
+              <option value="coach">Huấn Luyện Viên</option>
+            </select>
+          </div>
+
+          <button type="submit" class="submit-btn">Đăng Ký</button>
+        </form>
+
+        <div class="login-link">
+          Đã có tài khoản? <a href="dangnhap.html">Đăng nhập</a>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyA2dXWCyjL2xgCSyeW9QQ7RvjI_O7kFHJw",
+      authDomain: "sporthealthdata.firebaseapp.com",
+      projectId: "sporthealthdata",
+      storageBucket: "sporthealthdata.appspot.com",
+      messagingSenderId: "789054240877",
+      appId: "1:789054240877:web:04a400c9ea586523a86764",
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const signupForm = document.getElementById('signupForm');
+    const fullNameInput = document.getElementById('fullName');
+    const messageDiv = document.getElementById('message-div');
+
+    fullNameInput.addEventListener('input', () => {
+      const words = fullNameInput.value.toLowerCase().split(' ');
+      for (let i = 0; i < words.length; i++) {
+        if (words[i]) {
+          words[i] = words[i].charAt(0).toUpperCase() + words[i].slice(1);
+        }
+      }
+      fullNameInput.value = words.join(' ');
+    });
+
+    signupForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const fullName = signupForm.fullName.value;
+      const username = signupForm.username.value;
+      const email = signupForm.email.value;
+      const password = signupForm.password.value;
+      const dateOfBirth = signupForm.dateOfBirth.value;
+      const city = signupForm.city.value;
+      const role = signupForm.role.value;
+      const submitButton = signupForm.querySelector('.submit-btn');
+
+      submitButton.disabled = true;
+      submitButton.textContent = 'Đang xử lý...';
+      messageDiv.style.display = 'none';
+      messageDiv.classList.remove('error-message', 'success-message');
+
+      try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        await setDoc(doc(db, "users", user.uid), {
+          uid: user.uid,
+          fullName,
+          username,
+          email,
+          dateOfBirth,
+          city,
+          role
         });
 
-        // --- Xử lý sự kiện đăng ký ---
-        signupForm.addEventListener('submit', async (e) => {
-            e.preventDefault(); 
-
-            const fullName = signupForm.fullName.value;
-            const username = signupForm.username.value;
-            const email = signupForm.email.value;
-            const password = signupForm.password.value;
-            const dateOfBirth = signupForm.dateOfBirth.value;
-            const city = signupForm.city.value;
-            const role = signupForm.role.value;
-            const submitButton = signupForm.querySelector('.submit-btn');
-
-            submitButton.disabled = true;
-            submitButton.textContent = 'Đang xử lý...';
-            messageDiv.style.display = 'none';
-            messageDiv.classList.remove('error-message', 'success-message');
-
-            try {
-                // Bước 1: Tạo người dùng trong Firebase Authentication
-                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                const user = userCredential.user;
-
-                // Bước 2: Lưu thông tin bổ sung vào Firestore
-                await setDoc(doc(db, "users", user.uid), {
-                    uid: user.uid,
-                    fullName: fullName,
-                    username: username,
-                    email: email,
-                    dateOfBirth: dateOfBirth,
-                    city: city,
-                    role: role
-                });
-                
-                // Bước 3: Hiển thị thông báo và liên kết chuyển hướng
-                messageDiv.classList.add('success-message');
-                let dashboardUrl = (role === 'coach') ? 'coach-dashboard.html' : 'athlete-dashboard.html';
-                messageDiv.innerHTML = `Đăng ký thành công! <a href="${dashboardUrl}">Nhấn vào đây để đến trang Bảng điều khiển</a>.`;
-                messageDiv.style.display = 'block';
-                
-                submitButton.textContent = 'Đã đăng ký';
-                // Để nút bị vô hiệu hóa sau khi thành công
-
-            } catch (error) {
-                // Xử lý lỗi
-                messageDiv.classList.add('error-message');
-                if (error.code === 'auth/email-already-in-use') {
-                    messageDiv.textContent = 'Địa chỉ email này đã được sử dụng.';
-                } else if (error.code === 'auth/weak-password') {
-                     messageDiv.textContent = 'Mật khẩu phải có ít nhất 6 ký tự.';
-                }
-                else {
-                    messageDiv.textContent = 'Đã xảy ra lỗi. Vui lòng thử lại.';
-                }
-                messageDiv.style.display = 'block';
-                submitButton.disabled = false;
-                submitButton.textContent = 'Đăng Ký';
-            }
-        });
-    </script>
-
+        messageDiv.classList.add('success-message');
+        let dashboardUrl = (role === 'coach') ? 'coach-dashboard.html' : 'athlete-dashboard.html';
+        messageDiv.innerHTML = `Đăng ký thành công! <a href="${dashboardUrl}">Nhấn vào đây để đến trang Bảng điều khiển</a>.`;
+        messageDiv.style.display = 'block';
+        submitButton.textContent = 'Đã đăng ký';
+      } catch (error) {
+        messageDiv.classList.add('error-message');
+        if (error.code === 'auth/email-already-in-use') {
+          messageDiv.textContent = 'Địa chỉ email này đã được sử dụng.';
+        } else if (error.code === 'auth/weak-password') {
+          messageDiv.textContent = 'Mật khẩu phải có ít nhất 6 ký tự.';
+        } else {
+          messageDiv.textContent = 'Đã xảy ra lỗi. Vui lòng thử lại.';
+        }
+        messageDiv.style.display = 'block';
+        submitButton.disabled = false;
+        submitButton.textContent = 'Đăng Ký';
+      }
+    });
+  </script>
 </body>
 </html>
-
