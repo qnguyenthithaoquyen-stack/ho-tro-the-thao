@@ -212,7 +212,7 @@
         </div>
 
         <div class="small" style="margin-top:12px; text-align: center;">
-         
+          
         </div>
       </div>
     </div>
@@ -669,7 +669,7 @@ function renderVideoList(){
   if(filtered.length===0){ videoListEl.innerHTML='<div class="small">Chưa có video cho môn này.</div>'; return; }
   
   const groups = filtered.reduce((acc, video) => {
-    const dateKey = formatDateGroup(video.timestamp || 0);
+    const dateKey = video.timestamp ? formatDateGroup(video.timestamp) : 'Cũ hơn';
     if (!acc[dateKey]) {
       acc[dateKey] = [];
     }
@@ -677,7 +677,19 @@ function renderVideoList(){
     return acc;
   }, {});
 
-  Object.keys(groups).forEach(dateKey => {
+  const sortedGroupKeys = Object.keys(groups).sort((a, b) => {
+    if (a === 'Hôm nay') return -1;
+    if (b === 'Hôm nay') return 1;
+    if (a === 'Hôm qua') return -1;
+    if (b === 'Hôm qua') return 1;
+    if (a === 'Cũ hơn') return 1;
+    if (b === 'Cũ hơn') return -1;
+    const dateA = a.split('/').reverse().join('-');
+    const dateB = b.split('/').reverse().join('-');
+    return new Date(dateB) - new Date(dateA);
+  });
+
+  sortedGroupKeys.forEach(dateKey => {
     const dateHeader = document.createElement('h4');
     dateHeader.className = 'date-header';
     dateHeader.textContent = dateKey;
@@ -1008,5 +1020,4 @@ window.addEventListener('resize', () => {
 </script>
 </body>
 </html>
-
 
