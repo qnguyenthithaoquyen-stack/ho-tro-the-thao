@@ -17,11 +17,15 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 
+<!-- Lucide Icons -->
+<script src="https://unpkg.com/lucide@latest"></script>
+
 <style>
   :root{
     --bg:#f8fafc; --card:#fff; --ink:#0f172a; --muted:#64748b;
-    --primary:#10b981; --primary-700:#059669; --line:#e2e8f0;
-    --danger:#ef4444; --danger-700:#dc2626; --ring:rgba(16,185,129,.18);
+    --primary:#0d9488; --primary-700:#0f766e; --line:#e2e8f0;
+    --danger:#ef4444; --danger-700:#dc2626; --ring:rgba(13, 148, 136, 0.18);
+    --teal-lightest: #ccfbf1; --teal-darker: #134e4a;
   }
   *{box-sizing:border-box}
   html,body{height:100%}
@@ -31,22 +35,23 @@
   .header h1{font-size:18px;margin:0 0 4px 0}
   .sub{color:var(--muted);font-size:13px}
   .toolbar{display:flex;gap:8px;flex-wrap:wrap}
-  .btn{border:1px solid var(--line);background:#fff;color:var(--ink);padding:9px 13px;border-radius:999px;font-weight:600;cursor:pointer;transition:.2s; font-size: 14px;}
-  .btn:hover{background:#f8fafc}
+  .btn{display:inline-flex; align-items:center; gap: 6px; border:1px solid var(--line);background:#fff;color:var(--ink);padding:9px 15px;border-radius:999px;font-weight:600;cursor:pointer;transition:.2s; font-size: 14px;}
+  .btn:hover{background:#f8fafc; border-color: #d1d5db;}
   .btn-primary{background:var(--primary);border-color:var(--primary);color:#fff}
   .btn-primary:hover{background:var(--primary-700)}
   .btn-danger{color:var(--danger);background:#fff;border-color:var(--danger)}
   .btn-danger:hover{background:#fff2f2}
+  .btn .lucide{width:16px; height:16px;}
   
   .grid{display:grid;grid-template-columns:380px 1fr;gap:18px;margin-top:18px}
   .col{display:flex;flex-direction:column;gap:18px}
   .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
-  .card h3{margin:6px 0 14px 0}
+  .card h3{display: flex; align-items: center; gap: 8px; margin:6px 0 14px 0}
+  .card h3 .lucide{width: 20px; color: var(--primary);}
   .row{display:flex;gap:10px;flex-wrap:wrap; align-items: center;}
   .select,.file{border:1px solid var(--line);background:#fff;padding:9px 12px;border-radius:10px;font-weight:600;outline:none}
-  .select:focus,.file:focus{box-shadow:0 0 0 6px var(--ring)}
+  .select:focus,.file:focus{box-shadow:0 0 0 4px var(--ring)}
   
-  /* Custom File Input */
   .file-upload-label { display: inline-block; }
   input[type="file"].file { display: none; }
 
@@ -63,10 +68,18 @@
   .bar>span{display:block;height:100%;width:0%;background:var(--primary);transition:width .2s}
   .small{color:var(--muted);font-size:13px}
   .list{display:flex;flex-direction:column;gap:10px; max-height: 400px; overflow-y: auto; padding-right: 5px;}
-  .item{display:flex;justify-content:space-between;align-items:center;border:1px solid var(--line);background:#fcfdff;border-radius:12px;padding:10px}
+  .item{display:flex;justify-content:space-between;align-items:center;border:1px solid var(--line);background:#fcfdff;border-radius:12px;padding:10px; transition: all .2s;}
+  .item:hover{border-color: var(--primary); box-shadow: 0 4px 8px -2px rgba(13, 148, 136,.1);}
   .tag{background:#f1f5f9;color:#334155;border:1px solid var(--line);padding:2px 8px;border-radius:999px;font-size:12px}
-  .chip{background:#ecfdf5;color:#065f46;border:1px solid #c4f2df;padding:6px 10px;border-radius:999px;font-weight:700; display: inline-block;}
+  .chip{background:var(--teal-lightest);color:var(--teal-darker);border:1px solid #99f6e4;padding:6px 10px;border-radius:999px;font-weight:700; display: inline-block;}
   
+  #info ul {margin:8px 0; padding-left: 20px; list-style-type: none;}
+  #info li { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+  #info li .lucide { width: 16px; height: 16px; }
+  #info li .lucide-x-circle { color: var(--danger); }
+  #info li .lucide-alert-triangle { color: #f59e0b; }
+  #info li .lucide-lightbulb { color: #22c55e; }
+
   @media(max-width:1100px){.grid{grid-template-columns:1fr}}
   @media(max-width:800px){.player-grid{grid-template-columns:1fr}}
 </style>
@@ -79,10 +92,10 @@
       <div class="sub">Tải video, chạy MediaPipe, so khớp với khung chuẩn theo môn & góc quay.</div>
     </div>
     <div class="toolbar">
-      <button class="btn" id="backBtn">← Bảng điều khiển</button>
-      <button class="btn" id="exportJsonBtn">Xuất features (.json)</button>
-      <button class="btn" id="exportCsvBtn">Xuất (.csv)</button>
-      <button class="btn btn-primary" id="reportBtn">Xuất báo cáo</button>
+      <button class="btn" id="backBtn"><i data-lucide="layout-dashboard"></i>Bảng điều khiển</button>
+      <button class="btn" id="exportJsonBtn"><i data-lucide="file-json"></i>Xuất features (.json)</button>
+      <button class="btn" id="exportCsvBtn"><i data-lucide="table"></i>Xuất (.csv)</button>
+      <button class="btn btn-primary" id="reportBtn"><i data-lucide="file-text"></i>Xuất báo cáo</button>
     </div>
   </div>
 
@@ -91,22 +104,22 @@
     <div class="col">
       <!-- Settings & History Card -->
       <div class="card">
-        <h3>Cài đặt & Lịch sử</h3>
+        <h3><i data-lucide="settings"></i>Cài đặt & Lịch sử</h3>
         <p class="small" style="margin-top:-10px; margin-bottom:12px;">Chọn môn thể thao để lọc danh sách video bên dưới.</p>
         <select id="sport" class="select" style="width: 100%;">
           <option value="xuatphat">Môn thể thao: Xuất phát</option>
           <option value="nhaycao">Môn thể thao: Nhảy cao</option>
           <option value="nemta">Môn thể thao: Ném tạ</option>
         </select>
-        <h3 style="margin-top:22px; margin-bottom: 10px;">Lịch sử video</h3>
+        <h3 style="margin-top:22px; margin-bottom: 10px;"><i data-lucide="history"></i>Lịch sử video</h3>
         <div id="videoList" class="list"></div>
       </div>
 
       <!-- Analysis Results Card -->
       <div class="card">
-        <h3>Kết quả Phân tích</h3>
+        <h3><i data-lucide="clipboard-list"></i>Kết quả Phân tích</h3>
         <div id="info" class="small" style="border:1px solid var(--line);border-radius:10px;padding:12px; min-height: 80px;">Chưa có video được chọn.</div>
-        <h3 style="margin-top:16px">Thống kê tỉ lệ đúng</h3>
+        <h3 style="margin-top:16px"><i data-lucide="bar-chart-2"></i>Thống kê tỉ lệ đúng</h3>
         <div style="height:220px"><canvas id="chart"></canvas></div>
       </div>
     </div>
@@ -114,10 +127,10 @@
     <!-- RIGHT MAIN CONTENT -->
     <div class="col">
       <div class="card">
-        <h3>Trình phát Video & Mô phỏng 3D</h3>
+        <h3><i data-lucide="film"></i>Trình phát Video & Mô phỏng 3D</h3>
         <p class="small" style="margin-top:-10px; margin-bottom:14px;">Tải lên video mới hoặc chọn một video từ lịch sử để bắt đầu.</p>
         <div class="row" style="padding-bottom:10px; border-bottom: 1px solid var(--line);">
-          <label for="videoUpload" class="btn file-upload-label">Tải video mới</label>
+          <label for="videoUpload" class="btn file-upload-label"><i data-lucide="upload"></i>Tải video mới</label>
           <input id="videoUpload" type="file" class="file" accept="video/*"/>
           
           <select id="viewSel" class="select">
@@ -130,9 +143,9 @@
         </div>
         
         <div class="row" style="margin-top: 14px;">
-            <button id="analyzeBtn" class="btn btn-primary">Phân tích</button>
-            <button id="reanalyzeBtn" class="btn">Phân tích lại</button>
-            <button id="clearBtn" class="btn btn-danger">Xóa tất cả dữ liệu</button>
+            <button id="analyzeBtn" class="btn btn-primary"><i data-lucide="play-circle"></i>Phân tích</button>
+            <button id="reanalyzeBtn" class="btn"><i data-lucide="refresh-cw"></i>Phân tích lại</button>
+            <button id="clearBtn" class="btn btn-danger"><i data-lucide="trash-2"></i>Xóa tất cả dữ liệu</button>
         </div>
 
         <div class="player-grid">
@@ -266,8 +279,8 @@ function init3D() {
     const boneGeometry = new THREE.CylinderGeometry(0.025, 0.025, 1, 8);
     
     const passMaterial = {
-        joint: new THREE.MeshStandardMaterial({ color: 0x059669 }),
-        bone: new THREE.MeshStandardMaterial({ color: 0x10b981 }),
+        joint: new THREE.MeshStandardMaterial({ color: getComputedStyle(document.documentElement).getPropertyValue('--primary-700') }),
+        bone: new THREE.MeshStandardMaterial({ color: getComputedStyle(document.documentElement).getPropertyValue('--primary') }),
     };
     const failMaterial = {
         joint: new THREE.MeshStandardMaterial({ color: 0xf43f5e }),
@@ -535,10 +548,11 @@ function showInfo(res){
   const html=[];
   html.push(`<div class="chip">${res.name}</div>`);
   html.push(`<div style="margin:8px 0"><span class="tag">Góc: ${res.view?.toUpperCase?.()||'N/A'}</span> — Tỉ lệ đúng: <b>${res.tile}%</b> (Đúng: ${res.dung}, Sai: ${res.sai})</div>`);
-  if(res.loi?.length) html.push(`<div><b>❌ Lỗi thường gặp</b><ul style="margin:4px 0; padding-left: 20px;">${res.loi.map(x=>`<li>${x}</li>`).join('')}</ul></div>`);
-  if(res.chanthuong?.length) html.push(`<div><b>⚠️ Nguy cơ chấn thương</b><ul style="margin:4px 0; padding-left: 20px;">${res.chanthuong.map(x=>`<li>${x}</li>`).join('')}</ul></div>`);
-  if(res.goiy?.length) html.push(`<div><b>💡 Gợi ý</b><ul style="margin:4px 0; padding-left: 20px;">${res.goiy.map(x=>`<li>${x}</li>`).join('')}</ul></div>`);
+  if(res.loi?.length) html.push(`<div><b><i class="lucide lucide-x-circle"></i>Lỗi thường gặp</b><ul>${res.loi.map(x=>`<li>${x}</li>`).join('')}</ul></div>`);
+  if(res.chanthuong?.length) html.push(`<div><b><i class="lucide lucide-alert-triangle"></i>Nguy cơ chấn thương</b><ul>${res.chanthuong.map(x=>`<li>${x}</li>`).join('')}</ul></div>`);
+  if(res.goiy?.length) html.push(`<div><b><i class="lucide lucide-lightbulb"></i>Gợi ý</b><ul>${res.goiy.map(x=>`<li>${x}</li>`).join('')}</ul></div>`);
   infoEl.innerHTML = html.join('');
+  lucide.createIcons();
 }
 function renderChart(){
   const sport=sportSel.value;
@@ -548,7 +562,7 @@ function renderChart(){
   if(chart) chart.destroy();
   chart = new Chart(chartCanvas.getContext('2d'),{
     type:'bar',
-    data:{labels,datasets:[{label:'Tỉ lệ đúng (%)',data,backgroundColor:'#10b981', borderRadius: 4}]},
+    data:{labels,datasets:[{label:'Tỉ lệ đúng (%)',data,backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--primary'), borderRadius: 4}]},
     options:{responsive:true,maintainAspectRatio:false,scales:{y:{min:0,max:110,beginAtZero: true}}, plugins: {legend: {display: false}}}
   });
 }
@@ -572,9 +586,9 @@ function renderVideoList(){
     const right=document.createElement('div');
     const analyzed = !!results[v.id];
     right.innerHTML=`
-      ${analyzed ? '<span class="tag" style="background:#e0f2fe; color:#0c4a6e; border-color: #bae6fd;">Đã xử lý</span>' : '<span class="tag" style="background:#fefce8; color:#713f12; border-color: #fef08a;">Chưa xử lý</span>'}
-      <button class="btn analyze-item-btn" style="padding: 6px 10px; font-size: 12px; margin-left: 6px;">${analyzed ? 'Xem lại' : 'Phân tích'}</button>
-      <button class="btn btn-danger delete-item-btn" style="padding: 6px 10px; font-size: 12px; margin-left: 6px;">Xóa</button>`;
+      ${analyzed ? '<span class="tag" style="background:var(--teal-lightest); color:var(--teal-darker); border-color: #99f6e4;">Đã xử lý</span>' : '<span class="tag" style="background:#fefce8; color:#713f12; border-color: #fef08a;">Chưa xử lý</span>'}
+      <button class="btn analyze-item-btn" style="padding: 6px 10px; font-size: 12px; margin-left: 6px;"><i data-lucide="${analyzed ? 'rotate-cw' : 'play'}"></i>${analyzed ? 'Xem lại' : 'Phân tích'}</button>
+      <button class="btn btn-danger delete-item-btn" style="padding: 6px 10px; font-size: 12px; margin-left: 6px;"><i data-lucide="trash"></i>Xóa</button>`;
     
     const btnAnalyze = right.querySelector('.analyze-item-btn');
     const btnDel = right.querySelector('.delete-item-btn');
@@ -606,19 +620,10 @@ function renderVideoList(){
     row.appendChild(left); row.appendChild(right);
     videoListEl.appendChild(row);
   });
+  lucide.createIcons();
 }
 
 /* =================== PLAYBACK & OVERLAY =================== */
-function resizeOverlayToVideo(){
-  if (!player.videoWidth) return;
-  const rect=player.getBoundingClientRect();
-  const dpr=window.devicePixelRatio||1;
-  overlay.style.width=rect.width+'px';
-  overlay.style.height=rect.height+'px';
-  overlay.width = Math.max(1, Math.round(player.videoWidth*dpr));
-  overlay.height= Math.max(1, Math.round(player.videoHeight*dpr));
-  overlay.getContext('2d').setTransform(dpr,0,0,dpr,0,0);
-}
 function openVideo(v){
   currentVideo=v; 
   if(v.url) {
@@ -630,14 +635,12 @@ function openVideo(v){
   player.playsInline=true;
   
   player.onloadedmetadata=()=>{
-      resizeOverlayToVideo();
       onThreeResize();
   }
   
   player.onplay = ()=>{
     ensurePose();
     drawCb = res=>{
-      const ctx=overlay.getContext('2d'); ctx.clearRect(0,0,overlay.width,overlay.height);
       const pass = res.poseLandmarks ? checkPass(res.poseLandmarks) : false;
 
       if (res.poseLandmarks) {
@@ -729,7 +732,6 @@ async function analyze(v,force=false){
   player.pause();
   player.currentTime = 0;
   await new Promise(r => setTimeout(r, 100));
-  resizeOverlayToVideo();
   onThreeResize();
 
   const total=64;
@@ -869,6 +871,7 @@ sportSel.onchange=()=>{ renderVideoList(); renderChart(); };
 renderVideoList(); 
 renderChart();
 init3D();
+lucide.createIcons();
 window.addEventListener('resize', () => {
     resizeOverlayToVideo();
     onThreeResize();
