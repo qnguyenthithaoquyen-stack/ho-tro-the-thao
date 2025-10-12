@@ -73,12 +73,35 @@
   .tag{background:#f1f5f9;color:#334155;border:1px solid var(--line);padding:2px 8px;border-radius:999px;font-size:12px}
   .chip{background:var(--teal-lightest);color:var(--teal-darker);border:1px solid #99f6e4;padding:6px 10px;border-radius:999px;font-weight:700; display: inline-block;}
   
-  #info ul {margin:8px 0; padding-left: 20px; list-style-type: none;}
-  #info li { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
-  #info li .lucide { width: 16px; height: 16px; }
-  #info li .lucide-x-circle { color: var(--danger); }
-  #info li .lucide-alert-triangle { color: #f59e0b; }
-  #info li .lucide-lightbulb { color: #22c55e; }
+  .analysis-section {
+    margin-bottom: 14px;
+  }
+  .analysis-section:last-child {
+    margin-bottom: 0;
+  }
+  .analysis-section b {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    margin-bottom: 6px;
+  }
+  .analysis-section ul {
+    margin: 0;
+    padding-left: 24px;
+    list-style-type: '— ';
+    color: var(--muted);
+  }
+    .analysis-section li {
+    margin-bottom: 4px;
+  }
+  .analysis-section .lucide {
+      width: 16px;
+      height: 16px;
+  }
+  .analysis-section .lucide-x-circle { color: var(--danger); }
+  .analysis-section .lucide-alert-triangle { color: #f59e0b; }
+  .analysis-section .lucide-lightbulb { color: #22c55e; }
 
   @media(max-width:1100px){.grid{grid-template-columns:1fr}}
   @media(max-width:800px){.player-grid{grid-template-columns:1fr}}
@@ -118,7 +141,12 @@
       <!-- Analysis Results Card -->
       <div class="card">
         <h3><i data-lucide="clipboard-list"></i>Kết quả Phân tích</h3>
-        <div id="info" class="small" style="border:1px solid var(--line);border-radius:10px;padding:12px; min-height: 80px;">Chưa có video được chọn.</div>
+        <div id="info-summary" class="small" style="padding-bottom: 12px; margin-bottom: 12px; border-bottom: 1px solid var(--line);">Chưa có video được chọn.</div>
+        <div id="analysis-details" style="display: none;">
+            <div id="info-loi" class="analysis-section"></div>
+            <div id="info-chanthuong" class="analysis-section"></div>
+            <div id="info-goiy" class="analysis-section"></div>
+        </div>
         <h3 style="margin-top:16px"><i data-lucide="bar-chart-2"></i>Thống kê tỉ lệ đúng</h3>
         <div style="height:220px"><canvas id="chart"></canvas></div>
       </div>
@@ -165,7 +193,7 @@
         </div>
 
         <div class="small" style="margin-top:12px; text-align: center;">
-          © 2025 — Demo theo yêu cầu. Dùng chuột để xoay/phóng to mô hình 3D.
+        
         </div>
       </div>
     </div>
@@ -544,14 +572,36 @@ function setProgress(pct,text){
   if(pct>=100) setTimeout(()=>progressRow.style.display='none',400);
 }
 function showInfo(res){
-  if(!res){ infoEl.innerHTML='<span class="small">Chưa có video được chọn hoặc chưa có kết quả phân tích.</span>'; return; }
-  const html=[];
-  html.push(`<div class="chip">${res.name}</div>`);
-  html.push(`<div style="margin:8px 0"><span class="tag">Góc: ${res.view?.toUpperCase?.()||'N/A'}</span> — Tỉ lệ đúng: <b>${res.tile}%</b> (Đúng: ${res.dung}, Sai: ${res.sai})</div>`);
-  if(res.loi?.length) html.push(`<div><b><i class="lucide lucide-x-circle"></i>Lỗi thường gặp</b><ul>${res.loi.map(x=>`<li>${x}</li>`).join('')}</ul></div>`);
-  if(res.chanthuong?.length) html.push(`<div><b><i class="lucide lucide-alert-triangle"></i>Nguy cơ chấn thương</b><ul>${res.chanthuong.map(x=>`<li>${x}</li>`).join('')}</ul></div>`);
-  if(res.goiy?.length) html.push(`<div><b><i class="lucide lucide-lightbulb"></i>Gợi ý</b><ul>${res.goiy.map(x=>`<li>${x}</li>`).join('')}</ul></div>`);
-  infoEl.innerHTML = html.join('');
+  const summaryEl = document.getElementById('info-summary');
+  const detailsEl = document.getElementById('analysis-details');
+  const loiEl = document.getElementById('info-loi');
+  const chanthuongEl = document.getElementById('info-chanthuong');
+  const goiyEl = document.getElementById('info-goiy');
+
+  if(!res){ 
+    summaryEl.innerHTML = '<span class="small">Chưa có video được chọn hoặc chưa có kết quả phân tích.</span>';
+    detailsEl.style.display = 'none';
+    loiEl.innerHTML = '';
+    chanthuongEl.innerHTML = '';
+    goiyEl.innerHTML = '';
+    return; 
+  }
+  
+  detailsEl.style.display = 'block';
+
+  summaryEl.innerHTML = `
+    <div class="chip">${res.name}</div>
+    <div style="margin-top:8px"><span class="tag">Góc: ${res.view?.toUpperCase?.()||'N/A'}</span> — Tỉ lệ đúng: <b>${res.tile}%</b> (Đúng: ${res.dung}, Sai: ${res.sai})</div>
+  `;
+
+  loiEl.innerHTML = res.loi?.length ? `<b><i class="lucide lucide-x-circle"></i>Lỗi thường gặp</b><ul>${res.loi.map(x=>`<li>${x}</li>`).join('')}</ul>` : '';
+  chanthuongEl.innerHTML = res.chanthuong?.length ? `<b><i class="lucide lucide-alert-triangle"></i>Nguy cơ chấn thương</b><ul>${res.chanthuong.map(x=>`<li>${x}</li>`).join('')}</ul>` : '';
+  goiyEl.innerHTML = res.goiy?.length ? `<b><i class="lucide lucide-lightbulb"></i>Gợi ý</b><ul>${res.goiy.map(x=>`<li>${x}</li>`).join('')}</ul>` : '';
+  
+  loiEl.style.display = res.loi?.length ? 'block' : 'none';
+  chanthuongEl.style.display = res.chanthuong?.length ? 'block' : 'none';
+  goiyEl.style.display = res.goiy?.length ? 'block' : 'none';
+
   lucide.createIcons();
 }
 function renderChart(){
