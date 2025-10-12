@@ -22,18 +22,19 @@
   html, body { margin:0; overflow-x:hidden; }
   body{font-family:'Roboto',sans-serif;background:var(--bg);color:var(--text)}
 
-  /* ===== Header + Navbar full-bleed (giống index) ===== */
+  /* ===== Header + Navbar full-bleed (trải sát 2 mép khi zoom) ===== */
   .header{ background:var(--primary); color:#fff; position:relative; left:50%; right:50%; margin-left:-50vw; margin-right:-50vw; width:100vw; }
   .navbar{ background:#fff; box-shadow:0 2px 4px rgba(0,0,0,.05); position:relative; left:50%; right:50%; margin-left:-50vw; margin-right:-50vw; width:100vw; }
 
-  /* Wrapper bên trong căn giữa */
+  /* Wrapper bên trong (không giới hạn 1200px để hai cụm bám 2 mép) */
   .header-content, .navbar-content{
-    max-width:1200px; margin:0 auto; display:flex; align-items:center;
+    max-width:none; width:100%; margin:0; padding:0 30px;
+    display:flex; align-items:center;
   }
-  .header-content{ justify-content:space-between; padding:15px 30px; gap:16px; }
+  .header-content{ justify-content:space-between; gap:16px; padding:15px 30px; }
   .navbar-content{ padding:0 30px; }
 
-  .header-left{ display:flex; align-items:center; gap:15px; }
+  .header-left{ display:flex; align-items:center; gap:15px; flex:1 1 auto; }
   .logo{ background:#fff; color:var(--primary); font-weight:700; padding:10px; border-radius:8px; }
   .project-info h1{ font-size:24px; margin:0; font-weight:700; }
   .project-info p{ font-size:12px; margin:0; opacity:.9; }
@@ -55,7 +56,7 @@
   .navbar a:hover, .navbar a.active{ color:var(--primary); }
   .navbar a.active::after{ width:70%; }
 
-  /* ===== Nội dung chính trong khung 1200px có bóng (giống index) ===== */
+  /* ===== Nội dung chính 1200px căn giữa có bóng ===== */
   .container{ max-width:1200px; margin:0 auto; background:#fff; box-shadow:var(--shadow); min-height:calc(100vh - 120px); }
   .main{ padding:24px 30px 40px; }
 
@@ -158,6 +159,7 @@
   </div>
 
 <script type="module">
+  // Firebase v9 (modular)
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
   import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
   import { getFirestore, doc, getDoc, collection, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
