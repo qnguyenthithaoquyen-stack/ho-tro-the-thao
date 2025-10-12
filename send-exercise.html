@@ -17,6 +17,7 @@
             --shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
         }
 
+        html, body { overflow-x: hidden; }
         body {
             font-family: 'Roboto', sans-serif;
             margin: 0;
@@ -24,16 +25,50 @@
             color: var(--text-color);
         }
 
+        /* ===== Container khung nội dung (giữ 1200px cho phần main) ===== */
         .container { max-width: 1200px; margin: 0 auto; }
+
+        /* ===== Header + Navbar full-bleed (full-size ngang màn) ===== */
+        .header, .navbar {
+            position: relative;
+            left: 50%;
+            right: 50%;
+            margin-left: calc(-50vw + 0px);
+            margin-right: calc(-50vw + 0px);
+            width: 100vw;
+        }
+
+        /* Header */
         .header { display: flex; justify-content: space-between; align-items: center; padding: 15px 30px; background-color: var(--primary-color); color: #fff; }
         .header-left { display: flex; align-items: center; gap: 15px; }
         .logo { background-color: #fff; color: var(--primary-color); font-weight: 700; padding: 10px; border-radius: 8px; }
         .project-info h1 { font-size: 24px; margin: 0; }
         .project-info p { font-size: 12px; margin: 0; opacity: 0.9; }
-        .navbar { display: flex; background-color: var(--card-bg-color); box-shadow: 0 2px 4px rgba(0,0,0,.05); padding: 0 30px; }
-        .navbar a { padding: 15px 25px; text-decoration: none; color: var(--text-light-color); font-weight: 500; border-bottom: 3px solid transparent; transition: all 0.3s; }
+
+        /* Navbar (full-bleed) */
+        .navbar { 
+            display: flex; 
+            align-items: center; 
+            background-color: var(--card-bg-color); 
+            box-shadow: 0 2px 4px rgba(0,0,0,.05); 
+            padding: 0 30px; 
+        }
+        .navbar a { 
+            padding: 15px 25px; 
+            text-decoration: none; 
+            color: var(--text-light-color); 
+            font-weight: 500; 
+            border-bottom: 3px solid transparent; 
+            transition: all 0.3s; 
+            white-space: nowrap;
+        }
         .navbar a.active, .navbar a:hover { color: var(--primary-color); border-bottom-color: var(--primary-color); }
 
+        /* Mấu chốt "dạt ra 2 bên": mục đầu về trái, mục cuối về phải */
+        .navbar a:first-child { margin-right: auto; }
+        .navbar a:last-child  { margin-left:  auto; }
+
+        /* Main */
         .main-content {
             display: flex;
             justify-content: center;
@@ -50,39 +85,13 @@
             max-width: 600px;
         }
 
-        .form-header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
+        .form-header { text-align: center; margin-bottom: 30px; }
+        .form-header h2 { font-size: 28px; color: var(--primary-color); margin: 0; }
+        .form-header p { font-size: 16px; color: var(--text-light-color); margin-top: 10px; }
+        .form-header #athleteName { font-weight: 700; color: var(--text-color); }
 
-        .form-header h2 {
-            font-size: 28px;
-            color: var(--primary-color);
-            margin: 0;
-        }
-
-        .form-header p {
-            font-size: 16px;
-            color: var(--text-light-color);
-            margin-top: 10px;
-        }
-
-        .form-header #athleteName {
-            font-weight: 700;
-            color: var(--text-color);
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            font-weight: 500;
-            margin-bottom: 8px;
-            font-size: 14px;
-        }
-
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-weight: 500; margin-bottom: 8px; font-size: 14px; }
         .form-group input[type="text"],
         .form-group input[type="date"],
         .form-group textarea {
@@ -95,88 +104,54 @@
             transition: border-color 0.3s, box-shadow 0.3s;
             font-family: 'Roboto', sans-serif;
         }
-
         .form-group input:focus,
         .form-group textarea:focus {
             outline: none;
             border-color: var(--primary-color);
             box-shadow: 0 0 0 3px rgba(0, 128, 128, 0.15);
         }
+        .form-group textarea { resize: vertical; min-height: 120px; }
 
-        .form-group textarea {
-            resize: vertical;
-            min-height: 120px;
-        }
+        .form-actions { display: flex; justify-content: flex-end; gap: 15px; margin-top: 30px; }
+        .btn { padding: 12px 25px; border-radius: 8px; border: none; font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.3s; }
+        .btn-secondary { background-color: #e9ecef; color: var(--text-color); border: 1px solid #ced4da; }
+        .btn-secondary:hover { background-color: #d8dde2; }
+        .btn-primary { background-color: var(--primary-color); color: white; }
+        .btn-primary:hover { background-color: #006666; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .btn-primary:disabled { background-color: #a0c4c4; cursor: not-allowed; }
 
-        .form-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 15px;
-            margin-top: 30px;
-        }
-
-        .btn {
-            padding: 12px 25px;
-            border-radius: 8px;
-            border: none;
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .btn-secondary {
-            background-color: #e9ecef;
-            color: var(--text-color);
-            border: 1px solid #ced4da;
-        }
-        .btn-secondary:hover {
-            background-color: #d8dde2;
-        }
-
-        .btn-primary {
-            background-color: var(--primary-color);
-            color: white;
-        }
-        .btn-primary:hover {
-            background-color: #006666;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        .btn-primary:disabled {
-            background-color: #a0c4c4;
-            cursor: not-allowed;
-        }
-
-        .message {
-            text-align: center;
-            padding: 10px;
-            margin-bottom: 20px;
-            border-radius: 8px;
-            display: none;
-            font-size: 14px;
-        }
+        .message { text-align: center; padding: 10px; margin-bottom: 20px; border-radius: 8px; display: none; font-size: 14px; }
         .message.success { background-color: #d4edda; color: #155724; }
-        .message.error { background-color: #f8d7da; color: #721c24; }
+        .message.error   { background-color: #f8d7da; color: #721c24; }
 
+        /* Responsive tinh chỉnh khoảng cách 2 bên */
+        @media (max-width: 768px){
+            .navbar { padding: 0 16px; }
+            .navbar a { padding: 12px 16px; }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header class="header">
-            <div class="header-left">
-                <div class="logo">LOGO</div>
-                <div class="project-info">
-                    <h1>HỖ TRỢ HUẤN LUYỆN THỂ THAO</h1>
-                    <p>DỰ ÁN KHOA HỌC KỸ THUẬT</p>
-                </div>
+    <!-- Header full-bleed -->
+    <header class="header">
+        <div class="header-left">
+            <div class="logo">LOGO</div>
+            <div class="project-info">
+                <h1>HỖ TRỢ HUẤN LUYỆN THỂ THAO</h1>
+                <p>DỰ ÁN KHOA HỌC KỸ THUẬT</p>
             </div>
-        </header>
-        <nav class="navbar">
-            <a href="index.html">Trang chủ</a>
-            <a href="gioithieu.html">Giới thiệu</a>
-            <a href="coach-dashboard.html" class="active">Bảng điều khiển</a>
-        </nav>
+        </div>
+    </header>
+
+    <!-- Navbar full-bleed (các nút dạt 2 bên khi zoom) -->
+    <nav class="navbar">
+        <a href="index.html">Trang chủ</a>
+        <a href="gioithieu.html">Giới thiệu</a>
+        <a href="coach-dashboard.html" class="active">Bảng điều khiển</a>
+    </nav>
+
+    <!-- Khung nội dung cố định 1200px -->
+    <div class="container">
         <main class="main-content">
             <div class="exercise-form-card">
                 <div class="form-header">
@@ -207,12 +182,12 @@
     </div>
 
     <script type="module">
-        // Import các hàm cần thiết từ Firebase SDK
+        // Import từ Firebase SDK
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
         import { getFirestore, doc, getDoc, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
-        // --- Cấu hình Firebase ---
+        // Cấu hình Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyA2dXWCyjL2xgCSyeW9QQ7RvjI_O7kFHJw",
             authDomain: "sporthealthdata.firebaseapp.com",
@@ -222,29 +197,25 @@
             appId: "1:789054240877:web:04a400c9ea586523a86764",
         };
 
-        // --- Khởi tạo Firebase ---
+        // Khởi tạo
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // --- Hàm Chính - Chạy sau khi trang tải xong ---
         document.addEventListener('DOMContentLoaded', () => {
 
-            // --- Lấy các phần tử HTML ---
             const athleteNameEl = document.getElementById('athleteName');
             const exerciseForm = document.getElementById('exerciseForm');
             const messageDiv = document.getElementById('message');
             
             let athleteId = null;
 
-            // --- Giám sát trạng thái đăng nhập của HLV ---
             onAuthStateChanged(auth, (user) => {
                 if (!user) {
                     window.location.href = './dangnhap.html';
                 }
             });
 
-            // --- Lấy thông tin VĐV từ URL và hiển thị ---
             async function loadAthleteInfo() {
                 const params = new URLSearchParams(window.location.search);
                 athleteId = params.get('athleteId');
@@ -269,7 +240,6 @@
                 }
             }
 
-            // --- Xử lý sự kiện gửi form ---
             exerciseForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 if (!athleteId) {
@@ -289,10 +259,10 @@
                 try {
                     const exercisesColRef = collection(db, "users", athleteId, "exercises");
                     await addDoc(exercisesColRef, {
-                        title: title,
-                        description: description,
-                        dueDate: dueDate,
-                        status: 'pending', 
+                        title,
+                        description,
+                        dueDate,
+                        status: 'pending',
                         createdAt: serverTimestamp()
                     });
 
@@ -314,7 +284,6 @@
                 }
             });
 
-            // Chạy hàm tải thông tin VĐV khi trang được mở
             loadAthleteInfo();
         });
     </script>
