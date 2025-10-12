@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Phân tích tư thế cho VĐV</title>
+<title>Phân tích tư thế cho HLV</title>
 
 <!-- Font + Chart.js -->
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
@@ -226,7 +226,7 @@ const exportJsonBtn = document.getElementById('exportJsonBtn');
 const exportCsvBtn = document.getElementById('exportCsvBtn');
 
 // *** MODIFICATION: Changed navigation to cach-dashboard.html ***
-backBtn.onclick = () => { window.location.href = 'cach-dashboard.html'; };
+backBtn.onclick = () => { window.location.href = 'coach-dashboard.html'; };
 
 reportBtn.onclick = ()=>{
   if(!currentVideo || !results[currentVideo.id]){ alert('Chưa có kết quả để xuất.'); return; }
