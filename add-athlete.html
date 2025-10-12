@@ -31,9 +31,11 @@
       margin-right:calc(-50vw + 0px) !important;
       width:100vw !important;
     }
+
+    /* Header */
     .header{ background-color:var(--primary-color); color:#fff; }
     .header-inner{
-      width:100%; max-width:unset !important; margin:0 !important;
+      width:100%; margin:0; max-width:unset !important;
       padding:15px 30px; display:flex; justify-content:space-between; align-items:center; gap:16px;
     }
     .header-left{ display:flex; align-items:center; gap:15px; }
@@ -42,13 +44,22 @@
     .project-info p{ font-size:12px; margin:0; opacity:.9; }
     .logout-btn{ background-color:#fff; color:var(--primary-color); border:none; padding:10px 20px; border-radius:20px; cursor:pointer; font-weight:700; text-decoration:none; }
 
+    /* Navbar */
     .navbar{ background-color:var(--card-bg-color); box-shadow:0 2px 4px rgba(0,0,0,.05); }
     .navbar-inner{
-      width:100%; max-width:unset !important; margin:0 !important;
+      width:100%; margin:0; max-width:unset !important;
       padding:0 30px; display:flex; align-items:center;
+      /* Mấu chốt: cho phép dạt 2 bên */
     }
-    .navbar a{ padding:15px 25px; text-decoration:none; color:var(--text-light-color); font-weight:500; border-bottom:3px solid transparent; }
+    .navbar a{
+      padding:15px 25px; text-decoration:none; color:var(--text-light-color);
+      font-weight:500; border-bottom:3px solid transparent; transition:all .3s; white-space:nowrap;
+    }
     .navbar a.active{ color:var(--primary-color); border-bottom-color:var(--primary-color); }
+
+    /* Đẩy mục đầu về trái, mục cuối về phải (khi viewport rộng sẽ dạt ra) */
+    .navbar-inner a:first-child{ margin-right:auto; }
+    .navbar-inner a:last-child{  margin-left:auto; }
 
     /* ===== Main container giữ 1200px ===== */
     .container{ max-width:1200px; margin:0 auto; }
@@ -75,9 +86,12 @@
 
     .back-link{ display:inline-block; margin-top:20px; color:var(--text-light-color); text-decoration:none; font-size:14px; }
 
+    /* Responsive tinh chỉnh */
     @media (max-width:640px){
       .project-info h1{ font-size:18px; }
       .navbar a{ padding:12px 16px; }
+      /* Thu nhỏ khoảng cách 2 bên để đỡ tràn */
+      .navbar-inner{ padding:0 16px; }
     }
   </style>
 </head>
