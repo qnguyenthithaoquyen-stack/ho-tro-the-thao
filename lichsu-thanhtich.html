@@ -1,392 +1,334 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lịch sử thành tích - Hỗ Trợ Huấn Luyện Thể Thao</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
-        
-        :root {
-            --primary-color: #008080;
-            --background-color: #f0f4f8;
-            --card-bg-color: #ffffff;
-            --text-color: #333;
-            --text-light-color: #6c757d;
-            --border-color: #e9ecef;
-            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.07);
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Lịch sử thành tích - Hỗ Trợ Huấn Luyện Thể Thao</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
 
-        body { 
-            font-family: 'Roboto', sans-serif; 
-            margin: 0; 
-            background-color: var(--background-color); 
-            color: var(--text-color);
-        }
+    :root{
+      --primary:#008080;
+      --bg:#f0f4f8;
+      --card:#ffffff;
+      --text:#333;
+      --muted:#6c757d;
+      --line:#e9ecef;
+      --shadow:0 10px 25px -5px rgba(0,0,0,.07);
+      --row-hover:#eef6f7;
+    }
 
-        .container { max-width: 1200px; margin: 0 auto; background-color: #fff; min-height:100vh; }
-        
-        .header { display: flex; justify-content: space-between; align-items: center; padding: 15px 30px; background-color: var(--primary-color); color: #fff; }
-        .header-left { display: flex; align-items: center; gap: 15px; }
-        .logo { background-color: #fff; color: var(--primary-color); font-weight: 700; padding: 10px; border-radius: 8px; }
-        .project-info h1 { font-size: 24px; margin: 0; font-weight: 700; }
-        .project-info p { font-size: 12px; margin: 0; opacity: 0.9; }
-        .user-actions { display: flex; align-items: center; gap: 12px; }
-        .user-actions a { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 9px 22px; font-size: 14px; font-weight: 500; border-radius: 50px; text-decoration: none; border: 1.5px solid #fff; transition: background-color 0.3s, color 0.3s; }
-        .user-actions a svg { width: 16px; height: 16px; }
-        #logout-link { background-color: #fff; color: var(--primary-color); }
-        #logout-link:hover { background-color: rgba(255, 255, 255, 0.9); }
-        .navbar { display: flex; background-color: #fff; box-shadow: 0 2px 4px rgba(0,0,0,.05); padding: 0 30px; }
-        .navbar a { padding: 15px 25px; text-decoration: none; color: #333; font-weight: 500; position: relative; transition: color 0.3s ease; }
-        .navbar a.active { color: var(--primary-color); }
-        .navbar a.active::after { content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 70%; height: 3px; background-color: var(--primary-color); }
+    *{box-sizing:border-box}
+    html, body{margin:0; overflow-x:hidden;}
+    body{font-family:'Roboto',sans-serif; background:var(--bg); color:var(--text);}
 
-        .main-content { padding: 30px; }
-        .main-content h1 { font-size: 28px; color: var(--primary-color); margin-bottom: 0;}
-        .main-content .subtitle { color: var(--text-light-color); margin-top: 4px; }
-        
-        .page-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            flex-wrap: wrap;
-            gap: 1rem;
-            margin-bottom: 20px;
-        }
+    /* Header + Navbar full-bleed (bám mép trái/phải khi zoom) */
+    .header{background:var(--primary); color:#fff; position:relative; left:50%; right:50%; margin-left:-50vw; margin-right:-50vw; width:100vw;}
+    .navbar{background:#fff; box-shadow:0 2px 4px rgba(0,0,0,.05); position:relative; left:50%; right:50%; margin-left:-50vw; margin-right:-50vw; width:100vw;}
 
-        .btn-back {
-            background-color: var(--primary-color);
-            color: #fff;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: background-color 0.3s;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .btn-back:hover {
-            background-color: #006666;
-        }
+    /* Lớp nội dung bên trong header/navbar: chiếm 100% để đẩy 2 cụm ra 2 góc */
+    .header-content,.navbar-content{
+      max-width:none; width:100%; margin:0; padding:0 30px;
+      display:flex; align-items:center;
+    }
+    .header-content{justify-content:space-between; gap:16px; padding:15px 30px;}
+    .navbar-content{padding:0 30px;}
 
+    .header-left{display:flex; align-items:center; gap:15px; flex:1 1 auto;}
+    .logo{background:#fff; color:var(--primary); font-weight:700; padding:10px; border-radius:8px;}
+    .project-info h1{font-size:24px; margin:0; font-weight:700;}
+    .project-info p{font-size:12px; margin:0; opacity:.9;}
+    .user-actions{display:flex; align-items:center; gap:12px;}
+    .user-actions a{
+      display:inline-flex; align-items:center; justify-content:center; gap:8px;
+      padding:9px 22px; font-size:14px; font-weight:500; border-radius:50px;
+      text-decoration:none; border:1.5px solid #fff; background:#fff; color:var(--primary);
+      transition:background-color .3s,color .3s;
+    }
+    .user-actions a svg{width:16px; height:16px;}
 
-        .add-achievement-card {
-            background-color: var(--card-bg-color);
-            border-radius: 16px;
-            padding: 30px;
-            box-shadow: var(--shadow);
-            margin-bottom: 30px;
-        }
-        .add-achievement-card h2 {
-            margin-top: 0;
-            font-size: 24px;
-            color: var(--text-color);
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 15px;
-            margin-bottom: 20px;
-        }
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-        }
-        .form-group {
-            display: flex;
-            flex-direction: column;
-        }
-        .form-group label {
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: var(--text-color);
-        }
-        .form-group input, .form-group textarea {
-            padding: 12px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            font-family: 'Roboto', sans-serif;
-            font-size: 14px;
-            transition: border-color 0.2s, box-shadow 0.2s;
-        }
-        .form-group input:focus, .form-group textarea:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(0, 128, 128, 0.2);
-        }
-        .form-group textarea {
-            resize: vertical;
-            min-height: 80px;
-        }
-        .form-actions {
-            grid-column: 1 / -1;
-            text-align: right;
-            margin-top: 10px;
-        }
-        .btn-submit {
-            background-color: var(--primary-color);
-            color: #fff;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: background-color 0.3s;
-        }
-        .btn-submit:hover {
-            background-color: #006666;
-        }
-        
-        .history-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 25px;
-            box-shadow: var(--shadow);
-            border-radius: 8px;
-            overflow: hidden;
-        }
+    .navbar a{
+      padding:15px 25px; text-decoration:none; color:#333; font-weight:500; position:relative; transition:color .3s;
+    }
+    .navbar a::after{
+      content:''; position:absolute; bottom:0; left:50%; transform:translateX(-50%);
+      width:0; height:3px; background:var(--primary); transition:width .3s;
+    }
+    .navbar a:hover,.navbar a.active{color:var(--primary);}
+    .navbar a.active::after{width:70%;}
 
-        .history-table th, .history-table td {
-            padding: 15px 20px;
-            text-align: left;
-            border-bottom: 1px solid var(--border-color);
-        }
+    /* Khung nội dung chính 1200px căn giữa */
+    .container{max-width:1200px; margin:0 auto; background:#fff; min-height:100vh; box-shadow:var(--shadow);}
+    .main-content{padding:30px;}
+    .main-content h1{font-size:28px; color:var(--primary); margin-bottom:0;}
+    .subtitle{color:var(--muted); margin-top:4px;}
 
-        .history-table thead th {
-            background-color: var(--primary-color);
-            color: #fff;
-            font-weight: 500;
-        }
+    .page-header{
+      display:flex; justify-content:space-between; align-items:flex-start;
+      flex-wrap:wrap; gap:1rem; margin-bottom:20px;
+    }
+    .btn-back{
+      background:var(--primary); color:#fff; border:none; padding:10px 20px; border-radius:8px;
+      cursor:pointer; font-weight:500; text-decoration:none; display:inline-flex; align-items:center; gap:8px;
+      transition:filter .2s;
+    }
+    .btn-back:hover{filter:brightness(1.05);}
 
-        .history-table tbody tr:nth-child(even) {
-            background-color: #f8f9fa;
-        }
+    .add-achievement-card{
+      background:var(--card); border-radius:16px; padding:30px; box-shadow:var(--shadow); margin-bottom:30px;
+    }
+    .add-achievement-card h2{
+      margin:0 0 20px; font-size:24px; color:var(--text);
+      border-bottom:1px solid var(--line); padding-bottom:15px;
+    }
+    .form-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:20px;}
+    .form-group{display:flex; flex-direction:column;}
+    .form-group label{margin-bottom:8px; font-weight:500; color:var(--text);}
+    .form-group input,.form-group textarea{
+      padding:12px; border-radius:8px; border:1px solid var(--line);
+      font-family:'Roboto',sans-serif; font-size:14px; transition:border-color .2s, box-shadow .2s;
+    }
+    .form-group input:focus,.form-group textarea:focus{
+      outline:none; border-color:var(--primary); box-shadow:0 0 0 3px rgba(0,128,128,.2);
+    }
+    .form-group textarea{resize:vertical; min-height:80px;}
+    .form-actions{grid-column:1/-1; text-align:right; margin-top:10px;}
+    .btn-submit{
+      background:var(--primary); color:#fff; border:none; padding:12px 25px; border-radius:8px;
+      cursor:pointer; font-weight:500; transition:filter .2s;
+    }
+    .btn-submit:hover{filter:brightness(1.05);}
 
-        .history-table tbody tr:hover {
-            background-color: var(--list-hover-bg);
-        }
+    .history-table{width:100%; border-collapse:collapse; margin-top:25px; box-shadow:var(--shadow); border-radius:8px; overflow:hidden;}
+    .history-table th,.history-table td{padding:15px 20px; text-align:left; border-bottom:1px solid var(--line);}
+    .history-table thead th{background:var(--primary); color:#fff; font-weight:500;}
+    .history-table tbody tr:nth-child(even){background:#f8f9fa;}
+    .history-table tbody tr:hover{background:var(--row-hover);}
 
-        .loader-container { text-align: center; padding: 50px; color: var(--text-light-color); }
+    .loader-container{text-align:center; padding:50px; color:var(--muted);}
 
-    </style>
+    @media (max-width:720px){
+      .project-info h1{font-size:18px;}
+      .user-actions a{padding:8px 16px;}
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <header class="header">
-            <div class="header-left">
-                <div class="logo">LOGO</div>
-                <div class="project-info"><h1>HỖ TRỢ HUẤN LUYỆN THỂ THAO</h1><p>DỰ ÁN KHOA HỌC KỸ THUẬT</p></div>
-            </div>
-            <div class="user-actions">
-                <a href="#" id="logout-link" style="display: none;">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-                    <span>Đăng xuất</span>
-                </a>
-            </div>
-        </header>
-        <nav class="navbar">
-            <a href="index.html">Trang chủ</a>
-            <a href="gioithieu.html">Giới thiệu</a>
-            <a href="bangdieukhien.html" class="active">Bảng điều khiển</a>
-        </nav>
-        <main class="main-content">
-            <div class="page-header">
-                <div>
-                    <h1>Lịch sử thành tích</h1>
-                    <p id="athlete-name-display" class="subtitle">Dữ liệu của vận động viên</p>
-                </div>
-                <a href="bangdieukhien.html" class="btn-back">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="vertical-align: text-bottom;">
-                        <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"></path>
-                    </svg>
-                    <span>Quay về Bảng điều khiển</span>
-                </a>
-            </div>
-            
-            <div class="add-achievement-card">
-                <h2>Thêm thành tích mới</h2>
-                <form id="add-achievement-form">
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="eventDate">Ngày</label>
-                            <input type="text" id="eventDate" placeholder="dd/mm/yyyy" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="eventName">Tên giải/Sự kiện</label>
-                            <input type="text" id="eventName" placeholder="VD: Giải Vô địch Quốc gia" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="eventResult">Thành tích</label>
-                            <input type="text" id="eventResult" placeholder="VD: 10.52s (100m)" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="eventNotes">Ghi chú</label>
-                            <textarea id="eventNotes" placeholder="VD: Điều kiện thời tiết tốt"></textarea>
-                        </div>
-                    </div>
-                    <div class="form-actions">
-                        <button type="submit" class="btn-submit">Lưu thành tích</button>
-                    </div>
-                </form>
-            </div>
 
-            <table class="history-table">
-                <thead>
-                    <tr>
-                        <th>Ngày</th>
-                        <th>Tên giải/Sự kiện</th>
-                        <th>Thành tích</th>
-                        <th>Ghi chú</th>
-                    </tr>
-                </thead>
-                <tbody id="history-table-body">
-                    <!-- Dữ liệu sẽ được chèn vào đây bởi JavaScript -->
-                </tbody>
-            </table>
-            <div id="loader" class="loader-container">
-                <p>Đang tải dữ liệu...</p>
-            </div>
-        </main>
+  <!-- Header full-bleed -->
+  <header class="header">
+    <div class="header-content">
+      <div class="header-left">
+        <div class="logo">LOGO</div>
+        <div class="project-info">
+          <h1>HỖ TRỢ HUẤN LUYỆN THỂ THAO</h1>
+          <p>DỰ ÁN KHOA HỌC KỸ THUẬT</p>
+        </div>
+      </div>
+      <div class="user-actions">
+        <a href="#" id="logout-link" style="display:none;">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          <span>Đăng xuất</span>
+        </a>
+      </div>
     </div>
+  </header>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc, onSnapshot, collection, query, orderBy, addDoc, Timestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+  <!-- Navbar full-bleed -->
+  <nav class="navbar">
+    <div class="navbar-content">
+      <a href="index.html">Trang chủ</a>
+      <a href="gioithieu.html">Giới thiệu</a>
+      <a href="bangdieukhien.html" class="active">Bảng điều khiển</a>
+    </div>
+  </nav>
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyA2dXWCyjL2xgCSyeW9QQ7RvjI_O7kFHJw",
-            authDomain: "sporthealthdata.firebaseapp.com",
-            projectId: "sporthealthdata",
-            storageBucket: "sporthealthdata.appspot.com",
-            messagingSenderId: "789054240877",
-            appId: "1:789054240877:web:04a400c9ea586523a86764",
-        };
+  <!-- Nội dung chính 1200px -->
+  <div class="container">
+    <main class="main-content">
+      <div class="page-header">
+        <div>
+          <h1>Lịch sử thành tích</h1>
+          <p id="athlete-name-display" class="subtitle">Dữ liệu của vận động viên</p>
+        </div>
+        <a href="bangdieukhien.html" class="btn-back">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="vertical-align:text-bottom">
+            <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/>
+          </svg>
+          <span>Quay về Bảng điều khiển</span>
+        </a>
+      </div>
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+      <div class="add-achievement-card">
+        <h2>Thêm thành tích mới</h2>
+        <form id="add-achievement-form">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="eventDate">Ngày</label>
+              <input type="text" id="eventDate" placeholder="dd/mm/yyyy" required>
+            </div>
+            <div class="form-group">
+              <label for="eventName">Tên giải/Sự kiện</label>
+              <input type="text" id="eventName" placeholder="VD: Giải Vô địch Quốc gia" required>
+            </div>
+            <div class="form-group">
+              <label for="eventResult">Thành tích</label>
+              <input type="text" id="eventResult" placeholder="VD: 10.52s (100m)" required>
+            </div>
+            <div class="form-group">
+              <label for="eventNotes">Ghi chú</label>
+              <textarea id="eventNotes" placeholder="VD: Điều kiện thời tiết tốt"></textarea>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn-submit">Lưu thành tích</button>
+          </div>
+        </form>
+      </div>
 
-        const logoutLink = document.getElementById('logout-link');
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th>Ngày</th>
+            <th>Tên giải/Sự kiện</th>
+            <th>Thành tích</th>
+            <th>Ghi chú</th>
+          </tr>
+        </thead>
+        <tbody id="history-table-body"></tbody>
+      </table>
+      <div id="loader" class="loader-container"><p>Đang tải dữ liệu...</p></div>
+    </main>
+  </div>
 
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                logoutLink.style.display = 'inline-flex';
-                const urlParams = new URLSearchParams(window.location.search);
-                const athleteId = urlParams.get('athleteId');
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc, onSnapshot, collection, query, orderBy, addDoc, Timestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
-                if (athleteId) {
-                    loadHistoryData(athleteId);
-                    setupAddAchievementForm(athleteId);
-                } else {
-                    document.getElementById('loader').textContent = 'Không tìm thấy ID vận động viên.';
-                }
+    const firebaseConfig = {
+      apiKey: "AIzaSyA2dXWCyjL2xgCSyeW9QQ7RvjI_O7kFHJw",
+      authDomain: "sporthealthdata.firebaseapp.com",
+      projectId: "sporthealthdata",
+      storageBucket: "sporthealthdata.appspot.com",
+      messagingSenderId: "789054240877",
+      appId: "1:789054240877:web:04a400c9ea586523a86764",
+    };
 
-            } else {
-                window.location.href = './dangnhap.html';
-            }
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const logoutLink = document.getElementById('logout-link');
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        logoutLink.style.display = 'inline-flex';
+        const urlParams = new URLSearchParams(window.location.search);
+        const athleteId = urlParams.get('athleteId');
+
+        if (athleteId) {
+          loadHistoryData(athleteId);
+          setupAddAchievementForm(athleteId);
+        } else {
+          document.getElementById('loader').textContent = 'Không tìm thấy ID vận động viên.';
+        }
+      } else {
+        window.location.href = './dangnhap.html';
+      }
+    });
+
+    function setupAddAchievementForm(athleteId){
+      const form = document.getElementById('add-achievement-form');
+      if(!form) return;
+
+      form.addEventListener('submit', async (e)=>{
+        e.preventDefault();
+        const eventDateStr = document.getElementById('eventDate').value;
+        const eventName    = document.getElementById('eventName').value;
+        const eventResult  = document.getElementById('eventResult').value;
+        const eventNotes   = document.getElementById('eventNotes').value;
+
+        if(!eventDateStr || !eventName || !eventResult){
+          alert('Vui lòng điền đầy đủ các trường bắt buộc.');
+          return;
+        }
+
+        const parts = eventDateStr.split('/');
+        if(parts.length!==3 || parts.some(p=>isNaN(parseInt(p)))){
+          alert('Định dạng ngày không hợp lệ. Vui lòng nhập theo dạng dd/mm/yyyy.');
+          return;
+        }
+        const d = new Date(parseInt(parts[2]), parseInt(parts[1])-1, parseInt(parts[0]));
+        if(isNaN(d.getTime())){
+          alert('Ngày không hợp lệ. Vui lòng kiểm tra lại.');
+          return;
+        }
+
+        try{
+          const colRef = collection(db, "users", athleteId, "achievements");
+          await addDoc(colRef, {
+            date: Timestamp.fromDate(d),
+            eventName: eventName,
+            result: eventResult,
+            notes: eventNotes
+          });
+          form.reset();
+        }catch(err){
+          console.error("Lỗi khi thêm thành tích:", err);
+          alert("Đã xảy ra lỗi khi lưu thành tích.");
+        }
+      });
+    }
+
+    async function loadHistoryData(athleteId){
+      const athleteNameDisplay = document.getElementById('athlete-name-display');
+      const tableBody = document.getElementById('history-table-body');
+      const loader = document.getElementById('loader');
+
+      try{
+        const userRef = doc(db, "users", athleteId);
+        const userSnap = await getDoc(userRef);
+        if(userSnap.exists()){
+          athleteNameDisplay.textContent = `Dữ liệu của ${userSnap.data().fullName || 'Vận động viên'}`;
+        }
+
+        const colRef = collection(db, "users", athleteId, "achievements");
+        const q = query(colRef, orderBy("date","desc"));
+
+        onSnapshot(q, (snapshot)=>{
+          tableBody.innerHTML = '';
+          if(snapshot.empty){
+            loader.textContent = 'Chưa có thành tích nào được ghi nhận.';
+          }else{
+            loader.style.display = 'none';
+            snapshot.forEach(docSnap=>{
+              const data = docSnap.data();
+              const dateStr = data.date ? new Date(data.date.seconds*1000).toLocaleDateString('vi-VN') : 'N/A';
+              tableBody.insertAdjacentHTML('beforeend', `
+                <tr>
+                  <td>${dateStr}</td>
+                  <td>${data.eventName || ''}</td>
+                  <td>${data.result || ''}</td>
+                  <td>${data.notes || ''}</td>
+                </tr>
+              `);
+            });
+          }
         });
 
-        async function setupAddAchievementForm(athleteId) {
-            const form = document.getElementById('add-achievement-form');
-            if (!form) return;
+      }catch(err){
+        console.error("Lỗi khi tải dữ liệu:", err);
+        loader.textContent = 'Đã xảy ra lỗi khi tải dữ liệu.';
+      }
+    }
 
-            form.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const eventDateStr = document.getElementById('eventDate').value;
-                const eventName = document.getElementById('eventName').value;
-                const eventResult = document.getElementById('eventResult').value;
-                const eventNotes = document.getElementById('eventNotes').value;
-
-                if (!eventDateStr || !eventName || !eventResult) {
-                    alert('Vui lòng điền đầy đủ các trường bắt buộc.');
-                    return;
-                }
-
-                const dateParts = eventDateStr.split('/');
-                if (dateParts.length !== 3 || isNaN(parseInt(dateParts[0])) || isNaN(parseInt(dateParts[1])) || isNaN(parseInt(dateParts[2]))) {
-                    alert('Định dạng ngày không hợp lệ. Vui lòng nhập theo dạng dd/mm/yyyy.');
-                    return;
-                }
-                
-                // new Date(year, monthIndex, day)
-                const eventDate = new Date(parseInt(dateParts[2]), parseInt(dateParts[1]) - 1, parseInt(dateParts[0]));
-                
-                if (isNaN(eventDate.getTime())) {
-                    alert('Ngày không hợp lệ. Vui lòng kiểm tra lại.');
-                    return;
-                }
-
-
-                try {
-                    const achievementsColRef = collection(db, "users", athleteId, "achievements");
-                    await addDoc(achievementsColRef, {
-                        date: Timestamp.fromDate(eventDate),
-                        eventName: eventName,
-                        result: eventResult,
-                        notes: eventNotes
-                    });
-                    form.reset();
-                } catch (error) {
-                    console.error("Lỗi khi thêm thành tích: ", error);
-                    alert("Đã xảy ra lỗi khi lưu thành tích.");
-                }
-            });
-        }
-
-
-        async function loadHistoryData(athleteId) {
-            const athleteNameDisplay = document.getElementById('athlete-name-display');
-            const tableBody = document.getElementById('history-table-body');
-            const loader = document.getElementById('loader');
-
-            try {
-                const userDocRef = doc(db, "users", athleteId);
-                const userDocSnap = await getDoc(userDocRef);
-
-                if (userDocSnap.exists()) {
-                    athleteNameDisplay.textContent = `Dữ liệu của ${userDocSnap.data().fullName || 'Vận động viên'}`;
-                }
-
-                const achievementsColRef = collection(db, "users", athleteId, "achievements");
-                const q = query(achievementsColRef, orderBy("date", "desc"));
-                
-                onSnapshot(q, (snapshot) => {
-                    tableBody.innerHTML = '';
-                    if (snapshot.empty) {
-                        loader.textContent = 'Chưa có thành tích nào được ghi nhận.';
-                    } else {
-                        loader.style.display = 'none';
-                        snapshot.forEach(doc => {
-                            const data = doc.data();
-                            const date = data.date ? new Date(data.date.seconds * 1000).toLocaleDateString('vi-VN') : 'N/A';
-                            const row = `
-                                <tr>
-                                    <td>${date}</td>
-                                    <td>${data.eventName || ''}</td>
-                                    <td>${data.result || ''}</td>
-                                    <td>${data.notes || ''}</td>
-                                </tr>
-                            `;
-                            tableBody.innerHTML += row;
-                        });
-                    }
-                });
-
-            } catch (error) {
-                console.error("Lỗi khi tải dữ liệu:", error);
-                loader.textContent = 'Đã xảy ra lỗi khi tải dữ liệu.';
-            }
-        }
-
-        if (logoutLink) {
-            logoutLink.addEventListener('click', (e) => {
-                e.preventDefault();
-                signOut(auth).catch((error) => console.error('Lỗi khi đăng xuất:', error));
-            });
-        }
-    </script>
+    if (logoutLink){
+      logoutLink.addEventListener('click', (e)=>{
+        e.preventDefault();
+        signOut(auth).catch(err=>console.error('Lỗi khi đăng xuất:', err));
+      });
+    }
+  </script>
 </body>
 </html>
-
