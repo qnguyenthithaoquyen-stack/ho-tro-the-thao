@@ -29,9 +29,9 @@
         }
         body.loaded { opacity: 1; }
 
-        /* ========== Layout full-width ========== */
+        /* Full width layout */
         .container {
-            max-width: 100%;           /* trước đây 1200px, giờ full width */
+            max-width: 100%;
             width: 100%;
             margin: 0 auto;
         }
@@ -69,32 +69,39 @@
         .user-actions a:hover { background-color: rgba(255, 255, 255, 0.9); }
         .user-actions a svg { width: 16px; height: 16px; }
 
-        /* ========== Navbar full-width + "dạt ra 2 bên" ========== */
-        .navbar {
-            display: flex;
-            align-items: center;
-            background-color: var(--card-bg-color);
-            box-shadow: 0 2px 4px rgba(0,0,0,.05);
-            padding: 0 30px;
-            gap: 12px;
-            justify-content: space-between; /* cho phép giãn 2 đầu */
+        /* ===== Navbar: gom mục lại gần nhau, canh giữa ===== */
+        .navbar{
+            display:flex;
+            align-items:center;
+            justify-content:center;      /* canh giữa toàn bộ mục */
+            flex-wrap:wrap;
+            background-color:var(--card-bg-color);
+            box-shadow:0 2px 4px rgba(0,0,0,.05);
+            padding:0 30px;
+            gap:48px;                    /* khoảng cách giữa các mục */
         }
-        .navbar a {
-            padding: 15px 25px;
-            text-decoration: none;
-            color: var(--text-light-color);
-            font-weight: 500;
-            border-bottom: 3px solid transparent;
-            transition: all 0.3s;
-            white-space: nowrap;
+        .navbar a{
+            padding:15px 10px;           /* thu hẹp pad ngang để các mục gần nhau hơn */
+            text-decoration:none;
+            color:var(--text-light-color);
+            font-weight:500;
+            border-bottom:3px solid transparent;
+            transition:all .3s;
+            white-space:nowrap;
         }
-        .navbar a.active, .navbar a:hover { color: var(--primary-color); border-bottom-color: var(--primary-color); }
+        .navbar a.active,
+        .navbar a:hover{
+            color:var(--primary-color);
+            border-bottom-color:var(--primary-color);
+        }
+        /* Loại bỏ mọi quy tắc “đẩy 2 bên” nếu trước đó có */
+        .navbar a:first-child{ margin-right:0 !important; }
+        .navbar a:last-child{  margin-left:0  !important; }
 
-        /* Mẹo auto-margin: mục đầu bám trái, mục cuối bám phải.
-           Khi zoom out / màn hình rộng, các nút sẽ “dạt” về 2 bên,
-           nút ở giữa tự giãn khoảng cách hợp lý. */
-        .navbar a:first-child { margin-right: auto; }
-        .navbar a:last-child  { margin-left:  auto; }
+        /* Responsive tinh chỉnh khoảng cách */
+        @media (min-width:1600px){ .navbar{ gap:56px; } }
+        @media (max-width:768px){  .navbar{ gap:24px; } }
+        @media (max-width:480px){  .navbar{ gap:16px; } }
 
         /* Main Content */
         .main-content {
@@ -158,9 +165,7 @@
         .btn-chat { background-image: url('https://images.pexels.com/photos/863988/pexels-photo-863988.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'); }
         .btn-history { background-image: url('https://images.pexels.com/photos/248547/pexels-photo-248547.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'); }
 
-        /* Tối ưu thêm cho màn cực rộng: giữ hiệu ứng “dạt ra” + hạn chế khoảng trống dư */
         @media (min-width: 1600px) {
-          .navbar { padding: 0 40px; }
           .main-content { padding: 40px; gap: 32px; }
           .action-buttons { gap: 24px; }
         }
