@@ -41,6 +41,7 @@
   .btn-primary:hover{background:var(--primary-700)}
   .btn-danger{color:var(--danger);background:#fff;border-color:var(--danger)}
   .btn-danger:hover{background:#fff2f2}
+  
   .btn .lucide{width:16px; height:16px;}
   
   .grid{display:grid;grid-template-columns:380px 1fr;gap:18px;margin-top:18px}
@@ -103,6 +104,19 @@
   .analysis-section .lucide-alert-triangle { color: #f59e0b; }
   .analysis-section .lucide-lightbulb { color: #22c55e; }
 
+  .date-header {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    padding: 8px 4px 4px;
+    border-bottom: 1px solid var(--line);
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+  .date-header:first-child {
+      margin-top: 0;
+  }
+
   @media(max-width:1100px){.grid{grid-template-columns:1fr}}
   @media(max-width:800px){.player-grid{grid-template-columns:1fr}}
 </style>
@@ -115,10 +129,10 @@
       <div class="sub">Tải video, chạy MediaPipe, so khớp với khung chuẩn theo môn & góc quay.</div>
     </div>
     <div class="toolbar">
-      <button class="btn" id="backBtn"><i data-lucide="layout-dashboard"></i>Bảng điều khiển</button>
+      <button class="btn" id="reportBtn"><i data-lucide="file-text"></i>Xuất báo cáo</button>
       <button class="btn" id="exportJsonBtn"><i data-lucide="file-json"></i>Xuất features (.json)</button>
       <button class="btn" id="exportCsvBtn"><i data-lucide="table"></i>Xuất (.csv)</button>
-      <button class="btn btn-primary" id="reportBtn"><i data-lucide="file-text"></i>Xuất báo cáo</button>
+      <button class="btn btn-primary" id="backBtn"><i data-lucide="layout-dashboard"></i>Bảng điều khiển</button>
     </div>
   </div>
 
@@ -172,7 +186,12 @@
         
         <div class="row" style="margin-top: 14px;">
             <button id="analyzeBtn" class="btn btn-primary"><i data-lucide="play-circle"></i>Phân tích</button>
-            <button id="reanalyzeBtn" class="btn"><i data-lucide="refresh-cw"></i>Phân tích lại</button>
+            <select id="speedControl" class="select">
+              <option value="1">Tốc độ: 1x</option>
+              <option value="0.75">Tốc độ: 0.75x</option>
+              <option value="0.5">Tốc độ: 0.5x</option>
+              <option value="0.25">Tốc độ: 0.25x</option>
+            </select>
             <button id="clearBtn" class="btn btn-danger"><i data-lucide="trash-2"></i>Xóa tất cả dữ liệu</button>
         </div>
 
@@ -193,7 +212,7 @@
         </div>
 
         <div class="small" style="margin-top:12px; text-align: center;">
-        
+         
         </div>
       </div>
     </div>
@@ -259,15 +278,14 @@ const videoUpload = document.getElementById('videoUpload');
 const player = document.getElementById('player');
 const overlay = document.getElementById('overlay');
 const analyzeBtn = document.getElementById('analyzeBtn');
-const reanalyzeBtn = document.getElementById('reanalyzeBtn');
 const clearBtn = document.getElementById('clearBtn');
-const infoEl = document.getElementById('info');
 const liveBadge = document.getElementById('liveBadge');
 const progressRow = document.getElementById('progressRow');
 const progressBar = document.getElementById('progressBar');
 const progressText = document.getElementById('progressText');
 const videoListEl = document.getElementById('videoList');
 const chartCanvas = document.getElementById('chart');
+const speedControl = document.getElementById('speedControl');
 
 let mpPose=null, lastPoseLandmarks=null, drawCb=null;
 let results = JSON.parse(localStorage.getItem('thethaott_results')||'{}');
@@ -618,6 +636,25 @@ function renderChart(){
 }
 
 /* =================== HISTORY (persist) =================== */
+function formatDateGroup(timestamp) {
+    const date = new Date(timestamp);
+    const today = new Date();
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    today.setHours(0, 0, 0, 0);
+    yesterday.setHours(0, 0, 0, 0);
+    date.setHours(0, 0, 0, 0);
+
+    if (date.getTime() === today.getTime()) {
+        return 'Hôm nay';
+    }
+    if (date.getTime() === yesterday.getTime()) {
+        return 'Hôm qua';
+    }
+    return date.toLocaleDateString('vi-VN');
+}
+
 function uidFromName(name){
   let h=2166136261; for(let i=0;i<name.length;i++){h^=name.charCodeAt(i);h+=(h<<1)+(h<<4)+(h<<7)+(h<<8)+(h<<24);} return 'v_'+(h>>>0);
 }
@@ -625,50 +662,71 @@ function persistVideos(){ localStorage.setItem('thethaott_videos', JSON.stringif
 function renderVideoList(){
   const sport=sportSel.value;
   videoListEl.innerHTML='';
-  const filtered = libVideos.filter(v=> (v.sportTag===sport) || (v.name||'').toLowerCase().includes(sport));
+  const filtered = libVideos
+    .filter(v=> (v.sportTag===sport) || (v.name||'').toLowerCase().includes(sport))
+    .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0)); 
+
   if(filtered.length===0){ videoListEl.innerHTML='<div class="small">Chưa có video cho môn này.</div>'; return; }
-  filtered.forEach(v=>{
-    const row=document.createElement('div'); row.className='item';
-    row.style.cursor = 'pointer';
+  
+  const groups = filtered.reduce((acc, video) => {
+    const dateKey = formatDateGroup(video.timestamp || 0);
+    if (!acc[dateKey]) {
+      acc[dateKey] = [];
+    }
+    acc[dateKey].push(video);
+    return acc;
+  }, {});
 
-    const left=document.createElement('div');
-    left.innerHTML=`<b style="display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width: 120px;" title="${v.name}">${v.name}</b><div class="small">${v.sportTag||''}</div>`;
-    const right=document.createElement('div');
-    const analyzed = !!results[v.id];
-    right.innerHTML=`
-      ${analyzed ? '<span class="tag" style="background:var(--teal-lightest); color:var(--teal-darker); border-color: #99f6e4;">Đã xử lý</span>' : '<span class="tag" style="background:#fefce8; color:#713f12; border-color: #fef08a;">Chưa xử lý</span>'}
-      <button class="btn analyze-item-btn" style="padding: 6px 10px; font-size: 12px; margin-left: 6px;"><i data-lucide="${analyzed ? 'rotate-cw' : 'play'}"></i>${analyzed ? 'Xem lại' : 'Phân tích'}</button>
-      <button class="btn btn-danger delete-item-btn" style="padding: 6px 10px; font-size: 12px; margin-left: 6px;"><i data-lucide="trash"></i>Xóa</button>`;
-    
-    const btnAnalyze = right.querySelector('.analyze-item-btn');
-    const btnDel = right.querySelector('.delete-item-btn');
+  Object.keys(groups).forEach(dateKey => {
+    const dateHeader = document.createElement('h4');
+    dateHeader.className = 'date-header';
+    dateHeader.textContent = dateKey;
+    videoListEl.appendChild(dateHeader);
 
-    row.onclick = ()=>openVideo(v);
-    
-    btnAnalyze.onclick = (e) => {
-        e.stopPropagation();
-        openVideo(v);
-        setTimeout(() => analyze(v, analyzed), 100); 
-    };
-    
-    btnDel.onclick = (e)=>{
-      e.stopPropagation();
-      if(confirm('Xóa video này khỏi lịch sử?')){
-        if(v.url) URL.revokeObjectURL(v.url);
-        libVideos = libVideos.filter(x=>x.id!==v.id); persistVideos();
-        if(results[v.id]){ delete results[v.id]; localStorage.setItem('thethaott_results',JSON.stringify(results)); }
-        renderVideoList(); renderChart();
-        if(currentVideo && currentVideo.id===v.id){ 
-            player.src=''; 
-            player.removeAttribute('src');
-            currentVideo=null; 
-            infoEl.innerHTML='<span class="small">Chưa có video được chọn.</span>'; 
-        }
-      }
-    };
+    groups[dateKey].forEach(v=>{
+        const row=document.createElement('div'); row.className='item';
+        row.style.cursor = 'pointer';
 
-    row.appendChild(left); row.appendChild(right);
-    videoListEl.appendChild(row);
+        const left=document.createElement('div');
+        left.innerHTML=`<b style="display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width: 120px;" title="${v.name}">${v.name}</b><div class="small">${v.sportTag||''}</div>`;
+        const right=document.createElement('div');
+        const analyzed = !!results[v.id];
+        right.innerHTML=`
+          ${analyzed ? '<span class="tag" style="background:var(--teal-lightest); color:var(--teal-darker); border-color: #99f6e4;">Đã xử lý</span>' : '<span class="tag" style="background:#fefce8; color:#713f12; border-color: #fef08a;">Chưa xử lý</span>'}
+          <button class="btn analyze-item-btn" style="padding: 6px 10px; font-size: 12px; margin-left: 6px;"><i data-lucide="${analyzed ? 'rotate-cw' : 'play'}"></i>${analyzed ? 'Xem lại' : 'Phân tích'}</button>
+          <button class="btn btn-danger delete-item-btn" style="padding: 6px 10px; font-size: 12px; margin-left: 6px;"><i data-lucide="trash"></i>Xóa</button>`;
+        
+        const btnAnalyze = right.querySelector('.analyze-item-btn');
+        const btnDel = right.querySelector('.delete-item-btn');
+
+        row.onclick = ()=>openVideo(v);
+        
+        btnAnalyze.onclick = (e) => {
+            e.stopPropagation();
+            openVideo(v);
+            setTimeout(() => analyze(v, analyzed), 100); 
+        };
+        
+        btnDel.onclick = (e)=>{
+          e.stopPropagation();
+          if(confirm('Xóa video này khỏi lịch sử?')){
+            if(v.url) URL.revokeObjectURL(v.url);
+            libVideos = libVideos.filter(x=>x.id!==v.id); persistVideos();
+            if(results[v.id]){ delete results[v.id]; localStorage.setItem('thethaott_results',JSON.stringify(results)); }
+            renderVideoList(); renderChart();
+            if(currentVideo && currentVideo.id===v.id){ 
+                player.src=''; 
+                player.removeAttribute('src');
+                currentVideo=null; 
+                document.getElementById('info-summary').innerHTML='<span class="small">Chưa có video được chọn.</span>';
+                document.getElementById('analysis-details').style.display = 'none';
+            }
+          }
+        };
+
+        row.appendChild(left); row.appendChild(right);
+        videoListEl.appendChild(row);
+    });
   });
   lucide.createIcons();
 }
@@ -683,6 +741,7 @@ function openVideo(v){
   }
   player.muted=false; 
   player.playsInline=true;
+  player.playbackRate = parseFloat(speedControl.value);
   
   player.onloadedmetadata=()=>{
       onThreeResize();
@@ -724,6 +783,10 @@ function openVideo(v){
       if (skeletonGroup) skeletonGroup.visible = false;
   };
   showInfo(results[v.id]);
+  
+  const hasBeenAnalyzed = !!results[v.id];
+  analyzeBtn.innerHTML = `<i data-lucide="${hasBeenAnalyzed ? 'refresh-cw' : 'play-circle'}"></i>${hasBeenAnalyzed ? 'Phân tích lại' : 'Phân tích'}`;
+  lucide.createIcons();
 
   Array.from(videoListEl.children).forEach(child => {
       if (child.className.includes('item')) {
@@ -754,8 +817,14 @@ function checkPass(landmarks) {
 }
 
 /* =================== ANALYZE =================== */
-analyzeBtn.onclick   = ()=>{ if(!currentVideo){alert('Chưa chọn video.');return;} analyze(currentVideo,false); };
-reanalyzeBtn.onclick = ()=>{ if(!currentVideo){alert('Chưa chọn video.');return;} analyze(currentVideo,true); };
+analyzeBtn.onclick   = ()=>{ 
+    if(!currentVideo){
+        alert('Chưa chọn video.');
+        return;
+    }
+    const isAnalyzed = !!results[currentVideo.id];
+    analyze(currentVideo, isAnalyzed); 
+};
 
 async function analyze(v,force=false){
   const id=v.id; 
@@ -768,7 +837,6 @@ async function analyze(v,force=false){
   if(!pose){ alert('Không khởi tạo được Pose'); return; }
 
   analyzeBtn.disabled = true;
-  reanalyzeBtn.disabled = true;
 
   featTime=[]; featAngles=[]; featVel=[];
   if(v.url) player.src=v.url; 
@@ -788,7 +856,7 @@ async function analyze(v,force=false){
   const duration = player.duration;
   if (!duration || !isFinite(duration)) {
       alert("Không thể đọc được thời lượng video.");
-      analyzeBtn.disabled = false; reanalyzeBtn.disabled = false;
+      analyzeBtn.disabled = false;
       return;
   }
   const step = duration/total;
@@ -856,7 +924,7 @@ async function analyze(v,force=false){
   if(sampled < 5){ 
       setProgress(100, 'Lỗi'); 
       alert('Không thể phát hiện tư thế trong video. Video có thể không phù hợp hoặc chất lượng thấp.'); 
-      analyzeBtn.disabled = false; reanalyzeBtn.disabled = false;
+      analyzeBtn.disabled = false;
       return; 
   }
 
@@ -890,21 +958,25 @@ async function analyze(v,force=false){
   showInfo(results[id]); 
   renderChart(); 
   renderVideoList();
-  analyzeBtn.disabled = false; 
-  reanalyzeBtn.disabled = false;
+  analyzeBtn.innerHTML = `<i data-lucide="refresh-cw"></i>Phân tích lại`;
+  lucide.createIcons();
+  analyzeBtn.disabled = false;
 }
 
 /* =================== UPLOAD / CLEAR =================== */
 videoUpload.onchange = e=>{
   const f=e.target.files?.[0]; if(!f) return;
-  const id=uidFromName(f.name+'_'+Date.now());
+  const now = Date.now();
+  const id=uidFromName(f.name+'_'+now);
   let tag=''; const ln=f.name.toLowerCase();
   if(ln.includes('xuat')) tag='xuatphat';
   else if(ln.includes('nhay')) tag='nhaycao';
   else if(ln.includes('nem')) tag='nemta';
   if(!tag) tag=sportSel.value;
-  const v={id,name:f.name,url:URL.createObjectURL(f),sportTag:tag};
-  libVideos.push(v); persistVideos(); renderVideoList(); openVideo(v);
+  const v={id,name:f.name,url:URL.createObjectURL(f),sportTag:tag, timestamp: now};
+  libVideos.push(v); persistVideos(); renderVideoList(); 
+  speedControl.value = "1";
+  openVideo(v);
 };
 
 clearBtn.onclick=()=>{
@@ -912,10 +984,17 @@ clearBtn.onclick=()=>{
   localStorage.removeItem('thethaott_results'); results={};
   libVideos.forEach(v=>v.url && URL.revokeObjectURL(v.url)); libVideos=[];
   persistVideos(); renderVideoList(); renderChart(); player.src=''; currentVideo=null;
-  infoEl.innerHTML='<span class="small">Chưa có video được chọn.</span>';
+  document.getElementById('info-summary').innerHTML='<span class="small">Chưa có video được chọn.</span>';
+  document.getElementById('analysis-details').style.display = 'none';
 };
 
 sportSel.onchange=()=>{ renderVideoList(); renderChart(); };
+
+speedControl.onchange = () => {
+    if(player) {
+        player.playbackRate = parseFloat(speedControl.value);
+    }
+};
 
 /* =================== BOOT =================== */
 renderVideoList(); 
@@ -923,11 +1002,11 @@ renderChart();
 init3D();
 lucide.createIcons();
 window.addEventListener('resize', () => {
-    resizeOverlayToVideo();
     onThreeResize();
 });
 
 </script>
 </body>
 </html>
+
 
