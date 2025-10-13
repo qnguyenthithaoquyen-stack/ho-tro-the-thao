@@ -6,6 +6,10 @@
     <title>Gửi Bài Tập - Hỗ Trợ Huấn Luyện</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+        /* --- Reset & base --- */
+        *, *::before, *::after { box-sizing: border-box; }
+        html, body { height: 100%; }
         
         :root {
             --primary-color: #008080;
@@ -22,145 +26,172 @@
             margin: 0;
             background-color: var(--background-color);
             color: var(--text-color);
+            line-height: 1.4;
         }
 
-        .header { background-color: var(--primary-color); color: #fff; padding: 15px 30px; }
-        .header-inner { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
-        .header-left { display: flex; align-items: center; gap: 15px; }
-        .logo { background-color: #fff; color: var(--primary-color); font-weight: 700; padding: 10px; border-radius: 8px; }
-        .project-info h1 { font-size: 24px; margin: 0; }
-        .project-info p { font-size: 12px; margin: 0; opacity: 0.9; }
-        
-        .navbar { background-color: var(--card-bg-color); box-shadow: 0 2px 4px rgba(0,0,0,.05); padding: 0 30px; }
-        .nav-inner { max-width: 1200px; margin: 0 auto; display: flex; }
-        .navbar a { padding: 15px 25px; text-decoration: none; color: var(--text-light-color); font-weight: 500; border-bottom: 3px solid transparent; transition: all 0.3s; }
-        .navbar a.active, .navbar a:hover { color: var(--primary-color); border-bottom-color: var(--primary-color); }
+        /* --- Header & Navbar full width --- */
+        .header {
+            background-color: var(--primary-color);
+            color: #fff;
+            padding: 12px clamp(16px, 4vw, 30px);
+            width: 100%;
+        }
+        .header-inner {
+            /* full-bleed: bỏ max-width để thật sự full size */
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+        }
+        .header-left { display: flex; align-items: center; gap: 12px; }
+        .logo { background-color: #fff; color: var(--primary-color); font-weight: 700; padding: 8px 10px; border-radius: 8px; }
+        .project-info h1 { font-size: clamp(18px, 2.2vw, 24px); margin: 0; }
+        .project-info p { font-size: clamp(10px, 1.4vw, 12px); margin: 0; opacity: 0.9; }
 
+        .navbar {
+            background-color: var(--card-bg-color);
+            box-shadow: 0 2px 4px rgba(0,0,0,.05);
+            padding: 0 clamp(16px, 4vw, 30px);
+            width: 100%;
+        }
+        .nav-inner {
+            width: 100%;
+            display: flex;
+            gap: 2px;
+            /* Trung tâm trên màn hình vừa/nhỏ, trải đều khi cực rộng */
+            justify-content: center;
+        }
+        .navbar a {
+            padding: 14px clamp(14px, 2.2vw, 25px);
+            text-decoration: none;
+            color: var(--text-light-color);
+            font-weight: 500;
+            border-bottom: 3px solid transparent;
+            transition: color .25s, border-color .25s, background-color .25s;
+            border-radius: 8px 8px 0 0;
+        }
+        .navbar a.active, .navbar a:hover { color: var(--primary-color); border-bottom-color: var(--primary-color); background: #f8fbfb; }
+
+        /* --- Layout --- */
         .main-content {
             display: flex;
             justify-content: center;
-            align-items: center;
-            padding: 50px 30px;
+            align-items: flex-start;
+            padding: clamp(20px, 4vw, 50px) clamp(16px, 4vw, 30px);
+            min-height: calc(100vh - 120px); /* đủ cao để “đầy” trang */
         }
 
         .exercise-form-card {
             background-color: var(--card-bg-color);
             border-radius: 16px;
             box-shadow: var(--shadow);
-            padding: 30px 40px;
+            padding: clamp(20px, 3.2vw, 40px);
             width: 100%;
-            max-width: 600px;
+            max-width: 760px; /* form đọc thoải mái, không quá rộng */
         }
 
-        .form-header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
+        .form-header { text-align: center; margin-bottom: 24px; }
+        .form-header h2 { font-size: clamp(22px, 3vw, 28px); color: var(--primary-color); margin: 0; }
+        .form-header p { font-size: clamp(14px, 1.8vw, 16px); color: var(--text-light-color); margin-top: 10px; }
+        .form-header #athleteName { font-weight: 700; color: var(--text-color); }
 
-        .form-header h2 {
-            font-size: 28px;
-            color: var(--primary-color);
-            margin: 0;
-        }
-
-        .form-header p {
-            font-size: 16px;
-            color: var(--text-light-color);
-            margin-top: 10px;
-        }
-
-        .form-header #athleteName {
-            font-weight: 700;
-            color: var(--text-color);
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
+        .form-group { margin-bottom: 18px; }
         .form-group label {
             display: block;
             font-weight: 500;
             margin-bottom: 8px;
             font-size: 14px;
         }
-
         .form-group input[type="text"],
         .form-group input[type="date"],
         .form-group textarea {
             width: 100%;
             padding: 12px;
             border: 1px solid var(--border-color);
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: 16px;
-            box-sizing: border-box; 
-            transition: border-color 0.3s, box-shadow 0.3s;
+            transition: border-color .25s, box-shadow .25s;
             font-family: 'Roboto', sans-serif;
+            background: #fff;
         }
-
         .form-group input:focus,
         .form-group textarea:focus {
             outline: none;
             border-color: var(--primary-color);
             box-shadow: 0 0 0 3px rgba(0, 128, 128, 0.15);
         }
+        .form-group textarea { resize: vertical; min-height: 120px; }
 
-        .form-group textarea {
-            resize: vertical;
-            min-height: 120px;
-        }
-
+        /* --- Actions: luôn gom cụm nút, ổn định khi zoom --- */
         .form-actions {
             display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 26px;
+
+            /* Mặc định: canh phải (desktop rộng) */
             justify-content: flex-end;
-            gap: 15px;
-            margin-top: 30px;
+            flex-wrap: nowrap; /* không bị rớt hàng khi zoom */
         }
 
         .btn {
-            padding: 12px 25px;
-            border-radius: 8px;
-            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 22px;
+            border-radius: 10px;
+            border: 1px solid transparent;
             font-size: 16px;
             font-weight: 700;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: transform .15s ease, box-shadow .15s ease, background-color .25s ease, border-color .25s ease;
+            text-align: center;
+
+            /* Độ rộng tối thiểu giống nhau để không xê dịch khi zoom */
+            min-width: 138px;
+            white-space: nowrap; /* không xuống dòng chữ */
         }
 
         .btn-secondary {
             background-color: #e9ecef;
             color: var(--text-color);
-            border: 1px solid #ced4da;
+            border-color: #ced4da;
         }
-        .btn-secondary:hover {
-            background-color: #d8dde2;
-        }
+        .btn-secondary:hover { background-color: #d8dde2; }
 
-        .btn-primary {
-            background-color: var(--primary-color);
-            color: white;
-        }
-        .btn-primary:hover {
-            background-color: #006666;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        .btn-primary:disabled {
-            background-color: #a0c4c4;
-            cursor: not-allowed;
-        }
+        .btn-primary { background-color: var(--primary-color); color: white; }
+        .btn-primary:hover { background-color: #006666; transform: translateY(-1px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .btn-primary:disabled { background-color: #a0c4c4; cursor: not-allowed; transform: none; box-shadow: none; }
 
         .message {
             text-align: center;
             padding: 10px;
-            margin-bottom: 20px;
-            border-radius: 8px;
+            margin-bottom: 16px;
+            border-radius: 10px;
             display: none;
             font-size: 14px;
         }
         .message.success { background-color: #d4edda; color: #155724; }
         .message.error { background-color: #f8d7da; color: #721c24; }
 
+        /* --- Responsive: khi màn hình hẹp hoặc người dùng zoom mạnh,
+               chuyển các nút về giữa để không “xé” ra 2 bên --- */
+        @media (max-width: 768px) {
+            .nav-inner { justify-content: center; }
+            .form-actions {
+                justify-content: center;     /* gom cụm giữa */
+                flex-wrap: wrap;             /* cho phép xuống dòng đẹp */
+                gap: 10px 12px;
+            }
+            .btn { width: clamp(140px, 44vw, 260px); } /* rộng đều, khó xô lệch */
+        }
+
+        /* Phòng trường hợp người dùng zoom làm ô chữ quá to mà viewport vẫn rộng:
+           Khi form nhỏ hơn 520px, cũng đưa nút về giữa để chắc chắn không trôi. */
+        @media (max-width: 520px) {
+            .form-actions { justify-content: center; }
+        }
     </style>
 </head>
 <body>
@@ -175,6 +206,7 @@
             </div>
         </div>
     </header>
+
     <nav class="navbar">
         <div class="nav-inner">
             <a href="index.html">Trang chủ</a>
@@ -182,26 +214,32 @@
             <a href="coach-dashboard.html" class="active">Bảng điều khiển</a>
         </div>
     </nav>
+
     <main class="main-content">
         <div class="exercise-form-card">
             <div class="form-header">
                 <h2>Gửi bài tập mới</h2>
                 <p>Gửi cho VĐV: <b id="athleteName">Đang tải...</b></p>
             </div>
+
             <div id="message" class="message"></div>
+
             <form id="exerciseForm">
                 <div class="form-group">
                     <label for="title">Tiêu đề bài tập</label>
                     <input type="text" id="title" name="title" placeholder="Ví dụ: Chạy bền 5km" required>
                 </div>
+
                 <div class="form-group">
                     <label for="description">Mô tả chi tiết</label>
                     <textarea id="description" name="description" placeholder="Mô tả các yêu cầu, tốc độ, thời gian nghỉ..." required></textarea>
                 </div>
+
                 <div class="form-group">
                     <label for="dueDate">Ngày thực hiện</label>
                     <input type="date" id="dueDate" name="dueDate" required>
                 </div>
+
                 <div class="form-actions">
                     <a href="coach-dashboard.html" class="btn btn-secondary">Hủy</a>
                     <button type="submit" class="btn btn-primary">Gửi bài tập</button>
@@ -238,7 +276,7 @@
             const athleteNameEl = document.getElementById('athleteName');
             const exerciseForm = document.getElementById('exerciseForm');
             const messageDiv = document.getElementById('message');
-            
+
             let athleteId = null;
 
             // --- Giám sát trạng thái đăng nhập của HLV ---
@@ -282,8 +320,8 @@
                 }
 
                 const submitButton = exerciseForm.querySelector('button[type="submit"]');
-                const title = exerciseForm.title.value;
-                const description = exerciseForm.description.value;
+                const title = exerciseForm.title.value.trim();
+                const description = exerciseForm.description.value.trim();
                 const dueDate = exerciseForm.dueDate.value;
 
                 submitButton.disabled = true;
@@ -293,10 +331,10 @@
                 try {
                     const exercisesColRef = collection(db, "users", athleteId, "exercises");
                     await addDoc(exercisesColRef, {
-                        title: title,
-                        description: description,
-                        dueDate: dueDate,
-                        status: 'pending', 
+                        title,
+                        description,
+                        dueDate,
+                        status: 'pending',
                         createdAt: serverTimestamp()
                     });
 
@@ -306,7 +344,7 @@
 
                     setTimeout(() => {
                         window.location.href = 'coach-dashboard.html';
-                    }, 2000);
+                    }, 1500);
 
                 } catch (error) {
                     console.error("Lỗi khi gửi bài tập:", error);
@@ -324,4 +362,3 @@
     </script>
 </body>
 </html>
-
