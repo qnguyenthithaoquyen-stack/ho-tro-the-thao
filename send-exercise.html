@@ -29,7 +29,7 @@
             line-height: 1.4;
         }
 
-        /* --- Header & Navbar full width --- */
+        /* --- Header full width --- */
         .header {
             background-color: var(--primary-color);
             color: #fff;
@@ -37,7 +37,6 @@
             width: 100%;
         }
         .header-inner {
-            /* full-bleed: bỏ max-width để thật sự full size */
             width: 100%;
             display: flex;
             justify-content: space-between;
@@ -49,19 +48,26 @@
         .project-info h1 { font-size: clamp(18px, 2.2vw, 24px); margin: 0; }
         .project-info p { font-size: clamp(10px, 1.4vw, 12px); margin: 0; opacity: 0.9; }
 
+        /* --- Navbar: căn GIỮA thật sự, không lệch trái --- */
         .navbar {
             background-color: var(--card-bg-color);
             box-shadow: 0 2px 4px rgba(0,0,0,.05);
-            padding: 0 clamp(16px, 4vw, 30px);
-            width: 100%;
-        }
-        .nav-inner {
+            padding: 0;                /* không đẩy nội dung lệch */
             width: 100%;
             display: flex;
-            gap: 2px;
-            /* Trung tâm trên màn hình vừa/nhỏ, trải đều khi cực rộng */
-            justify-content: center;
         }
+        .nav-inner {
+            display: flex;
+            gap: 2px;
+            justify-content: flex-start; /* Đã đổi: căn lề trái */
+            max-width: 1200px;         /* khối giữa */
+            margin: 0 auto;            /* căn giữa theo viewport */
+            padding: 0 clamp(16px, 4vw, 30px); /* padding nằm trong khối giữa */
+            width: 100%;
+        }
+        /* Nếu muốn nhóm link chỉ rộng bằng nội dung, dùng dòng dưới và bỏ width:100% ở trên */
+        /* .nav-inner { width: fit-content; } */
+
         .navbar a {
             padding: 14px clamp(14px, 2.2vw, 25px);
             text-decoration: none;
@@ -79,7 +85,7 @@
             justify-content: center;
             align-items: flex-start;
             padding: clamp(20px, 4vw, 50px) clamp(16px, 4vw, 30px);
-            min-height: calc(100vh - 120px); /* đủ cao để “đầy” trang */
+            min-height: calc(100vh - 120px);
         }
 
         .exercise-form-card {
@@ -88,7 +94,7 @@
             box-shadow: var(--shadow);
             padding: clamp(20px, 3.2vw, 40px);
             width: 100%;
-            max-width: 760px; /* form đọc thoải mái, không quá rộng */
+            max-width: 760px;
         }
 
         .form-header { text-align: center; margin-bottom: 24px; }
@@ -129,10 +135,8 @@
             align-items: center;
             gap: 12px;
             margin-top: 26px;
-
-            /* Mặc định: canh phải (desktop rộng) */
-            justify-content: flex-end;
-            flex-wrap: nowrap; /* không bị rớt hàng khi zoom */
+            justify-content: flex-end; /* desktop: canh phải */
+            flex-wrap: nowrap;         /* không rớt hàng khi zoom nhẹ */
         }
 
         .btn {
@@ -147,10 +151,8 @@
             cursor: pointer;
             transition: transform .15s ease, box-shadow .15s ease, background-color .25s ease, border-color .25s ease;
             text-align: center;
-
-            /* Độ rộng tối thiểu giống nhau để không xê dịch khi zoom */
-            min-width: 138px;
-            white-space: nowrap; /* không xuống dòng chữ */
+            min-width: 138px;     /* đồng đều để không xô lệch */
+            white-space: nowrap;  /* tránh xuống dòng gây lệch */
         }
 
         .btn-secondary {
@@ -175,20 +177,15 @@
         .message.success { background-color: #d4edda; color: #155724; }
         .message.error { background-color: #f8d7da; color: #721c24; }
 
-        /* --- Responsive: khi màn hình hẹp hoặc người dùng zoom mạnh,
-               chuyển các nút về giữa để không “xé” ra 2 bên --- */
+        /* Responsive: khi hẹp/zoom mạnh, đưa nút về giữa cho chắc */
         @media (max-width: 768px) {
-            .nav-inner { justify-content: center; }
             .form-actions {
-                justify-content: center;     /* gom cụm giữa */
-                flex-wrap: wrap;             /* cho phép xuống dòng đẹp */
+                justify-content: center;
+                flex-wrap: wrap;
                 gap: 10px 12px;
             }
-            .btn { width: clamp(140px, 44vw, 260px); } /* rộng đều, khó xô lệch */
+            .btn { width: clamp(140px, 44vw, 260px); }
         }
-
-        /* Phòng trường hợp người dùng zoom làm ô chữ quá to mà viewport vẫn rộng:
-           Khi form nhỏ hơn 520px, cũng đưa nút về giữa để chắc chắn không trôi. */
         @media (max-width: 520px) {
             .form-actions { justify-content: center; }
         }
@@ -249,12 +246,12 @@
     </main>
 
     <script type="module">
-        // Import các hàm cần thiết từ Firebase SDK
+        // Firebase SDK
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
         import { getFirestore, doc, getDoc, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
-        // --- Cấu hình Firebase ---
+        // Config
         const firebaseConfig = {
             apiKey: "AIzaSyA2dXWCyjL2xgCSyeW9QQ7RvjI_O7kFHJw",
             authDomain: "sporthealthdata.firebaseapp.com",
@@ -264,60 +261,43 @@
             appId: "1:789054240877:web:04a400c9ea586523a86764",
         };
 
-        // --- Khởi tạo Firebase ---
+        // Init
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // --- Hàm Chính - Chạy sau khi trang tải xong ---
         document.addEventListener('DOMContentLoaded', () => {
-
-            // --- Lấy các phần tử HTML ---
             const athleteNameEl = document.getElementById('athleteName');
             const exerciseForm = document.getElementById('exerciseForm');
             const messageDiv = document.getElementById('message');
-
             let athleteId = null;
 
-            // --- Giám sát trạng thái đăng nhập của HLV ---
             onAuthStateChanged(auth, (user) => {
-                if (!user) {
-                    window.location.href = './dangnhap.html';
-                }
+                if (!user) window.location.href = './dangnhap.html';
             });
 
-            // --- Lấy thông tin VĐV từ URL và hiển thị ---
             async function loadAthleteInfo() {
                 const params = new URLSearchParams(window.location.search);
                 athleteId = params.get('athleteId');
-
-                if (!athleteId) {
-                    athleteNameEl.textContent = "Không tìm thấy VĐV";
-                    return;
-                }
+                if (!athleteId) { athleteNameEl.textContent = "Không tìm thấy VĐV"; return; }
 
                 try {
                     const athleteDocRef = doc(db, "users", athleteId);
                     const athleteDocSnap = await getDoc(athleteDocRef);
-
                     if (athleteDocSnap.exists()) {
                         athleteNameEl.textContent = athleteDocSnap.data().fullName || "VĐV không tên";
                     } else {
                         athleteNameEl.textContent = "VĐV không tồn tại";
                     }
-                } catch (error) {
-                    console.error("Lỗi khi tải thông tin VĐV:", error);
+                } catch (err) {
+                    console.error("Lỗi khi tải thông tin VĐV:", err);
                     athleteNameEl.textContent = "Lỗi tải dữ liệu";
                 }
             }
 
-            // --- Xử lý sự kiện gửi form ---
             exerciseForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
-                if (!athleteId) {
-                    alert("Không xác định được VĐV để gửi bài tập.");
-                    return;
-                }
+                if (!athleteId) { alert("Không xác định được VĐV để gửi bài tập."); return; }
 
                 const submitButton = exerciseForm.querySelector('button[type="submit"]');
                 const title = exerciseForm.title.value.trim();
@@ -331,9 +311,7 @@
                 try {
                     const exercisesColRef = collection(db, "users", athleteId, "exercises");
                     await addDoc(exercisesColRef, {
-                        title,
-                        description,
-                        dueDate,
+                        title, description, dueDate,
                         status: 'pending',
                         createdAt: serverTimestamp()
                     });
@@ -342,10 +320,7 @@
                     messageDiv.className = "message success";
                     messageDiv.style.display = 'block';
 
-                    setTimeout(() => {
-                        window.location.href = 'coach-dashboard.html';
-                    }, 1500);
-
+                    setTimeout(() => { window.location.href = 'coach-dashboard.html'; }, 1500);
                 } catch (error) {
                     console.error("Lỗi khi gửi bài tập:", error);
                     messageDiv.textContent = "Đã xảy ra lỗi khi gửi. Vui lòng thử lại.";
@@ -356,9 +331,9 @@
                 }
             });
 
-            // Chạy hàm tải thông tin VĐV khi trang được mở
             loadAthleteInfo();
         });
     </script>
 </body>
 </html>
+
