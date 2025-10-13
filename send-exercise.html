@@ -24,13 +24,15 @@
             color: var(--text-color);
         }
 
-        .container { max-width: 1200px; margin: 0 auto; }
-        .header { display: flex; justify-content: space-between; align-items: center; padding: 15px 30px; background-color: var(--primary-color); color: #fff; }
+        .header { background-color: var(--primary-color); color: #fff; padding: 15px 30px; }
+        .header-inner { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
         .header-left { display: flex; align-items: center; gap: 15px; }
         .logo { background-color: #fff; color: var(--primary-color); font-weight: 700; padding: 10px; border-radius: 8px; }
         .project-info h1 { font-size: 24px; margin: 0; }
         .project-info p { font-size: 12px; margin: 0; opacity: 0.9; }
-        .navbar { display: flex; background-color: var(--card-bg-color); box-shadow: 0 2px 4px rgba(0,0,0,.05); padding: 0 30px; }
+        
+        .navbar { background-color: var(--card-bg-color); box-shadow: 0 2px 4px rgba(0,0,0,.05); padding: 0 30px; }
+        .nav-inner { max-width: 1200px; margin: 0 auto; display: flex; }
         .navbar a { padding: 15px 25px; text-decoration: none; color: var(--text-light-color); font-weight: 500; border-bottom: 3px solid transparent; transition: all 0.3s; }
         .navbar a.active, .navbar a:hover { color: var(--primary-color); border-bottom-color: var(--primary-color); }
 
@@ -162,8 +164,8 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <header class="header">
+    <header class="header">
+        <div class="header-inner">
             <div class="header-left">
                 <div class="logo">LOGO</div>
                 <div class="project-info">
@@ -171,40 +173,42 @@
                     <p>DỰ ÁN KHOA HỌC KỸ THUẬT</p>
                 </div>
             </div>
-        </header>
-        <nav class="navbar">
+        </div>
+    </header>
+    <nav class="navbar">
+        <div class="nav-inner">
             <a href="index.html">Trang chủ</a>
             <a href="gioithieu.html">Giới thiệu</a>
             <a href="coach-dashboard.html" class="active">Bảng điều khiển</a>
-        </nav>
-        <main class="main-content">
-            <div class="exercise-form-card">
-                <div class="form-header">
-                    <h2>Gửi bài tập mới</h2>
-                    <p>Gửi cho VĐV: <b id="athleteName">Đang tải...</b></p>
-                </div>
-                <div id="message" class="message"></div>
-                <form id="exerciseForm">
-                    <div class="form-group">
-                        <label for="title">Tiêu đề bài tập</label>
-                        <input type="text" id="title" name="title" placeholder="Ví dụ: Chạy bền 5km" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="description">Mô tả chi tiết</label>
-                        <textarea id="description" name="description" placeholder="Mô tả các yêu cầu, tốc độ, thời gian nghỉ..." required></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="dueDate">Ngày thực hiện</label>
-                        <input type="date" id="dueDate" name="dueDate" required>
-                    </div>
-                    <div class="form-actions">
-                        <a href="coach-dashboard.html" class="btn btn-secondary">Hủy</a>
-                        <button type="submit" class="btn btn-primary">Gửi bài tập</button>
-                    </div>
-                </form>
+        </div>
+    </nav>
+    <main class="main-content">
+        <div class="exercise-form-card">
+            <div class="form-header">
+                <h2>Gửi bài tập mới</h2>
+                <p>Gửi cho VĐV: <b id="athleteName">Đang tải...</b></p>
             </div>
-        </main>
-    </div>
+            <div id="message" class="message"></div>
+            <form id="exerciseForm">
+                <div class="form-group">
+                    <label for="title">Tiêu đề bài tập</label>
+                    <input type="text" id="title" name="title" placeholder="Ví dụ: Chạy bền 5km" required>
+                </div>
+                <div class="form-group">
+                    <label for="description">Mô tả chi tiết</label>
+                    <textarea id="description" name="description" placeholder="Mô tả các yêu cầu, tốc độ, thời gian nghỉ..." required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="dueDate">Ngày thực hiện</label>
+                    <input type="date" id="dueDate" name="dueDate" required>
+                </div>
+                <div class="form-actions">
+                    <a href="coach-dashboard.html" class="btn btn-secondary">Hủy</a>
+                    <button type="submit" class="btn btn-primary">Gửi bài tập</button>
+                </div>
+            </form>
+        </div>
+    </main>
 
     <script type="module">
         // Import các hàm cần thiết từ Firebase SDK
@@ -320,3 +324,4 @@
     </script>
 </body>
 </html>
+
