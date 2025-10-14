@@ -26,104 +26,52 @@
       color:var(--text-color);
     }
 
-    /* FULL WIDTH */
-    .container{
-      max-width:100%;
-      width:100%;
-      margin:0 auto;
-    }
+    .container{ max-width:100%; width:100%; margin:0 auto; }
 
     .header{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      padding:15px 30px;
-      background:var(--primary-color);
-      color:#fff
+      display:flex;justify-content:space-between;align-items:center;
+      padding:15px 30px;background:var(--primary-color);color:#fff
     }
     .header-left{display:flex;align-items:center;gap:15px}
-    .logo{
-      background:#fff;color:var(--primary-color);
-      font-weight:700;padding:10px;border-radius:8px
-    }
+    .logo{background:#fff;color:var(--primary-color);font-weight:700;padding:10px;border-radius:8px}
     .project-info h1{font-size:24px;margin:0}
 
-    /* NAVBAR: dạt hai bên khi zoom */
+    /* NAVBAR: tất cả mục về bên trái */
     .navbar{
-      display:flex;
-      align-items:center;
-      gap:16px;
-      background:var(--card-bg-color);
-      box-shadow:0 2px 4px rgba(0,0,0,.05);
-      padding:0 30px;
-      min-height:56px;
+      display:flex;align-items:center;justify-content:flex-start;gap:16px;
+      background:var(--card-bg-color);box-shadow:0 2px 4px rgba(0,0,0,.05);padding:0 30px;min-height:56px;
     }
     .navbar a{
-      padding:15px 12px;
-      text-decoration:none;
-      color:var(--text-light-color);
-      font-weight:500;
-      white-space:nowrap;
+      padding:15px 12px;text-decoration:none;color:var(--text-light-color);font-weight:500;white-space:nowrap;
     }
-    /* Mẹo đẩy hai mép: cái đầu bám trái, cái cuối bám phải */
-    .navbar a:first-child{ margin-right:auto; }
-    .navbar a:last-child{ margin-left:auto; }
+    /* (ĐÃ GỠ) .navbar a:first-child{margin-right:auto} và .navbar a:last-child{margin-left:auto} */
 
-    /* CHAT FULL SIZE (theo chiều ngang), chiều cao theo 100vh trừ header+nav */
     .chat-container{
-      display:flex;
-      flex-direction:column;
-      height:calc(100vh - 56px - 60px); /* nav ~56px, header ~60px */
-      width:calc(100% - 40px);
-      margin:20px;
-      background:var(--card-bg-color);
-      box-shadow:0 4px 12px rgba(0,0,0,.1);
-      border-radius:16px;
-      overflow:hidden
+      display:flex;flex-direction:column;
+      height:calc(100vh - 56px - 60px);
+      width:calc(100% - 40px);margin:20px;
+      background:var(--card-bg-color);box-shadow:0 4px 12px rgba(0,0,0,.1);border-radius:16px;overflow:hidden
     }
 
     .chat-header{
-      padding:15px 20px;
-      border-bottom:1px solid var(--border-color);
-      background:#f8f9fa;
-      display:flex;justify-content:space-between;align-items:center
+      padding:15px 20px;border-bottom:1px solid var(--border-color);
+      background:#f8f9fa;display:flex;justify-content:space-between;align-items:center
     }
     .chat-header h2{margin:0;font-size:18px;color:var(--text-color)}
     .chat-header a{color:var(--primary-color);text-decoration:none;font-size:14px}
 
     .error{display:none;color:#b00020;padding:8px 20px}
-
-    .chat-messages{
-      flex:1;padding:20px;overflow-y:auto;display:flex;flex-direction:column
-    }
-    .message{
-      max-width:70%;
-      padding:10px 15px;border-radius:18px;margin-bottom:10px;line-height:1.4
-    }
-    .message.sent{
-      background:var(--sender-bg);color:var(--text-color);
-      align-self:flex-end;border-bottom-right-radius:4px
-    }
-    .message.received{
-      background:var(--receiver-bg);color:#fff;
-      align-self:flex-start;border-bottom-left-radius:4px
-    }
+    .chat-messages{flex:1;padding:20px;overflow-y:auto;display:flex;flex-direction:column}
+    .message{max-width:70%;padding:10px 15px;border-radius:18px;margin-bottom:10px;line-height:1.4}
+    .message.sent{background:var(--sender-bg);color:var(--text-color);align-self:flex-end;border-bottom-right-radius:4px}
+    .message.received{background:var(--receiver-bg);color:#fff;align-self:flex-start;border-bottom-left-radius:4px}
     .message .timestamp{font-size:11px;color:var(--text-light-color);margin-top:5px;display:block}
     .message.received .timestamp{color:rgba(255,255,255,0.7)}
 
-    .chat-input{
-      display:flex;padding:15px;border-top:1px solid var(--border-color);background:#f8f9fa
-    }
-    .chat-input input{
-      flex:1;border:1px solid var(--border-color);border-radius:20px;
-      padding:10px 15px;font-size:16px;outline:none
-    }
-    .chat-input button{
-      background:var(--primary-color);border:none;color:#fff;border-radius:50%;
-      width:40px;height:40px;margin-left:10px;cursor:pointer;display:flex;align-items:center;justify-content:center
-    }
+    .chat-input{display:flex;padding:15px;border-top:1px solid var(--border-color);background:#f8f9fa}
+    .chat-input input{flex:1;border:1px solid var(--border-color);border-radius:20px;padding:10px 15px;font-size:16px;outline:none}
+    .chat-input button{background:var(--primary-color);border:none;color:#fff;border-radius:50%;width:40px;height:40px;margin-left:10px;cursor:pointer;display:flex;align-items:center;justify-content:center}
 
-    /* Responsive nhỏ hơn: giảm padding để vẫn full và gọn */
     @media (max-width: 600px){
       .header{padding:12px 16px}
       .navbar{padding:0 16px}
@@ -187,40 +135,27 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // --- DOM ---
     const chatWithTitle = document.getElementById('chatWithTitle');
     const chatMessages = document.getElementById('chatMessages');
     const messageForm = document.getElementById('messageForm');
     const messageInput = document.getElementById('messageInput');
     const errorBox = document.getElementById('errorBox');
 
-    function showErr(msg){
-      errorBox.textContent = msg;
-      errorBox.style.display='block';
-    }
+    function showErr(msg){ errorBox.textContent = msg; errorBox.style.display='block'; }
     function hideErr(){ errorBox.style.display='none'; }
 
     function displayMessage(data){
       const div = document.createElement('div');
       div.classList.add('message');
       div.classList.add(data.senderId === currentUser.uid ? 'sent' : 'received');
-
-      const text = document.createElement('span');
-      text.textContent = data.text;
-
-      const ts = document.createElement('span');
-      ts.classList.add('timestamp');
+      const text = document.createElement('span'); text.textContent = data.text;
+      const ts = document.createElement('span'); ts.classList.add('timestamp');
       ts.textContent = data.createdAt?.seconds ? new Date(data.createdAt.seconds*1000).toLocaleTimeString() : '';
-
-      div.appendChild(text);
-      div.appendChild(ts);
-      chatMessages.appendChild(div);
+      div.appendChild(text); div.appendChild(ts); chatMessages.appendChild(div);
     }
 
-    // --- Helpers (đồng bộ với phía VĐV) ---
     function pairConvId(a,b){ return [a,b].sort().join('__'); }
 
-    // Tạo phòng KHÔNG đọc trước (phù hợp rules: allow create)
     async function ensureConversation(db, myUid, peerUid){
       const id = pairConvId(myUid, peerUid);
       const ref = doc(db, "conversations", id);
@@ -230,59 +165,38 @@
           lastMessage: null,
           updatedAt: serverTimestamp(),
         }, { merge:false });
-      }catch(e){
-        // Nếu đã tồn tại và setDoc coi là update (bị chặn) thì bỏ qua.
-      }
+      }catch(e){}
       return id;
     }
 
-    // --- State ---
     let currentUser, athleteId, convId;
 
     onAuthStateChanged(auth, async (user)=>{
       try{
-        if(!user){
-          window.location.href='./dangnhap.html';
-          return;
-        }
+        if(!user){ window.location.href='./dangnhap.html'; return; }
         currentUser = user;
 
         const params = new URLSearchParams(location.search);
         athleteId = params.get('with');
-        if(!athleteId){
-          showErr('Không tìm thấy ID của vận động viên (with=...).');
-          return;
-        }
+        if(!athleteId){ showErr('Không tìm thấy ID của vận động viên (with=...).'); return; }
 
-        // Tạo/đảm bảo phòng tồn tại trong "conversations"
         convId = await ensureConversation(db, currentUser.uid, athleteId);
 
-        // Tiêu đề
         try{
           const athleteDoc = await getDoc(doc(db,"users",athleteId));
-          if(athleteDoc.exists())
-            chatWithTitle.textContent = `Chat với ${athleteDoc.data().fullName}`;
-          else
-            chatWithTitle.textContent = 'Chat';
-        }catch{
-          chatWithTitle.textContent='Chat';
-        }
+          chatWithTitle.textContent = athleteDoc.exists()
+            ? `Chat với ${athleteDoc.data().fullName}` : 'Chat';
+        }catch{ chatWithTitle.textContent='Chat'; }
 
-        // Bắt đầu nghe tin nhắn
         listenForMessages();
         hideErr();
-
-        // Gửi tin
         messageForm.addEventListener('submit', handleMessageSubmit);
-      }catch(e){
-        showErr('Lỗi khởi tạo: ' + (e?.message || e));
-      }
+      }catch(e){ showErr('Lỗi khởi tạo: ' + (e?.message || e)); }
     });
 
     function listenForMessages(){
       const messagesColRef = collection(db, "conversations", convId, "messages");
       const q = query(messagesColRef, orderBy("createdAt"));
-
       onSnapshot(q, (snapshot)=>{
         chatMessages.innerHTML = '';
         snapshot.forEach(docSnap => displayMessage(docSnap.data()));
@@ -299,17 +213,11 @@
       e.preventDefault();
       const text = messageInput.value.trim();
       if(!text || !convId) return;
-
       messageInput.value = '';
       try{
-        // Gửi message: chỉ 3 field đúng theo rules
         await addDoc(collection(db, "conversations", convId, "messages"), {
-          text,
-          senderId: currentUser.uid,
-          createdAt: serverTimestamp()
+          text, senderId: currentUser.uid, createdAt: serverTimestamp()
         });
-
-        // Cập nhật meta parent: đúng whitelist trong rules
         await updateDoc(doc(db, "conversations", convId), {
           lastMessage: { text, senderId: currentUser.uid, createdAt: serverTimestamp() },
           updatedAt: serverTimestamp()
