@@ -16,17 +16,67 @@
       --sender-bg:#e6f2f2;
       --receiver-bg:var(--primary-color);
     }
-    body{font-family:'Roboto',sans-serif;margin:0;background:var(--background-color)}
+
+    /* Base */
+    *,*::before,*::after{box-sizing:border-box}
+    body{font-family:'Roboto',sans-serif;margin:0;background:var(--background-color);color:var(--text-color)}
+
+    /* Khối trung tâm cho nội dung (trừ header/nav) */
     .container{max-width:1200px;margin:0 auto}
-    .header{display:flex;justify-content:space-between;align-items:center;padding:15px 30px;background:var(--primary-color);color:#fff}
+
+    /* Header full-bleed (full size thật sự dù nằm trong .container) */
+    .header{
+      display:flex;justify-content:space-between;align-items:center;
+      padding:15px clamp(16px,4vw,30px);
+      background:var(--primary-color);color:#fff;
+
+      /* Break out khỏi .container để full viewport width */
+      position:relative; left:50%; right:50%;
+      margin-left:calc(-50vw + 50%); margin-right:calc(-50vw + 50%);
+      width:100vw;
+    }
     .header-left{display:flex;align-items:center;gap:15px}
     .logo{background:#fff;color:var(--primary-color);font-weight:700;padding:10px;border-radius:8px}
-    .project-info h1{font-size:24px;margin:0}
-    .navbar{display:flex;background:var(--card-bg-color);box-shadow:0 2px 4px rgba(0,0,0,.05);padding:0 30px}
-    .navbar a{padding:15px 25px;text-decoration:none;color:var(--text-light-color);font-weight:500}
+    .project-info h1{font-size:clamp(18px,2.4vw,24px);margin:0}
 
-    .chat-container{display:flex;flex-direction:column;height:calc(100vh - 140px);max-width:800px;margin:20px auto;background:var(--card-bg-color);box-shadow:0 4px 12px rgba(0,0,0,.1);border-radius:16px;overflow:hidden}
-    .chat-header{padding:15px 20px;border-bottom:1px solid var(--border-color);background:#f8f9fa;display:flex;justify-content:space-between;align-items:center}
+    /* Navbar full-bleed + nhóm link luôn ở GIỮA, không dạt khi zoom */
+    .navbar{
+      display:flex;
+      background:var(--card-bg-color);
+      box-shadow:0 2px 4px rgba(0,0,0,.05);
+      padding:0; /* không đẩy lệch */
+
+      position:relative; left:50%; right:50%;
+      margin-left:calc(-50vw + 50%); margin-right:calc(-50vw + 50%);
+      width:100vw;
+      justify-content:center; /* CĂN GIỮA nhóm link */
+    }
+    .navbar a{
+      padding:14px clamp(14px,2.2vw,25px);
+      text-decoration:none;
+      color:var(--text-light-color);
+      font-weight:500;
+      border-bottom:3px solid transparent;
+      border-radius:8px 8px 0 0;
+      transition:color .25s,border-color .25s,background-color .25s;
+      white-space:nowrap; /* tránh xuống dòng gây xô lệch */
+    }
+    .navbar a:hover,
+    .navbar a.active{color:var(--primary-color);border-bottom-color:var(--primary-color);background:#f8fbfb}
+
+    /* Chat card */
+    .chat-container{
+      display:flex;flex-direction:column;
+      height:calc(100vh - 140px);
+      max-width:800px;margin:20px auto;
+      background:var(--card-bg-color);
+      box-shadow:0 4px 12px rgba(0,0,0,.1);
+      border-radius:16px;overflow:hidden
+    }
+    .chat-header{
+      padding:15px 20px;border-bottom:1px solid var(--border-color);
+      background:#f8f9fa;display:flex;justify-content:space-between;align-items:center
+    }
     .chat-header h2{margin:0;font-size:18px;color:var(--text-color)}
     .chat-header a{color:var(--primary-color);text-decoration:none;font-size:14px}
 
@@ -39,8 +89,20 @@
     .message.received .timestamp{color:rgba(255,255,255,0.7)}
 
     .chat-input{display:flex;padding:15px;border-top:1px solid var(--border-color);background:#f8f9fa}
-    .chat-input input{flex:1;border:1px solid var(--border-color);border-radius:20px;padding:10px 15px;font-size:16px;outline:none}
-    .chat-input button{background:var(--primary-color);border:none;color:#fff;border-radius:50%;width:40px;height:40px;margin-left:10px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+    .chat-input input{
+      flex:1;border:1px solid var(--border-color);border-radius:20px;
+      padding:10px 15px;font-size:16px;outline:none;background:#fff
+    }
+    .chat-input button{
+      background:var(--primary-color);border:none;color:#fff;border-radius:50%;
+      width:40px;height:40px;margin-left:10px;cursor:pointer;display:flex;align-items:center;justify-content:center
+    }
+
+    /* Khi màn nhỏ/zoom mạnh: các link có thể wrap nhưng vẫn ở giữa */
+    @media (max-width:768px){
+      .navbar{flex-wrap:wrap}
+      .navbar a{padding:12px 18px}
+    }
   </style>
 </head>
 <body>
@@ -51,10 +113,11 @@
         <div class="project-info"><h1>HỖ TRỢ HUẤN LUYỆN THỂ THAO</h1></div>
       </div>
     </header>
+
     <nav class="navbar">
       <a href="index.html">Trang chủ</a>
       <a href="gioithieu.html">Giới thiệu</a>
-      <a href="bangdieukhien.html">Bảng điều khiển</a>
+      <a href="bangdieukhien.html" class="active">Bảng điều khiển</a>
     </nav>
 
     <div class="chat-container">
@@ -201,12 +264,12 @@
       messageInput.value = '';
 
       try{
-        // Gửi message: chỉ 3 field đúng theo rules
+        // Gửi message
         await addDoc(collection(db, "conversations", convId, "messages"), {
           text, senderId: currentUser.uid, createdAt: serverTimestamp()
         });
 
-        // Cập nhật meta parent: đúng whitelist trong rules
+        // Cập nhật meta parent
         await updateDoc(doc(db, "conversations", convId), {
           lastMessage: { text, senderId: currentUser.uid, createdAt: serverTimestamp() },
           updatedAt: serverTimestamp()
