@@ -59,14 +59,10 @@
         .nav-inner {
             display: flex;
             gap: 2px;
-            justify-content: flex-start; /* Đã đổi: căn lề trái */
-            max-width: 1200px;         /* khối giữa */
-            margin: 0 auto;            /* căn giữa theo viewport */
-            padding: 0 clamp(16px, 4vw, 30px); /* padding nằm trong khối giữa */
+            justify-content: flex-start; /* Căn lề trái */
+            padding: 0 clamp(16px, 4vw, 30px); /* Giữ padding lề */
             width: 100%;
         }
-        /* Nếu muốn nhóm link chỉ rộng bằng nội dung, dùng dòng dưới và bỏ width:100% ở trên */
-        /* .nav-inner { width: fit-content; } */
 
         .navbar a {
             padding: 14px clamp(14px, 2.2vw, 25px);
