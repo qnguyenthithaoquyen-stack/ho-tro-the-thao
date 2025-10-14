@@ -22,11 +22,10 @@
     html, body{margin:0; overflow-x:hidden;}
     body{font-family:'Roboto',sans-serif; background:var(--bg); color:var(--text);}
 
-    /* Header + Navbar full-bleed (bám mép trái/phải khi zoom) */
+    /* Header + Navbar full-bleed */
     .header{background:var(--primary); color:#fff; position:relative; left:50%; right:50%; margin-left:-50vw; margin-right:-50vw; width:100vw;}
     .navbar{background:#fff; box-shadow:0 2px 4px rgba(0,0,0,.05); position:relative; left:50%; right:50%; margin-left:-50vw; margin-right:-50vw; width:100vw;}
 
-    /* Lớp nội dung bên trong header/navbar: chiếm 100% để đẩy 2 cụm ra 2 góc */
     .header-content,.navbar-content{
       max-width:none; width:100%; margin:0; padding:0 30px;
       display:flex; align-items:center;
@@ -107,6 +106,22 @@
 
     .loader-container{text-align:center; padding:50px; color:var(--muted);}
 
+    /* Card nhận xét HLV */
+    .coach-comments-card{
+      background:var(--card); border-radius:16px; padding:30px; box-shadow:var(--shadow); margin:30px 0;
+    }
+    .coach-comments-card h2{
+      margin:0 0 16px; font-size:22px; color:var(--text);
+      border-bottom:1px solid var(--line); padding-bottom:12px;
+    }
+    .comment-item{
+      border:1px solid var(--line); border-radius:10px; padding:14px 16px; margin-bottom:12px; background:#fafafa;
+    }
+    .comment-meta{
+      display:flex; gap:10px; flex-wrap:wrap; color:var(--muted); font-size:13px; margin-bottom:6px;
+    }
+    .comment-text{white-space:pre-wrap; font-size:15px; color:var(--text);}
+
     @media (max-width:720px){
       .project-info h1{font-size:18px;}
       .user-actions a{padding:8px 16px;}
@@ -127,7 +142,7 @@
       </div>
       <div class="user-actions">
         <a href="#" id="logout-link" style="display:none;">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0  1 0 1 2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
           <span>Đăng xuất</span>
         </a>
       </div>
@@ -159,6 +174,7 @@
         </a>
       </div>
 
+      <!-- Form thêm thành tích (giữ nguyên) -->
       <div class="add-achievement-card">
         <h2>Thêm thành tích mới</h2>
         <form id="add-achievement-form">
@@ -186,6 +202,7 @@
         </form>
       </div>
 
+      <!-- Bảng lịch sử thành tích (giữ nguyên) -->
       <table class="history-table">
         <thead>
           <tr>
@@ -198,6 +215,14 @@
         <tbody id="history-table-body"></tbody>
       </table>
       <div id="loader" class="loader-container"><p>Đang tải dữ liệu...</p></div>
+
+      <!-- 🔹 KHỐI MỚI: Nhận xét từ HLV -->
+      <div class="coach-comments-card" id="coach-comments-card" style="display:none;">
+        <h2>Nhận xét từ HLV</h2>
+        <div id="coach-comments-wrapper">
+          <p id="coach-comments-empty" class="subtitle" style="margin:8px 0 0;">Chưa có nhận xét nào.</p>
+        </div>
+      </div>
     </main>
   </div>
 
@@ -230,6 +255,7 @@
         if (athleteId) {
           loadHistoryData(athleteId);
           setupAddAchievementForm(athleteId);
+          loadCoachComments(athleteId);   // <-- tải nhận xét HLV
         } else {
           document.getElementById('loader').textContent = 'Không tìm thấy ID vận động viên.';
         }
@@ -321,6 +347,69 @@
         console.error("Lỗi khi tải dữ liệu:", err);
         loader.textContent = 'Đã xảy ra lỗi khi tải dữ liệu.';
       }
+    }
+
+    // 🔹 Tải & hiển thị nhận xét từ HLV (read-only)
+    function loadCoachComments(athleteId){
+      const card = document.getElementById('coach-comments-card');
+      const wrap = document.getElementById('coach-comments-wrapper');
+      const empty = document.getElementById('coach-comments-empty');
+
+      // Hiển thị card ngay, nội dung sẽ cập nhật theo snapshot
+      card.style.display = 'block';
+
+      const cRef = collection(db, "users", athleteId, "coach_comments");
+      const qComments = query(cRef, orderBy("createdAt","desc"));
+
+      onSnapshot(qComments, (snapshot)=>{
+        wrap.innerHTML = '';
+        if (snapshot.empty){
+          empty.style.display = 'block';
+          empty.textContent = 'Chưa có nhận xét nào.';
+          return;
+        }
+        empty.style.display = 'none';
+
+        snapshot.forEach(docSnap=>{
+          const d = docSnap.data();
+          const coachName = d.coachName || 'HLV';
+          const createdAt = d.createdAt?.seconds ? new Date(d.createdAt.seconds*1000) : null;
+          const timeStr = createdAt ? createdAt.toLocaleString('vi-VN') : '—';
+          const targetEvent = d.targetEvent || ''; // nếu HLV gắn với 1 giải cụ thể
+          const note = d.note || d.comment || '';
+
+          const el = document.createElement('div');
+          el.className = 'comment-item';
+          el.innerHTML = `
+            <div class="comment-meta">
+              <span><strong>${coachName}</strong></span>
+              <span>•</span>
+              <span>${timeStr}</span>
+              ${targetEvent ? `<span>•</span><span>Sự kiện: <em>${targetEvent}</em></span>` : ''}
+            </div>
+            <div class="comment-text">${escapeHtml(note)}</div>
+          `;
+          wrap.appendChild(el);
+        });
+      }, (err)=>{
+        // Nếu lỗi, vẫn giữ card & báo rỗ nhẹ
+        const errEl = document.createElement('p');
+        errEl.className = 'subtitle';
+        errEl.style.color = '#c0392b';
+        errEl.textContent = 'Không tải được nhận xét từ HLV.';
+        wrap.appendChild(errEl);
+      });
+    }
+
+    // Escape HTML để hiển thị an toàn nội dung nhận xét
+    function escapeHtml(str){
+      if (!str && str !== 0) return '';
+      return String(str)
+        .replace(/&/g,'&amp;')
+        .replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;')
+        .replace(/'/g,'&#039;');
     }
 
     if (logoutLink){
