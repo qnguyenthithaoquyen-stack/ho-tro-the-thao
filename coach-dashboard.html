@@ -59,14 +59,13 @@
         .navbar{
             display:flex;align-items:center;justify-content:flex-start;flex-wrap:wrap;
             background:var(--card-bg-color);box-shadow:0 2px 4px rgba(0,0,0,.05);
-            padding:0 24px;gap:28px; /* chỉnh gap/padding nếu muốn sát trái hơn */
+            padding:0 24px;gap:28px;
         }
         .navbar a{
             padding:15px 10px;text-decoration:none;color:var(--text-light-color);
             font-weight:500;border-bottom:3px solid transparent;transition:all .3s;white-space:nowrap;
         }
         .navbar a.active,.navbar a:hover{color:var(--primary-color);border-bottom-color:var(--primary-color)}
-        /* bảo đảm không còn quy tắc đẩy 2 đầu */
         .navbar a:first-child{margin-right:0 !important}
         .navbar a:last-child{margin-left:0 !important}
         @media (max-width:768px){.navbar{gap:20px;padding:0 16px}}
@@ -340,10 +339,15 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('athleteDob').textContent = `Ngày sinh: ${data.dateOfBirth || 'N/A'}`;
         document.getElementById('athleteCity').textContent = `Thành phố: ${data.city || 'N/A'}`;
 
+        // Liên kết hành động theo VĐV
         document.getElementById('send-exercise-btn').href = `send-exercise.html?athleteId=${athleteId}`;
 
         const chatBtn = document.getElementById('chat-with-athlete-btn');
         if (chatBtn) chatBtn.href = `chat-coach.html?with=${athleteId}`;
+
+        // ✅ BỔ SUNG: chuyển đến lịch sử thành tích cho HLV
+        const historyBtn = document.querySelector('.btn-history');
+        if (historyBtn) historyBtn.href = `lichsu-coach.html?athleteId=${athleteId}`;
 
         listenForSensorData(athleteId);
         detailsPlaceholder.style.display = 'none';
