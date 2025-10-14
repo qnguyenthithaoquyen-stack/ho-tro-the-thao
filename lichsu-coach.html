@@ -113,6 +113,18 @@
     .note-author{font-weight:500; color:#445;}
     .note-text{font-size:14px; color:#222; white-space:pre-wrap;}
 
+    /* Badge trạng thái chọn thành tích */
+    .picked-row{
+      display:flex;align-items:center;gap:8px;
+      font-size:13px;color:#1f2937;background:#ecfeff;border:1px solid #a5f3fc;
+      padding:8px 10px;border-radius:10px;
+    }
+    .picked-row strong{color:#0f766e}
+    .clear-pick{
+      background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:4px 8px;cursor:pointer;font-size:12px
+    }
+    .clear-pick:hover{background:#f3f4f6}
+
     .loader-container{text-align:center; padding:50px; color:var(--muted);}
 
     @media (max-width:720px){
@@ -167,14 +179,13 @@
         </a>
       </div>
 
-      <!-- KHÔNG có form thêm thành tích cho HLV -->
-
       <!-- Bảng lịch sử thành tích -->
       <div class="card" style="margin-bottom:20px;">
         <h2>Lịch sử thành tích</h2>
         <table class="history-table">
           <thead>
             <tr>
+              <th style="width:80px">Chọn</th>
               <th>Ngày</th>
               <th>Tên giải/Sự kiện</th>
               <th>Thành tích</th>
@@ -189,6 +200,14 @@
       <!-- Nhận xét của HLV gửi VĐV -->
       <div class="card">
         <h2>Nhận xét của HLV</h2>
+
+        <!-- Trạng thái thành tích đang chọn -->
+        <div id="picked-achievement" class="picked-row" style="display:none; margin-bottom:12px;">
+          <span>Đang chọn:&nbsp;</span>
+          <span id="picked-achievement-summary"><!-- filled by JS --></span>
+          <button id="clear-pick-btn" type="button" class="clear-pick">Bỏ chọn</button>
+        </div>
+
         <form id="coach-feedback-form">
           <div class="form-grid">
             <div class="form-group">
@@ -210,7 +229,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
-    import { getFirestore, doc, getDoc, onSnapshot, collection, query, orderBy, addDoc, Timestamp, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, onSnapshot, collection, query, orderBy, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyA2dXWCyjL2xgCSyeW9QQ7RvjI_O7kFHJw",
@@ -229,6 +248,20 @@
 
     let gAthleteId = null;
     let gCoach = null;
+
+    // Trạng thái chọn thành tích
+    let gPickedAchievement = null; // { id, dateStr, eventName, result, notes }
+
+    // UI phần chọn
+    const pickedWrap = document.getElementById('picked-achievement');
+    const pickedSummary = document.getElementById('picked-achievement-summary');
+    const clearPickBtn = document.getElementById('clear-pick-btn');
+    clearPickBtn.addEventListener('click', () => {
+      gPickedAchievement = null;
+      pickedWrap.style.display = 'none';
+      // Bỏ chọn radio nếu có
+      document.querySelectorAll('input[name="achievementPick"]').forEach(r => r.checked = false);
+    });
 
     onAuthStateChanged(auth, async (user) => {
       if (user) {
@@ -250,7 +283,29 @@
       }
     });
 
-    /* ===== Lịch sử thành tích (read-only cho HLV) ===== */
+    /* ===== Lịch sử thành tích (read-only cho HLV) + khả năng chọn ===== */
+    function bindPickHandlers(){
+      document.querySelectorAll('input[name="achievementPick"]').forEach(radio=>{
+        radio.addEventListener('change', (e)=>{
+          if(!e.target.checked) return;
+          const tr = e.target.closest('tr');
+          gPickedAchievement = {
+            id: e.target.value,
+            dateStr: tr.dataset.date || '',
+            eventName: tr.dataset.event || '',
+            result: tr.dataset.result || '',
+            notes: tr.dataset.notes || ''
+          };
+          pickedSummary.innerHTML = `
+            <strong>${escapeHTML(gPickedAchievement.eventName || '—')}</strong>
+            <span style="opacity:.7"> • ${escapeHTML(gPickedAchievement.dateStr || '—')}</span>
+            <span style="opacity:.7"> • ${escapeHTML(gPickedAchievement.result || '')}</span>
+          `;
+          pickedWrap.style.display = 'flex';
+        });
+      });
+    }
+
     async function loadHistoryData(athleteId){
       const athleteNameDisplay = document.getElementById('athlete-name-display');
       const tableBody = document.getElementById('history-table-body');
@@ -268,22 +323,38 @@
 
         onSnapshot(qAch, (snapshot)=>{
           tableBody.innerHTML = '';
+          gPickedAchievement = null;
+          pickedWrap.style.display = 'none';
+
           if(snapshot.empty){
             loader.textContent = 'Chưa có thành tích nào được ghi nhận.';
           }else{
             loader.style.display = 'none';
             snapshot.forEach(docSnap=>{
               const data = docSnap.data();
-              const dateStr = data.date ? new Date(data.date.seconds*1000).toLocaleDateString('vi-VN') : 'N/A';
-              tableBody.insertAdjacentHTML('beforeend', `
-                <tr>
-                  <td>${dateStr}</td>
-                  <td>${data.eventName || ''}</td>
-                  <td>${data.result || ''}</td>
-                  <td>${data.notes || ''}</td>
-                </tr>
-              `);
+              const dateStr = data.date?.seconds ? new Date(data.date.seconds*1000).toLocaleDateString('vi-VN') : 'N/A';
+              const tr = document.createElement('tr');
+              tr.dataset.date = dateStr;
+              tr.dataset.event = data.eventName || '';
+              tr.dataset.result = data.result || '';
+              tr.dataset.notes = data.notes || '';
+              tr.innerHTML = `
+                <td>
+                  <label style="display:flex;align-items:center;gap:6px;">
+                    <input type="radio" name="achievementPick" value="${docSnap.id}">
+                    <span style="font-size:12px;color:#374151;">Chọn</span>
+                  </label>
+                </td>
+                <td>${escapeHTML(dateStr)}</td>
+                <td>${escapeHTML(data.eventName || '')}</td>
+                <td>${escapeHTML(data.result || '')}</td>
+                <td>${escapeHTML(data.notes || '')}</td>
+              `;
+              tableBody.appendChild(tr);
             });
+
+            // gắn handler chọn sau khi render xong
+            bindPickHandlers();
           }
         });
 
@@ -293,7 +364,7 @@
       }
     }
 
-    /* ===== Nhận xét của HLV gửi VĐV ===== */
+    /* ===== Nhận xét của HLV gửi VĐV (kèm thành tích đã chọn nếu có) ===== */
     function setupCoachFeedback(athleteId){
       const form = document.getElementById('coach-feedback-form');
       const msgEl = document.getElementById('coachMessage');
@@ -311,7 +382,14 @@
             coachId: gCoach?.uid || null,
             coachName: gCoach?.displayName || gCoach?.email || 'HLV',
             message,
-            createdAt: serverTimestamp()
+            createdAt: serverTimestamp(),
+            // liên kết thành tích nếu có
+            achievementId: gPickedAchievement?.id || null,
+            achievementMeta: gPickedAchievement ? {
+              dateStr: gPickedAchievement.dateStr || null,
+              eventName: gPickedAchievement.eventName || null,
+              result: gPickedAchievement.result || null
+            } : null
           });
           msgEl.value = '';
         }catch(err){
@@ -321,6 +399,7 @@
       });
     }
 
+    /* ===== Hiển thị danh sách nhận xét ===== */
     function listenCoachNotes(athleteId){
       const list = document.getElementById('notes-list');
       const loader = document.getElementById('notes-loader');
@@ -340,12 +419,30 @@
           const d = docSnap.data();
           const t = d.createdAt?.seconds ? new Date(d.createdAt.seconds*1000) : null;
           const timeStr = t ? t.toLocaleString('vi-VN') : '—';
+
+          // dòng “tham chiếu thành tích” (nếu có)
+          let refHtml = '';
+          if (d.achievementMeta?.eventName || d.achievementMeta?.dateStr || d.achievementId){
+            const evt = escapeHTML(d.achievementMeta?.eventName || '—');
+            const dt  = escapeHTML(d.achievementMeta?.dateStr || '—');
+            const rs  = escapeHTML(d.achievementMeta?.result || '');
+            refHtml = `
+              <div style="margin:6px 0 2px 0; font-size:12px; color:#555;">
+                Tham chiếu thành tích:
+                <span style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:2px 6px;display:inline-block;margin-left:4px;">
+                  ${evt} • ${dt}${rs ? ' • ' + rs : ''}
+                </span>
+              </div>
+            `;
+          }
+
           list.insertAdjacentHTML('beforeend', `
             <div class="note-item">
               <div class="note-head">
-                <span class="note-author">${(d.coachName||'HLV')}</span>
+                <span class="note-author">${escapeHTML(d.coachName||'HLV')}</span>
                 <span>${timeStr}</span>
               </div>
+              ${refHtml}
               <div class="note-text">${escapeHTML(d.message||'')}</div>
             </div>
           `);
