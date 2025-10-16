@@ -112,6 +112,34 @@
             margin-top: 5px;
         }
 
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 25px;
+            border-radius: 50px;
+            border: 1px solid transparent;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+
+        .btn-secondary {
+            background-color: #e9ecef;
+            color: var(--text-color);
+            border-color: #ced4da;
+        }
+        .btn-secondary:hover {
+            background-color: #d8dde2;
+        }
+        .btn-secondary i {
+            width: 20px;
+            height: 20px;
+        }
+
         @media (max-width: 600px) {
             .options-grid {
                 grid-template-columns: 1fr;
@@ -157,6 +185,12 @@
                     <span>Phân tích tư thế từ một ảnh tĩnh.</span>
                 </a>
             </div>
+             <div style="margin-top: 40px;">
+                 <a href="athlete-dashboard.html" class="btn btn-secondary">
+                    <i data-lucide="arrow-left"></i>
+                    <span>Quay lại Bảng điều khiển</span>
+                </a>
+            </div>
         </div>
     </main>
 
@@ -188,3 +222,4 @@
     </script>
 </body>
 </html>
+
