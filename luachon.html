@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chọn loại Phân tích - Hỗ Trợ Huấn Luyện</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+        
+        :root {
+            --primary-color: #008080;
+            --background-color: #f0f4f8;
+            --card-bg-color: #ffffff;
+            --text-color: #333;
+            --text-light-color: #6c757d;
+            --border-color: #e9ecef;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.07);
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .header { background-color: var(--primary-color); color: #fff; padding: 15px 30px; }
+        .header-inner { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        .logo { background-color: #fff; color: var(--primary-color); font-weight: 700; padding: 10px; border-radius: 8px; }
+        .project-info h1 { font-size: 24px; margin: 0; }
+        .project-info p { font-size: 12px; margin: 0; opacity: 0.9; }
+        
+        .navbar { background-color: var(--card-bg-color); box-shadow: 0 2px 4px rgba(0,0,0,.05); }
+        .nav-inner { max-width: 1200px; margin: 0 auto; display: flex; padding: 0 15px; }
+        .navbar a { padding: 15px 25px; text-decoration: none; color: var(--text-light-color); font-weight: 500; border-bottom: 3px solid transparent; transition: all 0.3s; }
+        .navbar a.active, .navbar a:hover { color: var(--primary-color); border-bottom-color: var(--primary-color); }
+        
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+        }
+
+        .selection-card {
+            background-color: var(--card-bg-color);
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            padding: 40px;
+            text-align: center;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .selection-card h1 {
+            font-size: 28px;
+            color: var(--primary-color);
+            margin: 0 0 10px 0;
+        }
+        .selection-card p {
+            font-size: 16px;
+            color: var(--text-light-color);
+            margin-bottom: 40px;
+        }
+        
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .option-button {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            text-decoration: none;
+            color: var(--text-color);
+            transition: all 0.3s ease;
+        }
+        .option-button:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary-color);
+            box-shadow: 0 8px 20px rgba(0, 128, 128, 0.1);
+        }
+
+        .option-button svg {
+            width: 48px;
+            height: 48px;
+            stroke: var(--primary-color);
+            stroke-width: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .option-button h3 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 700;
+        }
+        .option-button span {
+            font-size: 14px;
+            color: var(--text-light-color);
+            margin-top: 5px;
+        }
+
+        @media (max-width: 600px) {
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <header class="header">
+        <div class="header-inner">
+            <div class="header-left">
+                <div class="logo">LOGO</div>
+                <div class="project-info">
+                    <h1>HỖ TRỢ HUẤN LUYỆN THỂ THAO</h1>
+                    <p>DỰ ÁN KHOA HỌC KỸ THUẬT</p>
+                </div>
+            </div>
+        </div>
+    </header>
+    <nav class="navbar">
+        <div class="nav-inner">
+            <a href="index.html">Trang chủ</a>
+            <a href="gioithieu.html">Giới thiệu</a>
+            <a href="bangdieukhien.html" class="active">Bảng điều khiển</a>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="selection-card">
+            <h1>Chọn Loại Phân Tích</h1>
+            <p>Chọn một trong các phương pháp phân tích tư thế dưới đây.</p>
+            <div class="options-grid">
+                <a href="#" id="video-analysis-link" class="option-button">
+                    <i data-lucide="video"></i>
+                    <h3>Phân tích Video</h3>
+                    <span>Phân tích chuyển động từ video quay lại.</span>
+                </a>
+                <a href="#" id="image-analysis-link" class="option-button">
+                    <i data-lucide="image"></i>
+                    <h3>Phân tích Hình ảnh</h3>
+                    <span>Phân tích tư thế từ một ảnh tĩnh.</span>
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+
+            const params = new URLSearchParams(window.location.search);
+            const athleteId = params.get('athleteId');
+            const athleteName = params.get('athleteName');
+
+            const videoLink = document.getElementById('video-analysis-link');
+            const imageLink = document.getElementById('image-analysis-link');
+            
+            // Cập nhật link cho Phân tích Video, truyền tham số
+            if (athleteId) {
+                videoLink.href = `video-analysis.html?athleteId=${athleteId}&athleteName=${encodeURIComponent(athleteName || '')}`;
+            } else {
+                videoLink.href = 'video-analysis.html';
+            }
+
+            // Link cho Phân tích Hình ảnh (chưa có trang)
+            imageLink.href = '#'; 
+            imageLink.onclick = (e) => {
+                e.preventDefault();
+                alert('Chức năng phân tích hình ảnh sắp ra mắt!');
+            };
+        });
+    </script>
+</body>
+</html>
