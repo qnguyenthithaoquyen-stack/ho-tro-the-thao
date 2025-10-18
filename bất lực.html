@@ -41,7 +41,6 @@
   .btn-primary:hover{background:var(--primary-700)}
   .btn-danger{color:var(--danger);background:#fff;border-color:var(--danger)}
   .btn-danger:hover{background:#fff2f2}
-  
   .btn .lucide{width:16px; height:16px;}
   
   .grid{display:grid;grid-template-columns:380px 1fr;gap:18px;margin-top:18px}
@@ -52,7 +51,6 @@
   .row{display:flex;gap:10px;flex-wrap:wrap; align-items: center;}
   .select,.file{border:1px solid var(--line);background:#fff;padding:9px 12px;border-radius:10px;font-weight:600;outline:none}
   .select:focus,.file:focus{box-shadow:0 0 0 4px var(--ring)}
-  
   .file-upload-label { display: inline-block; }
   input[type="file"].file { display: none; }
 
@@ -73,49 +71,19 @@
   .item:hover{border-color: var(--primary); box-shadow: 0 4px 8px -2px rgba(13, 148, 136,.1);}
   .tag{background:#f1f5f9;color:#334155;border:1px solid var(--line);padding:2px 8px;border-radius:999px;font-size:12px}
   .chip{background:var(--teal-lightest);color:var(--teal-darker);border:1px solid #99f6e4;padding:6px 10px;border-radius:999px;font-weight:700; display: inline-block;}
-  
-  .analysis-section {
-    margin-bottom: 14px;
-  }
-  .analysis-section:last-child {
-    margin-bottom: 0;
-  }
-  .analysis-section b {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 14px;
-    margin-bottom: 6px;
-  }
-  .analysis-section ul {
-    margin: 0;
-    padding-left: 24px;
-    list-style-type: '— ';
-    color: var(--muted);
-  }
-    .analysis-section li {
-    margin-bottom: 4px;
-  }
-  .analysis-section .lucide {
-      width: 16px;
-      height: 16px;
-  }
-  .analysis-section .lucide-x-circle { color: var(--danger); }
-  .analysis-section .lucide-alert-triangle { color: #f59e0b; }
-  .analysis-section .lucide-lightbulb { color: #22c55e; }
 
-  .date-header {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--muted);
-    padding: 8px 4px 4px;
-    border-bottom: 1px solid var(--line);
-    margin-top: 10px;
-    margin-bottom: 10px;
-  }
-  .date-header:first-child {
-      margin-top: 0;
-  }
+  /* Bộ sưu tập khung sai */
+  .gallery{margin-top:12px}
+  .gallery h4{margin:6px 0 10px 0;font-size:14px;color:#0f172a;display:flex;align-items:center;gap:8px}
+  .thumbs{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+  .thumb{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff;display:flex;flex-direction:column}
+  .thumb img{width:100%;height:110px;object-fit:cover;background:#f8fafc}
+  .thumb .meta{padding:6px 8px;font-size:12px;color:#475569;display:flex;justify-content:space-between;gap:6px}
+  .thumb .actions{display:flex;gap:6px;padding:0 8px 8px}
+  .thumb .actions .btn{padding:6px 10px;font-size:12px}
+
+  .date-header{font-size:13px;font-weight:600;color:var(--muted);padding:8px 4px 4px;border-bottom:1px solid var(--line);margin-top:10px;margin-bottom:10px}
+  .date-header:first-child{margin-top:0}
 
   @media(max-width:800px){.player-grid{grid-template-columns:1fr}}
 </style>
@@ -138,7 +106,6 @@
   <div class="grid">
     <!-- LEFT SIDEBAR -->
     <div class="col">
-      <!-- Settings & History Card -->
       <div class="card">
         <h3><i data-lucide="settings"></i>Cài đặt & Lịch sử</h3>
         <p class="small" style="margin-top:-10px; margin-bottom:12px;">Chọn môn thể thao để lọc danh sách video bên dưới.</p>
@@ -151,7 +118,6 @@
         <div id="videoList" class="list"></div>
       </div>
 
-      <!-- Analysis Results Card -->
       <div class="card">
         <h3><i data-lucide="clipboard-list"></i>Kết quả Phân tích</h3>
         <div id="info-summary" class="small" style="padding-bottom: 12px; margin-bottom: 12px; border-bottom: 1px solid var(--line);">Chưa có video được chọn.</div>
@@ -181,6 +147,14 @@
             <option value="right">Góc quay: RIGHT</option>
             <option value="back">Góc quay: BACK</option>
           </select>
+
+          <!-- Thêm điều khiển lưu khung sai -->
+          <label class="small" style="display:inline-flex;align-items:center;gap:6px;margin-left:auto">
+            <input type="checkbox" id="autoSaveFail"/> Tự động lưu tư thế sai
+          </label>
+          <button id="saveFailBtn" class="btn btn-danger" title="Lưu khung 3D hiện tại nếu đang sai" disabled>
+            <i data-lucide="save"></i>Lưu khung 3D sai
+          </button>
         </div>
         
         <div class="row" style="margin-top: 14px;">
@@ -210,9 +184,12 @@
           <div class="small" id="progressText">0%</div>
         </div>
 
-        <div class="small" style="margin-top:12px; text-align: center;">
-          
+        <!-- Bộ sưu tập khung xương sai -->
+        <div id="failGallery" class="gallery">
+          <h4><i data-lucide="image"></i>Bộ sưu tập khung xương “Sai tư thế”</h4>
+          <div id="failThumbs" class="thumbs"></div>
         </div>
+
       </div>
     </div>
   </div>
@@ -286,9 +263,15 @@ const videoListEl = document.getElementById('videoList');
 const chartCanvas = document.getElementById('chart');
 const speedControl = document.getElementById('speedControl');
 
+/* mới thêm cho gallery */
+const autoSaveFail = document.getElementById('autoSaveFail');
+const saveFailBtn  = document.getElementById('saveFailBtn');
+const failThumbs   = document.getElementById('failThumbs');
+
 let mpPose=null, lastPoseLandmarks=null, drawCb=null;
 let results = JSON.parse(localStorage.getItem('thethaott_results')||'{}');
 let libVideos = JSON.parse(localStorage.getItem('thethaott_videos')||'[]'); // persist metadata
+let failStore = JSON.parse(localStorage.getItem('thethaott_failposes')||'{}'); // { [videoId]: [ {dataUrl, ts, view, tile} ] }
 let currentVideo=null, chart=null;
 
 /* =================== 3D VISUALIZATION =================== */
@@ -302,7 +285,8 @@ function init3D() {
     camera = new THREE.PerspectiveCamera(50, threeContainer.clientWidth / threeContainer.clientHeight, 0.1, 100);
     camera.position.set(0, 0, 4);
 
-    renderer = new THREE.WebGLRenderer({ antialias: true });
+    /* preserveDrawingBuffer để chụp ảnh canvas (toDataURL) */
+    renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
     renderer.setSize(threeContainer.clientWidth, threeContainer.clientHeight);
     renderer.setPixelRatio(window.devicePixelRatio);
     threeContainer.appendChild(renderer.domElement);
@@ -398,6 +382,55 @@ function update3DSkeleton(landmarks, isPass) {
     });
 }
 
+/* ======= Helpers cho lưu ảnh 3D sai ======= */
+function capture3DDataURL(){
+  renderer.render(scene, camera); // đảm bảo là frame mới nhất
+  return renderer.domElement.toDataURL('image/png');
+}
+function getFailList(videoId){ return failStore[videoId] ?? []; }
+function setFailList(videoId, list){ failStore[videoId]=list; localStorage.setItem('thethaott_failposes', JSON.stringify(failStore)); }
+function addFailPose(videoId, dataUrl, meta){
+  const list = getFailList(videoId);
+  // tránh trùng ảnh liên tiếp
+  if(list.length && list[list.length-1].dataUrl===dataUrl) return;
+  list.push({ dataUrl, ts: Date.now(), ...meta });
+  if(list.length>60) list.shift(); // tránh phình bộ nhớ
+  setFailList(videoId, list);
+  renderFailThumbs();
+}
+function renderFailThumbs(){
+  failThumbs.innerHTML='';
+  if(!currentVideo){ return; }
+  const list = getFailList(currentVideo.id);
+  if(!list.length){
+    failThumbs.innerHTML = '<div class="small">Chưa có khung xương sai nào được lưu.</div>';
+    return;
+  }
+  list.slice().reverse().forEach((it, idx)=>{
+    const card=document.createElement('div'); card.className='thumb';
+    const img=document.createElement('img'); img.src=it.dataUrl;
+    const meta=document.createElement('div'); meta.className='meta';
+    meta.textContent = `${new Date(it.ts).toLocaleTimeString('vi-VN')} • ${it.view?.toUpperCase?.()||'N/A'}`;
+    const actions=document.createElement('div'); actions.className='actions';
+    const dl=document.createElement('button'); dl.className='btn'; dl.innerHTML='<i data-lucide="download"></i>Tải';
+    dl.onclick=()=>{ const a=document.createElement('a'); a.href=it.dataUrl; a.download=`fail_${currentVideo?.name||'pose'}_${it.ts}.png`; document.body.appendChild(a); a.click(); a.remove(); };
+    const rm=document.createElement('button'); rm.className='btn btn-danger'; rm.innerHTML='<i data-lucide="trash-2"></i>Xóa';
+    rm.onclick=()=>{ const arr=getFailList(currentVideo.id); const realIndex = arr.length-1-idx; arr.splice(realIndex,1); setFailList(currentVideo.id, arr); };
+    actions.appendChild(dl); actions.appendChild(rm);
+    card.appendChild(img); card.appendChild(meta); card.appendChild(actions);
+    failThumbs.appendChild(card);
+  });
+  lucide.createIcons();
+}
+let lastAutoSaveMs = 0;
+function tryAutoSaveFail(isPass, meta){
+  if(!autoSaveFail.checked || isPass) return;
+  const now = Date.now();
+  if(now - lastAutoSaveMs < 800) return; // chống spam
+  lastAutoSaveMs = now;
+  const dataUrl = capture3DDataURL();
+  addFailPose(currentVideo.id, dataUrl, meta);
+}
 
 /* =================== MEDIAPIPE INIT =================== */
 function ensurePose(){
@@ -724,6 +757,8 @@ function renderVideoList(){
             if(v.url) URL.revokeObjectURL(v.url);
             libVideos = libVideos.filter(x=>x.id!==v.id); persistVideos();
             if(results[v.id]){ delete results[v.id]; localStorage.setItem('thethaott_results',JSON.stringify(results)); }
+            // xóa luôn ảnh fail của video
+            if(failStore[v.id]){ delete failStore[v.id]; localStorage.setItem('thethaott_failposes',JSON.stringify(failStore)); }
             renderVideoList(); renderChart();
             if(currentVideo && currentVideo.id===v.id){ 
                 player.src=''; 
@@ -731,6 +766,7 @@ function renderVideoList(){
                 currentVideo=null; 
                 document.getElementById('info-summary').innerHTML='<span class="small">Chưa có video được chọn.</span>';
                 document.getElementById('analysis-details').style.display = 'none';
+                renderFailThumbs();
             }
           }
         };
@@ -763,6 +799,9 @@ function openVideo(v){
     drawCb = res=>{
       const pass = res.poseLandmarks ? checkPass(res.poseLandmarks) : false;
 
+      // bật/tắt nút lưu thủ công
+      saveFailBtn.disabled = pass || !res.poseLandmarks;
+
       if (res.poseLandmarks) {
         update3DSkeleton(res.poseLandmarks, pass);
       } else if (skeletonGroup) {
@@ -772,6 +811,8 @@ function openVideo(v){
       if(res && res.poseLandmarks && res.poseLandmarks.length){
         let vUse=viewSel.value==='auto'?detectView2D(res.poseLandmarks):viewSel.value;
         liveBadge.style.display='block'; liveBadge.textContent=`[${vUse.toUpperCase()}] ${pass?'✅ Đạt':'⚠️ Lỗi'}`;
+        // tự động lưu nếu fail
+        tryAutoSaveFail(pass, { view: vUse, tile: results[currentVideo.id]?.tile });
       } else {
          liveBadge.style.display='none';
       }
@@ -794,6 +835,7 @@ function openVideo(v){
       if (skeletonGroup) skeletonGroup.visible = false;
   };
   showInfo(results[v.id]);
+  renderFailThumbs();
   
   const hasBeenAnalyzed = !!results[v.id];
   analyzeBtn.innerHTML = `<i data-lucide="${hasBeenAnalyzed ? 'refresh-cw' : 'play-circle'}"></i>${hasBeenAnalyzed ? 'Phân tích lại' : 'Phân tích'}`;
@@ -812,6 +854,16 @@ function openVideo(v){
       }
   });
 }
+
+/* Lưu thủ công */
+saveFailBtn.onclick = ()=>{
+  if(!currentVideo || !lastPoseLandmarks) return;
+  const pass = checkPass(lastPoseLandmarks);
+  if(pass){ alert('Khung hiện tại đang đạt, không lưu.'); return; }
+  const vUse = viewSel.value==='auto' ? detectView2D(lastPoseLandmarks) : viewSel.value;
+  const dataUrl = capture3DDataURL();
+  addFailPose(currentVideo.id, dataUrl, { view: vUse, tile: results[currentVideo.id]?.tile });
+};
 
 function checkPass(landmarks) {
     if (!currentVideo || !landmarks) return false;
@@ -912,15 +964,20 @@ async function analyze(v,force=false){
 
     if (res && res.poseLandmarks && res.poseLandmarks.length) {
         sampled++;
-        if (checkPass(res.poseLandmarks)) valid++;
+        const passNow = checkPass(res.poseLandmarks);
+        if (passNow) valid++;
         
         const A = extractAngles(res.poseLandmarks);
         const dt = featTime.length ? (t - featTime.at(-1)) : step;
         featTime.push(t);
         featAngles.push(A);
         featVel.push(angleVelocity(featAngles.at(-2) || A, A, dt));
-        
+
+        // cập nhật 3D + auto lưu nếu fail
+        update3DSkeleton(res.poseLandmarks, passNow);
         const autoView = detectView2D(res.poseLandmarks);
+        tryAutoSaveFail(passNow, { view: autoView });
+
         if (viewSel.value === 'auto' && viewCounts[autoView] != null) viewCounts[autoView]++;
     }
     const pct = Math.round(((i + 1) / total) * 100);
@@ -969,6 +1026,7 @@ async function analyze(v,force=false){
   showInfo(results[id]); 
   renderChart(); 
   renderVideoList();
+  renderFailThumbs();
   analyzeBtn.innerHTML = `<i data-lucide="refresh-cw"></i>Phân tích lại`;
   lucide.createIcons();
   analyzeBtn.disabled = false;
@@ -988,23 +1046,24 @@ videoUpload.onchange = e=>{
   libVideos.push(v); persistVideos(); renderVideoList(); 
   speedControl.value = "1";
   openVideo(v);
+  lastAutoSaveMs = 0; // reset autosave throttle
 };
 
 clearBtn.onclick=()=>{
   if(!confirm('Xóa toàn bộ dữ liệu (kết quả & lịch sử)? Thao tác này không thể hoàn tác.')) return;
   localStorage.removeItem('thethaott_results'); results={};
+  // xóa luôn thư viện video & ảnh fail
   libVideos.forEach(v=>v.url && URL.revokeObjectURL(v.url)); libVideos=[];
+  localStorage.removeItem('thethaott_failposes'); failStore={};
   persistVideos(); renderVideoList(); renderChart(); player.src=''; currentVideo=null;
   document.getElementById('info-summary').innerHTML='<span class="small">Chưa có video được chọn.</span>';
   document.getElementById('analysis-details').style.display = 'none';
+  renderFailThumbs();
 };
 
 sportSel.onchange=()=>{ renderVideoList(); renderChart(); };
-
 speedControl.onchange = () => {
-    if(player) {
-        player.playbackRate = parseFloat(speedControl.value);
-    }
+    if(player) { player.playbackRate = parseFloat(speedControl.value); }
 };
 
 /* =================== BOOT =================== */
@@ -1012,11 +1071,7 @@ renderVideoList();
 renderChart();
 init3D();
 lucide.createIcons();
-window.addEventListener('resize', () => {
-    onThreeResize();
-});
-
+window.addEventListener('resize', onThreeResize);
 </script>
 </body>
 </html>
-
