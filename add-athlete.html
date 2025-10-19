@@ -39,7 +39,18 @@
       padding:15px 30px; display:flex; justify-content:space-between; align-items:center; gap:16px;
     }
     .header-left{ display:flex; align-items:center; gap:15px; }
-    .logo{ background-color:#fff; color:var(--primary-color); font-weight:700; padding:10px; border-radius:8px; }
+
+    /* Logo ảnh đồng bộ với các trang khác */
+    .logo{
+      height:50px;
+      width:auto;
+      border-radius:6px;
+      background:#fff;
+      padding:2px;
+      object-fit:contain;
+      display:block;
+    }
+
     .project-info h1{ font-size:24px; margin:0; }
     .project-info p{ font-size:12px; margin:0; opacity:.9; }
     .logout-btn{ background-color:#fff; color:var(--primary-color); border:none; padding:10px 20px; border-radius:20px; cursor:pointer; font-weight:700; text-decoration:none; }
@@ -49,15 +60,12 @@
     .navbar-inner{
       width:100%; margin:0; max-width:unset !important;
       padding:0 30px; display:flex; align-items:center;
-      /* Mấu chốt: cho phép dạt 2 bên */
     }
     .navbar a{
       padding:15px 25px; text-decoration:none; color:var(--text-light-color);
       font-weight:500; border-bottom:3px solid transparent; transition:all .3s; white-space:nowrap;
     }
     .navbar a.active{ color:var(--primary-color); border-bottom-color:var(--primary-color); }
-
-    /* Đẩy mục đầu về trái, mục cuối về phải (khi viewport rộng sẽ dạt ra) */
     .navbar-inner a:first-child{ margin-right:auto; }
     .navbar-inner a:last-child{  margin-left:auto; }
 
@@ -90,7 +98,6 @@
     @media (max-width:640px){
       .project-info h1{ font-size:18px; }
       .navbar a{ padding:12px 16px; }
-      /* Thu nhỏ khoảng cách 2 bên để đỡ tràn */
       .navbar-inner{ padding:0 16px; }
     }
   </style>
@@ -100,9 +107,10 @@
   <header class="header">
     <div class="header-inner">
       <div class="header-left">
-        <div class="logo">LOGO</div>
+        <!-- Thay LOGO dạng chữ bằng ảnh, đồng bộ kích thước -->
+        <img src="5f4a128d-c63a-46ad-92a7-94b6c5bbb49e.jpg" alt="Logo Hỗ Trợ Huấn Luyện Thể Thao" class="logo">
         <div class="project-info">
-          <h1>HỖ TRỢ HUẤN LUYỆN THỂ THAO</h1>
+          <h1>THỂ THAO THÔNG MINH</h1>
           <p>DỰ ÁN KHOA HỌC KỸ THUẬT</p>
         </div>
       </div>
