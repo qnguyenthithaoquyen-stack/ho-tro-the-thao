@@ -28,7 +28,6 @@
     }
     body.loaded{ opacity:1; }
 
-    /* ===== FULL-BLEED HEADER + NAVBAR (như các trang trước) ===== */
     .header, .navbar{
       position:relative !important;
       left:50% !important; right:50% !important;
@@ -45,7 +44,6 @@
     }
     .header-left{ display:flex; align-items:center; gap:15px; }
 
-    /* >>> Logo giống trang chủ <<< */
     .logo{
       height:50px; width:auto;
       border-radius:6px; background:#fff; padding:2px;
@@ -69,7 +67,6 @@
     .navbar a.active{ color:var(--primary-color); }
     .navbar a.active::after{ content:''; position:absolute; bottom:0; left:50%; transform:translateX(-50%); width:70%; height:3px; background:var(--primary-color); }
 
-    /* ===== Main container giữ 1200px ===== */
     .container{ max-width:1200px; margin:0 auto; background:#fff; }
 
     .main-content{ padding:30px; }
@@ -81,6 +78,7 @@
 
     .task-item{ display:flex; align-items:center; justify-content:space-between; padding:20px; border-radius:12px; margin-bottom:15px; transition:.3s; border:1px solid transparent; }
     .task-item.run{ background-color:#e6f7ff; border-color:#91d5ff; }
+    .task-item.removing{ opacity:0; height:0; margin:0; padding:0 20px; overflow:hidden; transition:.25s ease; }
     .task-item:hover{ transform:translateY(-4px); box-shadow:0 8px 20px -5px rgba(0,0,0,0.12); }
     .task-info{ display:flex; align-items:center; gap:20px; }
     .task-icon{ width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; }
@@ -143,7 +141,6 @@
   <header class="header">
     <div class="header-inner">
       <div class="header-left">
-        <!-- Logo giống trang chủ -->
         <img id="logo-img" class="logo" alt="Logo Hỗ Trợ Huấn Luyện Thể Thao" src="" />
         <div class="project-info">
           <h1>HỖ TRỢ HUẤN LUYỆN THỂ THAO</h1>
@@ -168,7 +165,6 @@
     </div>
   </nav>
 
-  <!-- Main container 1200px -->
   <div class="container">
     <main class="main-content" id="content-area">
       <div class="loader-container">
@@ -177,7 +173,7 @@
     </main>
   </div>
 
-  <!-- NẠP LOGO (thử nhiều đường dẫn/đuôi tệp như trang khác) -->
+  <!-- Nạp logo (thử nhiều đường dẫn) -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const logo = document.getElementById('logo-img');
@@ -318,51 +314,80 @@
       contentArea.innerHTML = `<div class="access-denied"><h2>Truy cập bị từ chối</h2><p>Trang này chỉ dành cho tài khoản Vận động viên.</p></div>`;
     }
 
+    /* ==== CHỈNH 1: Lọc bỏ nhiệm vụ đã hoàn thành khi render từ snapshot ==== */
     function listenForExercises(athleteId){
       const goalsListContainer = document.getElementById('goals-list');
       if(!goalsListContainer) return;
       const exercisesColRef = collection(db, "users", athleteId, "exercises");
       const q = query(exercisesColRef, orderBy("createdAt","desc"));
       onSnapshot(q, (snapshot)=>{
-        const existingTasks = goalsListContainer.querySelectorAll('.task-item, .no-exercise-msg');
-        existingTasks.forEach(task=>task.remove());
-        if(snapshot.empty){
-          const noExerciseItem = document.createElement('p');
-          noExerciseItem.textContent = 'Bạn chưa có bài tập nào được giao.';
-          noExerciseItem.className = 'no-exercise-msg';
-          noExerciseItem.style.color = 'var(--text-light-color)';
-          goalsListContainer.appendChild(noExerciseItem);
-        }else{
-          snapshot.forEach(docSnap=>{
-            const exercise = docSnap.data();
-            const exerciseId = docSnap.id;
-            const exerciseDiv = document.createElement('div');
-            exerciseDiv.className = 'task-item run';
-            exerciseDiv.innerHTML = `<div class="task-info"><div class="task-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><div class="task-details"><h3>${exercise.title || 'Bài tập mới'}</h3><p>Hạn chót: ${exercise.dueDate || 'Chưa có'}</p></div></div><div class="task-action"><button>Thực hiện</button></div>`;
-            goalsListContainer.appendChild(exerciseDiv);
+        const existing = goalsListContainer.querySelectorAll('.task-item, .no-exercise-msg');
+        existing.forEach(x=>x.remove());
 
-            const executeButton = exerciseDiv.querySelector('.task-action button');
-            if(exercise.status === 'completed'){
-              exerciseDiv.style.opacity = '0.6';
-              if(executeButton){ executeButton.textContent='Đã hoàn thành'; executeButton.disabled=true; }
-            }else{
-              if(executeButton){
-                executeButton.addEventListener('click', async ()=>{
-                  executeButton.disabled = true;
-                  executeButton.textContent = 'Đang cập nhật...';
-                  const exerciseDocRef = doc(db, "users", athleteId, "exercises", exerciseId);
-                  try{
-                    await updateDoc(exerciseDocRef, { status:'completed', completedAt: serverTimestamp() });
-                  }catch(err){
-                    console.error("Lỗi khi cập nhật bài tập: ", err);
-                    alert("Không thể cập nhật trạng thái. Vui lòng thử lại.");
-                    executeButton.disabled = false;
-                    executeButton.textContent = 'Thực hiện';
-                  }
-                });
-              }
+        let shown = 0;
+        snapshot.forEach(docSnap=>{
+          const exercise = docSnap.data();
+          const exerciseId = docSnap.id;
+
+          // Bỏ qua các bài đã hoàn thành
+          if (exercise.status === 'completed') return;
+
+          const exerciseDiv = document.createElement('div');
+          exerciseDiv.className = 'task-item run';
+          exerciseDiv.innerHTML = `
+            <div class="task-info">
+              <div class="task-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                  <circle cx="9" cy="7" r="4"/>
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+              </div>
+              <div class="task-details">
+                <h3>${exercise.title || 'Bài tập mới'}</h3>
+                <p>Hạn chót: ${exercise.dueDate || 'Chưa có'}</p>
+              </div>
+            </div>
+            <div class="task-action"><button>Thực hiện</button></div>
+          `;
+          goalsListContainer.appendChild(exerciseDiv);
+          shown++;
+
+          const executeButton = exerciseDiv.querySelector('.task-action button');
+          /* ==== CHỈNH 2: Ẩn ngay tại chỗ + cập nhật Firestore ==== */
+          executeButton.addEventListener('click', async ()=>{
+            executeButton.disabled = true;
+            executeButton.textContent = 'Đang cập nhật...';
+
+            // Ẩn mượt mà tại chỗ (optimistic UI)
+            exerciseDiv.classList.add('removing');
+
+            const exerciseDocRef = doc(db, "users", athleteId, "exercises", exerciseId);
+            try{
+              await updateDoc(exerciseDocRef, { status:'completed', completedAt: serverTimestamp() });
+              // Sau khi snapshot trả về, item sẽ không còn được render nữa.
+              setTimeout(()=>exerciseDiv.remove(), 300);
+            }catch(err){
+              console.error("Lỗi khi cập nhật bài tập: ", err);
+              alert("Không thể cập nhật trạng thái. Vui lòng thử lại.");
+              // Hoàn tác UI nếu lỗi
+              exerciseDiv.classList.remove('removing');
+              executeButton.disabled = false;
+              executeButton.textContent = 'Thực hiện';
             }
           });
+        });
+
+        if (shown === 0){
+          const noExerciseItem = document.createElement('p');
+          noExerciseItem.className = 'no-exercise-msg';
+          noExerciseItem.style.color = 'var(--text-light-color)';
+          // Nếu không có doc nào hoặc tất cả đã completed
+          noExerciseItem.textContent = snapshot.empty
+            ? 'Bạn chưa có bài tập nào được giao.'
+            : 'Tuyệt! Bạn đã hoàn thành tất cả nhiệm vụ.';
+          goalsListContainer.appendChild(noExerciseItem);
         }
       });
     }
