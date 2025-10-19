@@ -29,7 +29,7 @@
     .header{background-color:var(--primary-color); color:#fff;}
     .navbar{background-color:var(--card-bg-color); box-shadow:0 2px 4px rgba(0,0,0,.05);}
 
-    /* Lớp nội dung bên trong header/navbar: 100% để đẩy 2 cụm ra 2 góc */
+    /* Lớp nội dung bên trong header/navbar */
     .header-content,.navbar-content{
       max-width:none; width:100%; margin:0; padding:0 30px;
       display:flex; align-items:center;
@@ -38,7 +38,14 @@
     .navbar-content{padding:0 30px;}
 
     .header-left{display:flex; align-items:center; gap:15px; flex:1 1 auto;}
-    .logo{background:#fff;color:var(--primary-color);font-weight:700;padding:10px;border-radius:8px}
+
+    /* LOGO giống trang chủ */
+    .logo{
+      height:50px; width:auto;
+      border-radius:6px; background:#fff; padding:2px;
+      object-fit:contain; display:block;
+    }
+
     .project-info h1{font-size:24px;margin:0}
 
     .navbar a{
@@ -94,10 +101,10 @@
   <header class="header">
     <div class="header-content">
       <div class="header-left">
-        <div class="logo">LOGO</div>
+        <!-- Đã thay LOGO chữ bằng ảnh giống trang chủ -->
+        <img id="logo-img" class="logo" alt="Logo Hỗ Trợ Huấn Luyện Thể Thao" src="" />
         <div class="project-info"><h1>HỖ TRỢ HUẤN LUYỆN THỂ THAO</h1></div>
       </div>
-      <!-- chừa không gian bên phải để khi zoom, hai cụm bám 2 mép -->
       <div style="width:1px; height:1px;"></div>
     </div>
   </header>
@@ -131,6 +138,31 @@
       </form>
     </div>
   </div>
+
+  <!-- NẠP LOGO: thử nhiều đường dẫn giống các trang khác -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const logo = document.getElementById('logo-img');
+      const candidates = [
+        './5f4a128d-c63a-46ad-92a7-94b6c5bbb49e.jpg?v=1',
+        './z7123609881638_15d1fc595d70a7e15393a8c1de57fbfd.jpg?v=1',
+        './logo-xuan-tho.png?v=1',
+        './logo-xuan-tho.jpg?v=1',
+        './logo.png?v=1',
+        './logo.jpg?v=1'
+      ];
+      let i = 0;
+      const tryNext = () => {
+        if (i >= candidates.length) return;
+        const url = candidates[i++];
+        const test = new Image();
+        test.onload = () => { logo.src = url; };
+        test.onerror = tryNext;
+        test.src = url;
+      };
+      tryNext();
+    });
+  </script>
 
   <script type="module">
     // Firebase v9.15
@@ -269,7 +301,7 @@
       if(isAIChat){
         displayMessage({ text, senderId: currentUser.uid, createdAt:{seconds:Math.floor(Date.now()/1000)} });
         messageInput.value='';
-        // Chỗ này nếu tích hợp AI server-side thì gọi API rồi append kết quả về UI (không ghi Firestore).
+        // Nếu tích hợp AI server-side, gọi API tại đây rồi append phản hồi.
         return;
       }
 
