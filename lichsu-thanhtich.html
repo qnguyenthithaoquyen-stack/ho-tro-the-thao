@@ -34,7 +34,18 @@
     .navbar-content{padding:0 30px;}
 
     .header-left{display:flex; align-items:center; gap:15px; flex:1 1 auto;}
-    .logo{background:#fff; color:var(--primary); font-weight:700; padding:10px; border-radius:8px;}
+
+    /* Logo ảnh đồng bộ như các trang khác */
+    .logo{
+      height:50px;
+      width:auto;
+      border-radius:6px;
+      background:#fff;
+      padding:2px;
+      object-fit:contain;
+      display:block;
+    }
+
     .project-info h1{font-size:24px; margin:0; font-weight:700;}
     .project-info p{font-size:12px; margin:0; opacity:.9;}
     .user-actions{display:flex; align-items:center; gap:12px;}
@@ -134,7 +145,8 @@
   <header class="header">
     <div class="header-content">
       <div class="header-left">
-        <div class="logo">LOGO</div>
+        <!-- Logo ảnh đồng bộ -->
+        <img src="5f4a128d-c63a-46ad-92a7-94b6c5bbb49e.jpg" alt="Logo" class="logo">
         <div class="project-info">
           <h1>HỖ TRỢ HUẤN LUYỆN THỂ THAO</h1>
           <p>DỰ ÁN KHOA HỌC KỸ THUẬT</p>
@@ -142,7 +154,7 @@
       </div>
       <div class="user-actions">
         <a href="#" id="logout-link" style="display:none;">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0  1 0 1 2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
           <span>Đăng xuất</span>
         </a>
       </div>
@@ -216,7 +228,7 @@
       </table>
       <div id="loader" class="loader-container"><p>Đang tải dữ liệu...</p></div>
 
-      <!-- 🔹 KHỐI MỚI: Nhận xét từ HLV -->
+      <!-- Nhận xét từ HLV -->
       <div class="coach-comments-card" id="coach-comments-card" style="display:none;">
         <h2>Nhận xét từ HLV</h2>
         <div id="coach-comments-wrapper">
@@ -255,7 +267,7 @@
         if (athleteId) {
           loadHistoryData(athleteId);
           setupAddAchievementForm(athleteId);
-          loadCoachComments(athleteId);   // <-- tải nhận xét HLV
+          loadCoachComments(athleteId);
         } else {
           document.getElementById('loader').textContent = 'Không tìm thấy ID vận động viên.';
         }
@@ -349,13 +361,12 @@
       }
     }
 
-    // 🔹 Tải & hiển thị nhận xét từ HLV (read-only)
+    // Tải & hiển thị nhận xét từ HLV (read-only)
     function loadCoachComments(athleteId){
       const card = document.getElementById('coach-comments-card');
       const wrap = document.getElementById('coach-comments-wrapper');
       const empty = document.getElementById('coach-comments-empty');
 
-      // Hiển thị card ngay, nội dung sẽ cập nhật theo snapshot
       card.style.display = 'block';
 
       const cRef = collection(db, "users", athleteId, "coach_comments");
@@ -375,7 +386,7 @@
           const coachName = d.coachName || 'HLV';
           const createdAt = d.createdAt?.seconds ? new Date(d.createdAt.seconds*1000) : null;
           const timeStr = createdAt ? createdAt.toLocaleString('vi-VN') : '—';
-          const targetEvent = d.targetEvent || ''; // nếu HLV gắn với 1 giải cụ thể
+          const targetEvent = d.targetEvent || '';
           const note = d.note || d.comment || '';
 
           const el = document.createElement('div');
@@ -391,8 +402,7 @@
           `;
           wrap.appendChild(el);
         });
-      }, (err)=>{
-        // Nếu lỗi, vẫn giữ card & báo rỗ nhẹ
+      }, ()=>{
         const errEl = document.createElement('p');
         errEl.className = 'subtitle';
         errEl.style.color = '#c0392b';
@@ -401,7 +411,7 @@
       });
     }
 
-    // Escape HTML để hiển thị an toàn nội dung nhận xét
+    // Escape HTML
     function escapeHtml(str){
       if (!str && str !== 0) return '';
       return String(str)
