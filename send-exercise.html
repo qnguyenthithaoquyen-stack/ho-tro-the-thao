@@ -44,23 +44,34 @@
             gap: 16px;
         }
         .header-left { display: flex; align-items: center; gap: 12px; }
-        .logo { background-color: #fff; color: var(--primary-color); font-weight: 700; padding: 8px 10px; border-radius: 8px; }
+
+        /* >>> Logo ảnh – đồng bộ như các trang khác <<< */
+        .logo{
+            height:50px;       /* chiều cao cố định */
+            width:auto;        /* giữ tỉ lệ */
+            border-radius:6px; /* bo góc */
+            background:#fff;   /* nền trắng */
+            padding:2px;       /* viền trắng mỏng */
+            object-fit:contain;
+            display:block;
+        }
+
         .project-info h1 { font-size: clamp(18px, 2.2vw, 24px); margin: 0; }
         .project-info p { font-size: clamp(10px, 1.4vw, 12px); margin: 0; opacity: 0.9; }
 
-        /* --- Navbar: căn GIỮA thật sự, không lệch trái --- */
+        /* --- Navbar: căn trái --- */
         .navbar {
             background-color: var(--card-bg-color);
             box-shadow: 0 2px 4px rgba(0,0,0,.05);
-            padding: 0;                /* không đẩy nội dung lệch */
+            padding: 0;
             width: 100%;
             display: flex;
         }
         .nav-inner {
             display: flex;
             gap: 2px;
-            justify-content: flex-start; /* Căn lề trái */
-            padding: 0 clamp(16px, 4vw, 30px); /* Giữ padding lề */
+            justify-content: flex-start;
+            padding: 0 clamp(16px, 4vw, 30px);
             width: 100%;
         }
 
@@ -125,14 +136,14 @@
         }
         .form-group textarea { resize: vertical; min-height: 120px; }
 
-        /* --- Actions: luôn gom cụm nút, ổn định khi zoom --- */
+        /* --- Actions --- */
         .form-actions {
             display: flex;
             align-items: center;
             gap: 12px;
             margin-top: 26px;
-            justify-content: flex-end; /* desktop: canh phải */
-            flex-wrap: nowrap;         /* không rớt hàng khi zoom nhẹ */
+            justify-content: flex-end;
+            flex-wrap: nowrap;
         }
 
         .btn {
@@ -147,8 +158,8 @@
             cursor: pointer;
             transition: transform .15s ease, box-shadow .15s ease, background-color .25s ease, border-color .25s ease;
             text-align: center;
-            min-width: 138px;     /* đồng đều để không xô lệch */
-            white-space: nowrap;  /* tránh xuống dòng gây lệch */
+            min-width: 138px;
+            white-space: nowrap;
         }
 
         .btn-secondary {
@@ -173,7 +184,7 @@
         .message.success { background-color: #d4edda; color: #155724; }
         .message.error { background-color: #f8d7da; color: #721c24; }
 
-        /* Responsive: khi hẹp/zoom mạnh, đưa nút về giữa cho chắc */
+        /* Responsive */
         @media (max-width: 768px) {
             .form-actions {
                 justify-content: center;
@@ -191,7 +202,8 @@
     <header class="header">
         <div class="header-inner">
             <div class="header-left">
-                <div class="logo">LOGO</div>
+                <!-- Logo ảnh đồng bộ -->
+                <img src="5f4a128d-c63a-46ad-92a7-94b6c5bbb49e.jpg" alt="Logo" class="logo">
                 <div class="project-info">
                     <h1>HỖ TRỢ HUẤN LUYỆN THỂ THAO</h1>
                     <p>DỰ ÁN KHOA HỌC KỸ THUẬT</p>
@@ -332,4 +344,3 @@
     </script>
 </body>
 </html>
-
