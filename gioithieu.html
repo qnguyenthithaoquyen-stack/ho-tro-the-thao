@@ -3,17 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Giới thiệu - Thể Thao Thông Minh (edge-pinned)</title>
+  <title>Giới thiệu - Thể Thao Thông Minh</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
     :root { --primary-color:#008080; }
 
     *{ box-sizing:border-box; }
     html,body{ margin:0; overflow-x:hidden; }
-    body{font-family:'Roboto',sans-serif;background:#f0f2f5; opacity:0; transition:opacity .4s ease;}
-    body.loaded{ opacity:1; }
+    body{font-family:'Roboto',sans-serif;background:#f0f2f5;}
 
-    /* ===== FULL-BLEED STRIPS (header + navbar) giống index ===== */
+    /* ===== FULL-BLEED STRIPS (header + navbar) to match index.html ===== */
     .header, .navbar{
       position:relative !important;
       left:50% !important; right:50% !important;
@@ -21,61 +20,64 @@
       margin-right:calc(-50vw + 0px) !important;
       width:100vw !important;
     }
-    .header{ background:var(--primary-color); color:#fff; }
-    .navbar{ background:#fff; box-shadow:0 2px 4px rgba(0,0,0,.05); }
 
-    /* ===== EDGE-PINNED CONTENT ===== */
-    .header-inner, .navbar-inner{
-      width:100%; max-width:unset !important; margin:0 !important;
-      padding:0 12px !important; display:flex !important; align-items:center !important;
+    /* Header */
+    .header{
+      background:var(--primary-color);color:#fff;
     }
-    .header-inner{ min-height:68px; justify-content:space-between !important; gap:16px; padding-top:10px; padding-bottom:10px; }
-    .header-left{ display:flex; align-items:center; gap:12px; min-width:0; }
-
-    /* Logo giống hệt trang chủ */
+    .header-inner{
+      /* edge-pinned content spanning full width */
+      width:100%; max-width:unset !important; margin:0 !important; padding:15px 30px;
+      display:flex;justify-content:space-between;align-items:center;gap:16px;
+    }
+    .header-left{display:flex;align-items:center;gap:15px;min-width:0;}
+    /* === ĐÃ SỬA CSS CHO LOGO === */
     .logo {
-  height: 50px; /* Chiều cao cố định là 50px */
-  width: auto;
-  border-radius: 6px;
-  background: #fff;
-  padding: 2px;
-  object-fit: contain;
-  display: block;
-}
+      height: 50px;
+      width: auto;
+      border-radius: 6px;
+      background-color: white;
+      padding: 2px;
+      display: block;
     }
+    .project-info h1{font-size:24px;margin:0;font-weight:700;white-space:nowrap;}
+    .project-info p{font-size:12px;margin:0;opacity:.9;}
 
-    .project-info h1{ margin:0; font-weight:700; font-size:22px; white-space:nowrap; }
-    .project-info p{ margin:0; font-size:12px; opacity:.9; }
-
-    .user-actions{ display:flex; gap:10px; }
+    /* Cụm nút */
+    .user-actions{display:flex;align-items:center;gap:12px;margin-left:auto;}
     .user-actions a{
-      display:inline-flex; align-items:center; gap:8px; white-space:nowrap;
-      padding:9px 18px; font-size:14px; font-weight:500; border-radius:999px;
-      text-decoration:none; border:1.5px solid #fff;
-      transition:background .25s,color .25s;
+      display:inline-flex;align-items:center;justify-content:center;gap:8px;
+      padding:9px 22px;font-size:14px;font-weight:500;border-radius:50px;
+      text-decoration:none;border:1.5px solid #fff;transition:.3s;white-space:nowrap;
     }
-    .user-actions a svg{ width:16px; height:16px; }
-    #login-link{ background:transparent; color:#fff; }
-    #login-link:hover{ background:#fff; color:var(--primary-color); }
-    #register-link,#logout-link{ background:#fff; color:var(--primary-color); }
-    #register-link:hover,#logout-link:hover{ background:rgba(255,255,255,.9); }
+    .user-actions a svg{width:16px;height:16px}
+    #login-link{background:transparent;color:#fff;}
+    #login-link:hover{background:#fff;color:var(--primary-color);}
+    #register-link,#logout-link{background:#fff;color:var(--primary-color);}
+    #register-link:hover,#logout-link:hover{background:rgba(255,255,255,.9);}
 
-    .navbar-inner{ justify-content:flex-start; padding:0 12px !important; }
-    .navbar a{ padding:14px 22px; color:#333; text-decoration:none; font-weight:500; position:relative; transition:color .25s; }
-    .navbar a::after{ content:''; position:absolute; bottom:0; left:50%; transform:translateX(-50%); width:0; height:3px; background:var(--primary-color); transition:width .25s; }
-    .navbar a:hover, .navbar a.active{ color:var(--primary-color); }
-    .navbar a.active::after{ width:70%; }
+    /* Nav */
+    .navbar{background:#fff;box-shadow:0 2px 4px rgba(0,0,0,.05);}
+    .navbar-inner{
+      width:100%; max-width:unset !important; margin:0 !important; padding:0 30px;
+      display:flex; align-items:center;
+    }
+    .navbar a{padding:15px 25px;text-decoration:none;color:#333;font-weight:500;position:relative;transition:color .3s;}
+    .navbar a::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:0;height:3px;background:var(--primary-color);transition:width .3s;}
+    .navbar a:hover,.navbar a.active{color:var(--primary-color);}
+    .navbar a.active::after{width:70%;}
 
-    /* Main giống index */
-    .container{ max-width:1200px; margin:0 auto; background:#fff; box-shadow:0 0 15px rgba(0,0,0,.07); }
-    main{ padding:40px 30px; line-height:1.6; }
-    main h2{ font-size:36px; color:#2c3e50; border-bottom:2px solid var(--primary-color); padding-bottom:10px; margin-bottom:20px; }
-    main p{ font-size:16px; color:#34495e; margin-bottom:15px; }
+    /* Main: vẫn khung 1200px như index */
+    .container{max-width:1200px;margin:0 auto;background:#fff;box-shadow:0 0 15px rgba(0,0,0,.07);}
+    main{padding:40px 30px;line-height:1.6;}
+    main h2{font-size:36px;color:#2c3e50;border-bottom:2px solid var(--primary-color);padding-bottom:10px;margin-bottom:20px;}
+    main p{font-size:16px;color:#34495e;margin-bottom:15px;}
 
+    /* Responsive nhỏ */
     @media (max-width:640px){
-      .project-info h1{ font-size:18px }
-      .user-actions a{ padding:8px 16px }
-      .navbar a{ padding:12px 16px }
+      .project-info h1{font-size:18px}
+      .user-actions a{padding:8px 16px}
+      .navbar a{padding:12px 16px}
     }
   </style>
 </head>
@@ -83,11 +85,10 @@
   <header class="header">
     <div class="header-inner">
       <div class="header-left">
-        <!-- Logo: dùng trình nạp an toàn như trang chủ -->
-        <img id="5f4a128d-c63a-46ad-92a7-94b6c5bbb49e.jpg" class="logo" alt="Logo Thể Thao Thông Minh" src="" />
+        <img src="5f4a128d-c63a-46ad-92a7-94b6c5bbb49e.jpg" alt="Logo Thể Thao Thông Minh" class="logo">
         <div class="project-info">
           <h1>THỂ THAO THÔNG MINH</h1>
-          <p>GIẢI PHÁP CÔNG NGHỆ TỐI ƯU HIỆU SUẤT VÀ PHÒNG NGỪA CHẤN THƯƠNG CHO VĐV TRẺ</p>
+          <p>GIẢI PHÁP CÔNG NGHỆ TỐI ƯU HIỆU SUẤT VÀ PHÒNG NGỮA CHẤN THƯƠNG CHO VẬN ĐỘNG VIÊN ĐIỀN KINH TRẺ</p>
         </div>
       </div>
       <div class="user-actions">
@@ -111,7 +112,7 @@
     <div class="navbar-inner">
       <a href="index.html">Trang chủ</a>
       <a href="gioithieu.html" class="active">Giới thiệu</a>
-      <a href="#" id="dashboard-link" style="display:none">Bảng điều khiển</a>
+      <a href="bangdieukhien.html" id="dashboard-link" style="display:none">Bảng điều khiển</a>
     </div>
   </nav>
 
@@ -119,61 +120,42 @@
     <main>
       <h2>Giới thiệu về Dự án</h2>
       <p>
-        Chào mừng bạn đến với dự án "Hỗ trợ Huấn luyện Thể thao" – một sản phẩm Khoa học Kỹ thuật
-        ứng dụng công nghệ hiện đại nhằm nâng cao thành tích và đảm bảo an toàn cho vận động viên.
+        Chào mừng bạn đến với dự án "THỂ THAO THÔNG MINH" – một sản phẩm Khoa học Kỹ thuật
+        được xây dựng với mục tiêu ứng dụng công nghệ hiện đại vào việc nâng cao thành tích và đảm bảo
+        an toàn cho vận động viên.
       </p>
       <p>
-        Hệ thống sử dụng AI và Thị giác máy tính để phân tích video tập luyện/thi đấu, cung cấp
-        đánh giá tư thế – kỹ thuật và các chỉ số vận động quan trọng.
+        Hệ thống của chúng tôi sử dụng các thuật toán Trí tuệ Nhân tạo (AI) và Thị giác Máy tính
+        (Computer Vision) để phân tích video thi đấu và tập luyện. Từ đó, hệ thống cung cấp phân tích
+        chi tiết về tư thế, kỹ thuật và các chỉ số vận động quan trọng.
       </p>
       <h3>Các tính năng chính</h3>
       <ul>
-        <li><strong>Phân tích tư thế:</strong> Phát hiện lỗi kỹ thuật và gợi ý cải thiện.</li>
-        <li><strong>Theo dõi thành tích:</strong> Lưu trữ & trực quan hóa lịch sử tập luyện.</li>
-        <li><strong>Cảnh báo chấn thương:</strong> Nhận diện chuyển động rủi ro.</li>
-        <li><strong>Giao tiếp HLV–VĐV:</strong> Giao bài tập và theo dõi tiến độ.</li>
+        <li><strong>Phân tích tư thế:</strong> Phát hiện lỗi kỹ thuật và đưa ra gợi ý cải thiện.</li>
+        <li><strong>Theo dõi thành tích:</strong> Lưu trữ & biểu đồ hoá lịch sử tập luyện.</li>
+        <li><strong>Cảnh báo chấn thương:</strong> Nhận diện chuyển động có nguy cơ gây chấn thương.</li>
+        <li><strong>Giao tiếp HLV–VĐV:</strong> Giao bài tập và theo dõi tiến độ trực quan.</li>
       </ul>
+      <p>
+        Chúng tôi tin rằng việc áp dụng công nghệ sẽ là một bước đột phá, giúp vận động viên khai phá
+        tối đa tiềm năng và đạt được thành tích vượt trội.
+      </p>
     </main>
   </div>
 
-  <!-- Nạp logo & hiệu ứng loaded giống trang chủ -->
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const logo = document.getElementById('logo-img');
-      const candidates = [
-        './5f4a128d-c63a-46ad-92a7-94b6c5bbb49e.jpg?v=1',
-        './logo-xuan-tho.png?v=1',
-        './logo-xuan-tho.jpg?v=1',
-        './z7123609881638_15d1fc595d70a7e15393a8c1de57fbfd.jpg?v=1',
-        './logo.png?v=1',
-        './logo.jpg?v=1'
-      ];
-      let i = 0;
-      const tryNext = () => {
-        if (i >= candidates.length) { document.body.classList.add('loaded'); return; }
-        const test = new Image();
-        const url = candidates[i++];
-        test.onload = () => { logo.src = url; document.body.classList.add('loaded'); };
-        test.onerror = tryNext;
-        test.src = url;
-      };
-      tryNext();
-    });
-  </script>
-
-  <!-- Firebase Auth: bật/tắt nút & link Dashboard như trang chủ -->
+  <!-- Firebase Auth: hiển thị/ẩn nút & link Dashboard theo trạng thái đăng nhập -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
 
     const firebaseConfig = {
-      apiKey:"AIzaSyA2dXWCyjL2xgCSyeW9QQ7RvjI_O7kFHJw",
-      authDomain:"sporthealthdata.firebaseapp.com",
-      projectId:"sporthealthdata",
-      storageBucket:"sporthealthdata.appspot.com",
-      messagingSenderId:"789054240877",
-      appId:"1:789054240877:web:04a400c9ea586523a86764",
-      measurementId:"G-ZWS9C7P359"
+      apiKey: "AIzaSyA2dXWCyjL2xgCSyeW9QQ7RvjI_O7kFHJw",
+      authDomain: "sporthealthdata.firebaseapp.com",
+      projectId: "sporthealthdata",
+      storageBucket: "sporthealthdata.appspot.com",
+      messagingSenderId: "789054240877",
+      appId: "1:789054240877:web:04a400c9ea586523a86764",
+      measurementId: "G-ZWS9C7P359"
     };
 
     const app = initializeApp(firebaseConfig);
@@ -184,27 +166,27 @@
     const logoutLink = document.getElementById('logout-link');
     const dashboardLink = document.getElementById('dashboard-link');
 
-    const updateUI = (user)=>{
-      if(user){
-        if(dashboardLink) dashboardLink.style.display='block';
-        if(logoutLink) logoutLink.style.display='inline-flex';
-        if(loginLink) loginLink.style.display='none';
-        if(registerLink) registerLink.style.display='none';
-      }else{
-        if(dashboardLink) dashboardLink.style.display='none';
-        if(logoutLink) logoutLink.style.display='none';
-        if(loginLink) loginLink.style.display='inline-flex';
-        if(registerLink) registerLink.style.display='inline-flex';
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        if (dashboardLink) dashboardLink.style.display = 'block';
+        if (logoutLink) logoutLink.style.display = 'inline-flex';
+        if (loginLink) loginLink.style.display = 'none';
+        if (registerLink) registerLink.style.display = 'none';
+      } else {
+        if (dashboardLink) dashboardLink.style.display = 'none';
+        if (logoutLink) logoutLink.style.display = 'none';
+        if (loginLink) loginLink.style.display = 'inline-flex';
+        if (registerLink) registerLink.style.display = 'inline-flex';
       }
-    };
+    });
 
-    onAuthStateChanged(auth,(user)=>{ updateUI(user); });
-    if(logoutLink){
-      logoutLink.addEventListener('click',(e)=>{
+    if (logoutLink) {
+      logoutLink.addEventListener('click', (e) => {
         e.preventDefault();
-        signOut(auth).catch(err=>console.error('Lỗi khi đăng xuất:',err));
+        signOut(auth).catch((error) => console.error('Lỗi khi đăng xuất:', error));
       });
     }
   </script>
 </body>
 </html>
+
