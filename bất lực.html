@@ -13,7 +13,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5/pose.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils@0.5/drawing_utils.min.js"></script>
 
-<!-- Three.js for 3D rendering (non-module version) -->
+<!-- Three.js (non-module) -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 
@@ -148,12 +148,15 @@
             <option value="back">Góc quay: BACK</option>
           </select>
 
-          <!-- Thêm điều khiển lưu khung sai -->
+          <!-- Điều khiển lưu khung sai -->
           <label class="small" style="display:inline-flex;align-items:center;gap:6px;margin-left:auto">
             <input type="checkbox" id="autoSaveFail"/> Tự động lưu tư thế sai
           </label>
           <button id="saveFailBtn" class="btn btn-danger" title="Lưu khung 3D hiện tại nếu đang sai" disabled>
             <i data-lucide="save"></i>Lưu khung 3D sai
+          </button>
+          <button id="toggleGalleryBtn" class="btn">
+            <i data-lucide="images"></i>Hiện/Ẩn khung sai
           </button>
         </div>
         
@@ -266,12 +269,14 @@ const speedControl = document.getElementById('speedControl');
 /* mới thêm cho gallery */
 const autoSaveFail = document.getElementById('autoSaveFail');
 const saveFailBtn  = document.getElementById('saveFailBtn');
+const toggleGalleryBtn = document.getElementById('toggleGalleryBtn');
+const failGallery  = document.getElementById('failGallery');
 const failThumbs   = document.getElementById('failThumbs');
 
 let mpPose=null, lastPoseLandmarks=null, drawCb=null;
 let results = JSON.parse(localStorage.getItem('thethaott_results')||'{}');
 let libVideos = JSON.parse(localStorage.getItem('thethaott_videos')||'[]'); // persist metadata
-let failStore = JSON.parse(localStorage.getItem('thethaott_failposes')||'{}'); // { [videoId]: [ {dataUrl, ts, view, tile} ] }
+let failStore = JSON.parse(localStorage.getItem('thethaott_failposes')||'{}'); // { [videoId]: [ {dataUrl, ts, view, tile, sig} ] }
 let currentVideo=null, chart=null;
 
 /* =================== 3D VISUALIZATION =================== */
@@ -285,7 +290,7 @@ function init3D() {
     camera = new THREE.PerspectiveCamera(50, threeContainer.clientWidth / threeContainer.clientHeight, 0.1, 100);
     camera.position.set(0, 0, 4);
 
-    /* preserveDrawingBuffer để chụp ảnh canvas (toDataURL) */
+    // preserveDrawingBuffer để chụp ảnh canvas
     renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
     renderer.setSize(threeContainer.clientWidth, threeContainer.clientHeight);
     renderer.setPixelRatio(window.devicePixelRatio);
@@ -319,7 +324,7 @@ function init3D() {
     for (let i = 0; i < 33; i++) {
         skeletonGroup.add(new THREE.Mesh(jointGeometry, passMaterial.joint));
     }
-    window.POSE_CONNECTIONS.forEach(() => {
+    window.POSE_CONNECTIONS?.forEach?.(() => {
         skeletonGroup.add(new THREE.Mesh(boneGeometry, passMaterial.bone));
     });
 
@@ -367,7 +372,7 @@ function update3DSkeleton(landmarks, isPass) {
         );
     }
     
-    window.POSE_CONNECTIONS.forEach(([i1, i2], index) => {
+    window.POSE_CONNECTIONS?.forEach?.(([i1, i2], index) => {
         const p1 = joints[i1].position;
         const p2 = joints[i2].position;
         const bone = bones[index];
@@ -384,20 +389,40 @@ function update3DSkeleton(landmarks, isPass) {
 
 /* ======= Helpers cho lưu ảnh 3D sai ======= */
 function capture3DDataURL(){
-  renderer.render(scene, camera); // đảm bảo là frame mới nhất
+  renderer.render(scene, camera); // frame mới nhất
   return renderer.domElement.toDataURL('image/png');
 }
 function getFailList(videoId){ return failStore[videoId] ?? []; }
 function setFailList(videoId, list){ failStore[videoId]=list; localStorage.setItem('thethaott_failposes', JSON.stringify(failStore)); }
+
+/* ======= Chống TRÙNG bằng pose signature ======= */
+let failSigIndex = JSON.parse(localStorage.getItem('thethaott_failposes_idx')||'{}'); // { [videoId]: { [sig]: true } }
+function persistFailSigIndex(){ localStorage.setItem('thethaott_failposes_idx', JSON.stringify(failSigIndex)); }
+function hasFailSig(videoId, sig){ return !!(failSigIndex[videoId] && failSigIndex[videoId][sig]); }
+function addFailSig(videoId, sig){ if(!failSigIndex[videoId]) failSigIndex[videoId]={}; failSigIndex[videoId][sig]=true; persistFailSigIndex(); }
+function removeFailSig(videoId, sig){ if(failSigIndex[videoId]){ delete failSigIndex[videoId][sig]; persistFailSigIndex(); } }
+
+// Tạo "signature" từ góc + view (làm tròn 0.5° để chống nhiễu)
+function poseSignatureFromLandmarks(lm, view){
+  const A = extractAngles(lm);
+  const keys = ['kneeL','kneeR','hipL','hipR','elbowL','elbowR','shoulderL','shoulderR','torso'];
+  const parts = keys.map(k=>{
+    const v = typeof A[k]==='number' ? Math.round(A[k]*2)/2 : 'x';
+    return `${k}:${v}`;
+  });
+  return `v:${(view||'na').toUpperCase()}|`+parts.join('|');
+}
+
 function addFailPose(videoId, dataUrl, meta){
+  if(meta?.sig && hasFailSig(videoId, meta.sig)) return; // đã có -> bỏ qua
   const list = getFailList(videoId);
-  // tránh trùng ảnh liên tiếp
-  if(list.length && list[list.length-1].dataUrl===dataUrl) return;
   list.push({ dataUrl, ts: Date.now(), ...meta });
-  if(list.length>60) list.shift(); // tránh phình bộ nhớ
+  if(list.length>60) list.shift();
   setFailList(videoId, list);
+  if(meta?.sig) addFailSig(videoId, meta.sig);
   renderFailThumbs();
 }
+
 function renderFailThumbs(){
   failThumbs.innerHTML='';
   if(!currentVideo){ return; }
@@ -415,7 +440,13 @@ function renderFailThumbs(){
     const dl=document.createElement('button'); dl.className='btn'; dl.innerHTML='<i data-lucide="download"></i>Tải';
     dl.onclick=()=>{ const a=document.createElement('a'); a.href=it.dataUrl; a.download=`fail_${currentVideo?.name||'pose'}_${it.ts}.png`; document.body.appendChild(a); a.click(); a.remove(); };
     const rm=document.createElement('button'); rm.className='btn btn-danger'; rm.innerHTML='<i data-lucide="trash-2"></i>Xóa';
-    rm.onclick=()=>{ const arr=getFailList(currentVideo.id); const realIndex = arr.length-1-idx; arr.splice(realIndex,1); setFailList(currentVideo.id, arr); };
+    rm.onclick=()=>{ 
+      const arr=getFailList(currentVideo.id); 
+      const realIndex = arr.length-1-idx; 
+      const removed = arr.splice(realIndex,1)[0]; 
+      setFailList(currentVideo.id, arr); 
+      if(removed?.sig) removeFailSig(currentVideo.id, removed.sig);
+    };
     actions.appendChild(dl); actions.appendChild(rm);
     card.appendChild(img); card.appendChild(meta); card.appendChild(actions);
     failThumbs.appendChild(card);
@@ -423,13 +454,15 @@ function renderFailThumbs(){
   lucide.createIcons();
 }
 let lastAutoSaveMs = 0;
-function tryAutoSaveFail(isPass, meta){
-  if(!autoSaveFail.checked || isPass) return;
+function tryAutoSaveFail(isPass, meta, landmarks){
+  if(!autoSaveFail.checked || isPass || !currentVideo || !landmarks) return;
   const now = Date.now();
   if(now - lastAutoSaveMs < 800) return; // chống spam
+  const sig = poseSignatureFromLandmarks(landmarks, meta?.view);
+  if(hasFailSig(currentVideo.id, sig)) return; // đã có
   lastAutoSaveMs = now;
   const dataUrl = capture3DDataURL();
-  addFailPose(currentVideo.id, dataUrl, meta);
+  addFailPose(currentVideo.id, dataUrl, { ...meta, sig });
 }
 
 /* =================== MEDIAPIPE INIT =================== */
@@ -678,12 +711,8 @@ function formatDateGroup(timestamp) {
     yesterday.setHours(0, 0, 0, 0);
     date.setHours(0, 0, 0, 0);
 
-    if (date.getTime() === today.getTime()) {
-        return 'Hôm nay';
-    }
-    if (date.getTime() === yesterday.getTime()) {
-        return 'Hôm qua';
-    }
+    if (date.getTime() === today.getTime()) return 'Hôm nay';
+    if (date.getTime() === yesterday.getTime()) return 'Hôm qua';
     return date.toLocaleDateString('vi-VN');
 }
 
@@ -702,9 +731,7 @@ function renderVideoList(){
   
   const groups = filtered.reduce((acc, video) => {
     const dateKey = video.timestamp ? formatDateGroup(video.timestamp) : 'Cũ hơn';
-    if (!acc[dateKey]) {
-      acc[dateKey] = [];
-    }
+    if (!acc[dateKey]) acc[dateKey] = [];
     acc[dateKey].push(video);
     return acc;
   }, {});
@@ -728,8 +755,7 @@ function renderVideoList(){
     videoListEl.appendChild(dateHeader);
 
     groups[dateKey].forEach(v=>{
-        const row=document.createElement('div'); row.className='item';
-        row.style.cursor = 'pointer';
+        const row=document.createElement('div'); row.className='item'; row.style.cursor='pointer';
 
         const left=document.createElement('div');
         left.innerHTML=`<b style="display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width: 120px;" title="${v.name}">${v.name}</b><div class="small">${v.sportTag||''}</div>`;
@@ -757,12 +783,12 @@ function renderVideoList(){
             if(v.url) URL.revokeObjectURL(v.url);
             libVideos = libVideos.filter(x=>x.id!==v.id); persistVideos();
             if(results[v.id]){ delete results[v.id]; localStorage.setItem('thethaott_results',JSON.stringify(results)); }
-            // xóa luôn ảnh fail của video
+            // xóa fail poses + chỉ mục
             if(failStore[v.id]){ delete failStore[v.id]; localStorage.setItem('thethaott_failposes',JSON.stringify(failStore)); }
+            if(failSigIndex[v.id]){ delete failSigIndex[v.id]; persistFailSigIndex(); }
             renderVideoList(); renderChart();
             if(currentVideo && currentVideo.id===v.id){ 
-                player.src=''; 
-                player.removeAttribute('src');
+                player.src=''; player.removeAttribute('src');
                 currentVideo=null; 
                 document.getElementById('info-summary').innerHTML='<span class="small">Chưa có video được chọn.</span>';
                 document.getElementById('analysis-details').style.display = 'none';
@@ -778,21 +804,15 @@ function renderVideoList(){
   lucide.createIcons();
 }
 
-/* =================== PLAYBACK & OVERLAY =================== */
+/* =================== PLAYBACK & LIVE OVERLAY =================== */
 function openVideo(v){
   currentVideo=v; 
-  if(v.url) {
-    player.src=v.url;
-  } else {
-    player.removeAttribute('src');
-  }
+  if(v.url) player.src=v.url; else player.removeAttribute('src');
   player.muted=false; 
   player.playsInline=true;
   player.playbackRate = parseFloat(speedControl.value);
   
-  player.onloadedmetadata=()=>{
-      onThreeResize();
-  }
+  player.onloadedmetadata=()=>{ onThreeResize(); }
   
   player.onplay = ()=>{
     ensurePose();
@@ -811,8 +831,8 @@ function openVideo(v){
       if(res && res.poseLandmarks && res.poseLandmarks.length){
         let vUse=viewSel.value==='auto'?detectView2D(res.poseLandmarks):viewSel.value;
         liveBadge.style.display='block'; liveBadge.textContent=`[${vUse.toUpperCase()}] ${pass?'✅ Đạt':'⚠️ Lỗi'}`;
-        // tự động lưu nếu fail
-        tryAutoSaveFail(pass, { view: vUse, tile: results[currentVideo.id]?.tile });
+        // tự động lưu nếu fail (chống trùng bằng signature)
+        tryAutoSaveFail(pass, { view: vUse, tile: results[currentVideo.id]?.tile }, res.poseLandmarks);
       } else {
          liveBadge.style.display='none';
       }
@@ -855,14 +875,21 @@ function openVideo(v){
   });
 }
 
+/* Nút hiện/ẩn gallery */
+toggleGalleryBtn.onclick = ()=>{
+  failGallery.style.display = (failGallery.style.display==='none') ? 'block' : 'none';
+};
+
 /* Lưu thủ công */
 saveFailBtn.onclick = ()=>{
   if(!currentVideo || !lastPoseLandmarks) return;
   const pass = checkPass(lastPoseLandmarks);
   if(pass){ alert('Khung hiện tại đang đạt, không lưu.'); return; }
   const vUse = viewSel.value==='auto' ? detectView2D(lastPoseLandmarks) : viewSel.value;
+  const sig = poseSignatureFromLandmarks(lastPoseLandmarks, vUse);
+  if(hasFailSig(currentVideo.id, sig)){ alert('Khung này đã có trong bộ sưu tập.'); return; }
   const dataUrl = capture3DDataURL();
-  addFailPose(currentVideo.id, dataUrl, { view: vUse, tile: results[currentVideo.id]?.tile });
+  addFailPose(currentVideo.id, dataUrl, { view: vUse, tile: results[currentVideo.id]?.tile, sig });
 };
 
 function checkPass(landmarks) {
@@ -880,13 +907,10 @@ function checkPass(landmarks) {
 }
 
 /* =================== ANALYZE =================== */
-analyzeBtn.onclick   = ()=>{ 
-    if(!currentVideo){
-        alert('Chưa chọn video.');
-        return;
-    }
-    const isAnalyzed = !!results[currentVideo.id];
-    analyze(currentVideo, isAnalyzed); 
+analyzeBtn.onclick = ()=>{ 
+  if(!currentVideo){ alert('Chưa chọn video.'); return; }
+  const isAnalyzed = !!results[currentVideo.id];
+  analyze(currentVideo, isAnalyzed); 
 };
 
 async function analyze(v,force=false){
@@ -973,10 +997,14 @@ async function analyze(v,force=false){
         featAngles.push(A);
         featVel.push(angleVelocity(featAngles.at(-2) || A, A, dt));
 
-        // cập nhật 3D + auto lưu nếu fail
+        // cập nhật 3D + auto lưu nếu fail (chống trùng)
         update3DSkeleton(res.poseLandmarks, passNow);
         const autoView = detectView2D(res.poseLandmarks);
-        tryAutoSaveFail(passNow, { view: autoView });
+        const sig = poseSignatureFromLandmarks(res.poseLandmarks, autoView);
+        if(!passNow && !hasFailSig(currentVideo.id, sig)){
+          const img = capture3DDataURL();
+          addFailPose(currentVideo.id, img, { view: autoView, sig });
+        }
 
         if (viewSel.value === 'auto' && viewCounts[autoView] != null) viewCounts[autoView]++;
     }
@@ -1052,9 +1080,9 @@ videoUpload.onchange = e=>{
 clearBtn.onclick=()=>{
   if(!confirm('Xóa toàn bộ dữ liệu (kết quả & lịch sử)? Thao tác này không thể hoàn tác.')) return;
   localStorage.removeItem('thethaott_results'); results={};
-  // xóa luôn thư viện video & ảnh fail
   libVideos.forEach(v=>v.url && URL.revokeObjectURL(v.url)); libVideos=[];
   localStorage.removeItem('thethaott_failposes'); failStore={};
+  localStorage.removeItem('thethaott_failposes_idx'); failSigIndex={};
   persistVideos(); renderVideoList(); renderChart(); player.src=''; currentVideo=null;
   document.getElementById('info-summary').innerHTML='<span class="small">Chưa có video được chọn.</span>';
   document.getElementById('analysis-details').style.display = 'none';
@@ -1062,9 +1090,7 @@ clearBtn.onclick=()=>{
 };
 
 sportSel.onchange=()=>{ renderVideoList(); renderChart(); };
-speedControl.onchange = () => {
-    if(player) { player.playbackRate = parseFloat(speedControl.value); }
-};
+speedControl.onchange = () => { if(player) player.playbackRate = parseFloat(speedControl.value); };
 
 /* =================== BOOT =================== */
 renderVideoList(); 
