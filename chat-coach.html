@@ -33,7 +33,16 @@
       padding:15px 30px;background:var(--primary-color);color:#fff
     }
     .header-left{display:flex;align-items:center;gap:15px}
-    .logo{background:#fff;color:var(--primary-color);font-weight:700;padding:10px;border-radius:8px}
+    /* Logo ảnh – đồng bộ như các trang khác */
+    .logo{
+      height:50px;           /* chiều cao cố định */
+      width:auto;            /* giữ tỷ lệ */
+      border-radius:6px;     /* bo góc */
+      background:#fff;       /* nền trắng giống badge */
+      padding:2px;           /* viền trắng mỏng */
+      object-fit:contain;    /* không méo hình */
+      display:block;
+    }
     .project-info h1{font-size:24px;margin:0}
 
     /* NAVBAR: tất cả mục về bên trái */
@@ -78,6 +87,7 @@
       .chat-container{width:calc(100% - 20px);margin:10px;height:calc(100vh - 50px - 56px)}
       .project-info h1{font-size:18px}
       .navbar a{padding:12px 8px}
+      .logo{height:44px} /* nhẹ nhàng thu nhỏ trên màn hình nhỏ */
     }
   </style>
 </head>
@@ -85,6 +95,7 @@
   <div class="container">
     <header class="header">
       <div class="header-left">
+        <!-- Logo ảnh -->
         <img src="5f4a128d-c63a-46ad-92a7-94b6c5bbb49e.jpg" alt="Logo" class="logo">
         <div class="project-info"><h1>THỂ THAO THÔNG MINH</h1></div>
       </div>
