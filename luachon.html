@@ -30,7 +30,18 @@
         .header { background-color: var(--primary-color); color: #fff; padding: 15px 30px; }
         .header-inner { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
         .header-left { display: flex; align-items: center; gap: 15px; }
-        .logo { background-color: #fff; color: var(--primary-color); font-weight: 700; padding: 10px; border-radius: 8px; }
+
+        /* >>> Logo ảnh đồng bộ kích thước như các file trước <<< */
+        .logo{
+            height:50px;           /* cố định chiều cao */
+            width:auto;            /* giữ tỉ lệ ảnh */
+            border-radius:6px;     /* bo góc */
+            background:#fff;       /* nền trắng */
+            padding:2px;           /* viền trắng mỏng */
+            object-fit:contain;    /* không méo ảnh */
+            display:block;
+        }
+
         .project-info h1 { font-size: 24px; margin: 0; }
         .project-info p { font-size: 12px; margin: 0; opacity: 0.9; }
         
@@ -93,7 +104,7 @@
             box-shadow: 0 8px 20px rgba(0, 128, 128, 0.1);
         }
 
-        .option-button svg {
+        .option-button svg, .option-button i {
             width: 48px;
             height: 48px;
             stroke: var(--primary-color);
@@ -153,7 +164,8 @@
     <header class="header">
         <div class="header-inner">
             <div class="header-left">
-                <div class="logo">LOGO</div>
+                <!-- Thay LOGO text bằng ảnh logo -->
+                <img src="5f4a128d-c63a-46ad-92a7-94b6c5bbb49e.jpg" alt="Logo Hỗ Trợ Huấn Luyện" class="logo">
                 <div class="project-info">
                     <h1>HỖ TRỢ HUẤN LUYỆN THỂ THAO</h1>
                     <p>DỰ ÁN KHOA HỌC KỸ THUẬT</p>
@@ -222,4 +234,3 @@
     </script>
 </body>
 </html>
-
