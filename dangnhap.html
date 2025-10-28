@@ -35,7 +35,18 @@
       display:flex; justify-content:space-between; align-items:center; gap:16px;
     }
     .header-left{ display:flex; align-items:center; gap:15px; }
-    .logo{ background:#fff; color:var(--primary-color); font-weight:700; padding:10px; border-radius:8px; }
+
+    /* --- LOGO ảnh đồng bộ kích thước như các trang khác --- */
+    .logo{
+      height:50px;          /* cố định chiều cao */
+      width:auto;           /* giữ tỉ lệ */
+      border-radius:6px;    /* bo góc nhẹ */
+      background:#fff;      /* nền trắng */
+      padding:2px;          /* viền đệm mỏng */
+      object-fit:contain;   /* không méo ảnh */
+      display:block;
+    }
+
     .project-info h1{ font-size:24px; margin:0; font-weight:700; }
     .project-info p{ font-size:12px; margin:0; opacity:.9; }
 
@@ -98,7 +109,8 @@
   <header class="header">
     <div class="header-inner">
       <div class="header-left">
-        <img src="5f4a128d-c63a-46ad-92a7-94b6c5bbb49e.jpg" alt="Logo" class="logo">
+        <!-- Áp dụng logo ảnh với kích thước đồng bộ -->
+        <img src="5f4a128d-c63a-46ad-92a7-94b6c5bbb49e.jpg" alt="Logo Hỗ Trợ Huấn Luyện Thể Thao" class="logo">
         <div class="project-info">
           <h1>THỂ THAO THÔNG MINH</h1>
           <p>DỰ ÁN KHOA HỌC KỸ THUẬT</p>
