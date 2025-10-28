@@ -32,7 +32,7 @@
     .header-inner{max-width:1600px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
     .header-left{display:flex;align-items:center;gap:15px}
 
-    .logo{height:50px;width:auto;border-radius:6px;background:#fff;padding:2px;object-fit:contain;display:block}
+    .logo{height:50px;width:auto;border-radius:6px;background:#fff;padding:2px;object-fit:contain;display:block; object-position: left;} /* Cập nhật object-position */
 
     .project-info h1{font-size:24px;margin:0}
     .project-info p{font-size:12px;margin:0;opacity:.9}
@@ -69,7 +69,9 @@
     }
 
     .option-button{
-      flex:1 1 0;           /* chia đều, co giãn theo zoom */
+      /* flex:1 1 0; */ /* Bỏ flex: 1 để nút không giãn ra */
+      width: clamp(280px, 35%, 500px); /* Kích thước cố định + co giãn nhẹ */
+      max-width: 500px; /* Chiều rộng tối đa */
       min-width:0;          /* tránh “độ rộng tối thiểu” do nội dung */
       display:flex; flex-direction:column; align-items:center; justify-content:center;
       padding:clamp(20px,3vw,32px);
@@ -99,7 +101,8 @@
 
     /* Mobile: xếp dọc, vẫn chạm mép trong card */
     @media (max-width: 768px){
-      .options-grid{flex-direction:column}
+      .options-grid{flex-direction:column; align-items: center;} /* Căn giữa nút trên mobile */
+      .option-button { width: 90%; max-width: 400px;} /* Điều chỉnh chiều rộng trên mobile */
     }
   </style>
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -108,7 +111,13 @@
   <header class="header">
     <div class="header-inner">
       <div class="header-left">
-        <img src="5f4a128d-c63a-46ad-92a7-94b6c5bbb49e.jpg" alt="Logo Hỗ Trợ Huấn Luyện" class="logo">
+        <!-- Sử dụng placeholder nếu ảnh gốc không tải được -->
+        <img
+            src="5f4a128d-c63a-46ad-92a7-94b6c5bbb49e.jpg"
+            alt="Logo Hỗ Trợ Huấn Luyện"
+            class="logo"
+            onerror="this.onerror=null; this.src='https://placehold.co/150x50/ffffff/008080?text=Logo';"
+         >
         <div class="project-info">
           <h1>THỂ THAO THÔNG MINH</h1>
           <p>DỰ ÁN KHOA HỌC KỸ THUẬT</p>
@@ -159,25 +168,38 @@
 
       const params = new URLSearchParams(window.location.search);
       const athleteId = params.get('athleteId');
-      const athleteName = params.get('athleteName');
+      const athleteName = params.get('athleteName'); // Lấy cả tên nếu có
 
       const videoLink = document.getElementById('video-analysis-link');
-      const imageLink = document.getElementById('image-analysis-link');
+      const imageLink = document.getElementById('image-analysis-link'); // Lấy link nút ảnh
 
+      const videoAnalysisPage = 'bất lực.html'; // Tên file trang phân tích video
+      const imageAnalysisPage = 'phantich-hinhanh.html'; // Tên file trang phân tích ảnh
+
+      // Xử lý link cho nút Phân tích Video
       if (athleteId) {
-        videoLink.href = `bất lực.html?athleteId=${encodeURIComponent(athleteId)}&athleteName=${encodeURIComponent(athleteName||'')}`;
+        // Nếu có ID, thêm cả ID và tên (nếu có) vào URL
+        videoLink.href = `${videoAnalysisPage}?athleteId=${encodeURIComponent(athleteId)}&athleteName=${encodeURIComponent(athleteName || '')}`;
       } else {
-        videoLink.href = 'bất lực.html';
+        // Nếu không có ID, chỉ cần trỏ đến trang
+        videoLink.href = videoAnalysisPage;
       }
 
-      imageLink.href = '#';
-      imageLink.onclick = (e) => {
-        e.preventDefault();
-        alert('Chức năng phân tích hình ảnh sắp ra mắt!');
-      };
+      // ---- SỬA ĐỔI CHO NÚT PHÂN TÍCH HÌNH ẢNH ----
+      if (athleteId) {
+        // Nếu có ID, thêm cả ID và tên (nếu có) vào URL
+        imageLink.href = `${imageAnalysisPage}?athleteId=${encodeURIComponent(athleteId)}&athleteName=${encodeURIComponent(athleteName || '')}`;
+      } else {
+        // Nếu không có ID, chỉ cần trỏ đến trang
+        imageLink.href = imageAnalysisPage;
+      }
+
+      // Xóa bỏ onclick cũ (nếu có) để đảm bảo link hoạt động
+      imageLink.onclick = null;
+      // ---- KẾT THÚC SỬA ĐỔI ----
+
     });
   </script>
 </body>
 </html>
-
 
