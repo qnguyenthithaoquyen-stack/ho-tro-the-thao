@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Đăng ký - Hỗ Trợ Huấn Luyện Thể Thao</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
@@ -27,7 +27,21 @@
       padding:15px 30px; display:flex; justify-content:space-between; align-items:center; gap:16px;
     }
     .header-left{ display:flex; align-items:center; gap:15px; min-width:0; }
-    .logo{ background:#fff; color:var(--primary-color); font-weight:700; padding:10px; border-radius:5px; }
+
+    /* ⬇️ Đồng bộ LOGO ảnh (giống các file trước) */
+    .logo{
+      height:50px;           /* cố định chiều cao logo */
+      width:auto;            /* giữ tỉ lệ ảnh */
+      border-radius:6px;     /* bo góc nhẹ */
+      background:#fff;       /* nền trắng tinh */
+      padding:2px;           /* viền đệm mỏng */
+      object-fit:contain;    /* không méo hình */
+      display:block;
+    }
+    @media (max-width:640px){
+      .logo{ height:44px; }  /* co nhẹ trên mobile */
+    }
+
     .project-info h1{ font-size:24px; margin:0; font-weight:700; white-space:nowrap; }
     .project-info p{ font-size:12px; margin:0; opacity:.9; }
 
@@ -67,6 +81,7 @@
     @media (max-width:640px){
       .project-info h1{ font-size:18px; }
       .navbar a{ padding:12px 16px; }
+      .form-row{ flex-direction:column; }
     }
   </style>
 </head>
@@ -76,7 +91,7 @@
   <header class="header">
     <div class="header-inner">
       <div class="header-left">
-        <img src="5f4a128d-c63a-46ad-92a7-94b6c5bbb49e.jpg" alt="Logo" class="logo">
+        <img src="5f4a128d-c63a-46ad-92a7-94b6c5bbb49e.jpg" alt="Logo Hỗ Trợ Huấn Luyện Thể Thao" class="logo">
         <div class="project-info">
           <h1>THỂ THAO THÔNG MINH</h1>
           <p>DỰ ÁN KHOA HỌC KỸ THUẬT - ỨNG DỤNG THEO DÕI CHỈ SỐ VẬN ĐỘNG VIÊN</p>
@@ -211,12 +226,11 @@
     const fullNameInput = document.getElementById('fullName');
     const messageDiv = document.getElementById('message-div');
 
+    // Tự động viết hoa chữ cái đầu trong tên
     fullNameInput.addEventListener('input', () => {
       const words = fullNameInput.value.toLowerCase().split(' ');
       for (let i = 0; i < words.length; i++) {
-        if (words[i]) {
-          words[i] = words[i].charAt(0).toUpperCase() + words[i].slice(1);
-        }
+        if (words[i]) words[i] = words[i].charAt(0).toUpperCase() + words[i].slice(1);
       }
       fullNameInput.value = words.join(' ');
     });
@@ -253,7 +267,7 @@
         });
 
         messageDiv.classList.add('success-message');
-        let dashboardUrl = (role === 'coach') ? 'coach-dashboard.html' : 'athlete-dashboard.html';
+        const dashboardUrl = (role === 'coach') ? 'coach-dashboard.html' : 'athlete-dashboard.html';
         messageDiv.innerHTML = `Đăng ký thành công! <a href="${dashboardUrl}">Nhấn vào đây để đến trang Bảng điều khiển</a>.`;
         messageDiv.style.display = 'block';
         submitButton.textContent = 'Đã đăng ký';
