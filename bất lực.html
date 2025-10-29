@@ -275,9 +275,13 @@ const failThumbs   = document.getElementById('failThumbs');
 
 let mpPose=null, lastPoseLandmarks=null, drawCb=null;
 let results = JSON.parse(localStorage.getItem('thethaott_results')||'{}');
-let libVideos = JSON.parse(localStorage.getItem('thethaott_videos')||'[]'); // persist metadata
-let failStore = JSON.parse(localStorage.getItem('thethaott_failposes')||'{}'); // { [videoId]: [ {dataUrl, ts, view, tile, sig} ] }
+let libVideos = JSON.parse(localStorage.getItem('thethaott_videos')||'[]');
+let failStore = JSON.parse(localStorage.getItem('thethaott_failposes')||'{}');
 let currentVideo=null, chart=null;
+
+/* đọc athleteId từ URL để ghi cảnh báo */
+const urlParams = new URLSearchParams(location.search);
+const ATHLETE_ID = urlParams.get('athleteId') || null;
 
 /* =================== 3D VISUALIZATION =================== */
 const threeContainer = document.getElementById('three-container');
@@ -290,7 +294,6 @@ function init3D() {
     camera = new THREE.PerspectiveCamera(50, threeContainer.clientWidth / threeContainer.clientHeight, 0.1, 100);
     camera.position.set(0, 0, 4);
 
-    // preserveDrawingBuffer để chụp ảnh canvas
     renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
     renderer.setSize(threeContainer.clientWidth, threeContainer.clientHeight);
     renderer.setPixelRatio(window.devicePixelRatio);
@@ -389,20 +392,19 @@ function update3DSkeleton(landmarks, isPass) {
 
 /* ======= Helpers cho lưu ảnh 3D sai ======= */
 function capture3DDataURL(){
-  renderer.render(scene, camera); // frame mới nhất
+  renderer.render(scene, camera);
   return renderer.domElement.toDataURL('image/png');
 }
 function getFailList(videoId){ return failStore[videoId] ?? []; }
 function setFailList(videoId, list){ failStore[videoId]=list; localStorage.setItem('thethaott_failposes', JSON.stringify(failStore)); }
 
 /* ======= Chống TRÙNG bằng pose signature ======= */
-let failSigIndex = JSON.parse(localStorage.getItem('thethaott_failposes_idx')||'{}'); // { [videoId]: { [sig]: true } }
+let failSigIndex = JSON.parse(localStorage.getItem('thethaott_failposes_idx')||'{}');
 function persistFailSigIndex(){ localStorage.setItem('thethaott_failposes_idx', JSON.stringify(failSigIndex)); }
 function hasFailSig(videoId, sig){ return !!(failSigIndex[videoId] && failSigIndex[videoId][sig]); }
 function addFailSig(videoId, sig){ if(!failSigIndex[videoId]) failSigIndex[videoId]={}; failSigIndex[videoId][sig]=true; persistFailSigIndex(); }
 function removeFailSig(videoId, sig){ if(failSigIndex[videoId]){ delete failSigIndex[videoId][sig]; persistFailSigIndex(); } }
 
-// Tạo "signature" từ góc + view (làm tròn 0.5° để chống nhiễu)
 function poseSignatureFromLandmarks(lm, view){
   const A = extractAngles(lm);
   const keys = ['kneeL','kneeR','hipL','hipR','elbowL','elbowR','shoulderL','shoulderR','torso'];
@@ -414,7 +416,7 @@ function poseSignatureFromLandmarks(lm, view){
 }
 
 function addFailPose(videoId, dataUrl, meta){
-  if(meta?.sig && hasFailSig(videoId, meta.sig)) return; // đã có -> bỏ qua
+  if(meta?.sig && hasFailSig(videoId, meta.sig)) return;
   const list = getFailList(videoId);
   list.push({ dataUrl, ts: Date.now(), ...meta });
   if(list.length>60) list.shift();
@@ -446,6 +448,7 @@ function renderFailThumbs(){
       const removed = arr.splice(realIndex,1)[0]; 
       setFailList(currentVideo.id, arr); 
       if(removed?.sig) removeFailSig(currentVideo.id, removed.sig);
+      renderFailThumbs();
     };
     actions.appendChild(dl); actions.appendChild(rm);
     card.appendChild(img); card.appendChild(meta); card.appendChild(actions);
@@ -457,9 +460,9 @@ let lastAutoSaveMs = 0;
 function tryAutoSaveFail(isPass, meta, landmarks){
   if(!autoSaveFail.checked || isPass || !currentVideo || !landmarks) return;
   const now = Date.now();
-  if(now - lastAutoSaveMs < 800) return; // chống spam
+  if(now - lastAutoSaveMs < 800) return;
   const sig = poseSignatureFromLandmarks(landmarks, meta?.view);
-  if(hasFailSig(currentVideo.id, sig)) return; // đã có
+  if(hasFailSig(currentVideo.id, sig)) return;
   lastAutoSaveMs = now;
   const dataUrl = capture3DDataURL();
   addFailPose(currentVideo.id, dataUrl, { ...meta, sig });
@@ -783,7 +786,6 @@ function renderVideoList(){
             if(v.url) URL.revokeObjectURL(v.url);
             libVideos = libVideos.filter(x=>x.id!==v.id); persistVideos();
             if(results[v.id]){ delete results[v.id]; localStorage.setItem('thethaott_results',JSON.stringify(results)); }
-            // xóa fail poses + chỉ mục
             if(failStore[v.id]){ delete failStore[v.id]; localStorage.setItem('thethaott_failposes',JSON.stringify(failStore)); }
             if(failSigIndex[v.id]){ delete failSigIndex[v.id]; persistFailSigIndex(); }
             renderVideoList(); renderChart();
@@ -819,7 +821,6 @@ function openVideo(v){
     drawCb = res=>{
       const pass = res.poseLandmarks ? checkPass(res.poseLandmarks) : false;
 
-      // bật/tắt nút lưu thủ công
       saveFailBtn.disabled = pass || !res.poseLandmarks;
 
       if (res.poseLandmarks) {
@@ -831,7 +832,6 @@ function openVideo(v){
       if(res && res.poseLandmarks && res.poseLandmarks.length){
         let vUse=viewSel.value==='auto'?detectView2D(res.poseLandmarks):viewSel.value;
         liveBadge.style.display='block'; liveBadge.textContent=`[${vUse.toUpperCase()}] ${pass?'✅ Đạt':'⚠️ Lỗi'}`;
-        // tự động lưu nếu fail (chống trùng bằng signature)
         tryAutoSaveFail(pass, { view: vUse, tile: results[currentVideo.id]?.tile }, res.poseLandmarks);
       } else {
          liveBadge.style.display='none';
@@ -905,6 +905,138 @@ function checkPass(landmarks) {
         : [{ rules: startRules }];
     return passByAnyRuleSet(A, sets, sport).pass;
 }
+
+/* =================== AI ANALYSIS (NEW) =================== */
+
+/**
+ * Hằng số schema cho Gemini
+ */
+const analysisSchema = {
+  type: "OBJECT",
+  properties: {
+    "loi": {
+      type: "ARRAY",
+      items: { type: "STRING" },
+      description: "Danh sách 3 lỗi kỹ thuật phổ biến nhất dựa trên dữ liệu."
+    },
+    "chanthuong": {
+      type: "ARRAY",
+      items: { type: "STRING" },
+      description: "3 nguy cơ chấn thương liên quan trực tiếp đến các lỗi đã phát hiện."
+    },
+    "goiy": {
+      type: "ARRAY",
+      items: { type: "STRING" },
+      description: "3 bài tập hoặc gợi ý ngắn gọn (dưới 10 từ) để khắc phục lỗi."
+    }
+  },
+  required: ["loi", "chanthuong", "goiy"]
+};
+
+/**
+ * Hàm delay cho exponential backoff
+ */
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+/**
+ * Gọi Gemini API để lấy phân tích (lỗi, chấn thương, gợi ý)
+ * @param {object} summary - Đối tượng tóm tắt features (mean, std, rom...)
+ * @param {string} sport - Tên môn thể thao (vd: 'xuatphat')
+ * @param {number} tile - Tỉ lệ % đúng
+ * @param {number} sai - Số khung sai
+ * @param {number} dung - Số khung đúng
+ * @returns {Promise<object>} - Promise giải quyết về {loi: [], chanthuong: [], goiy: []}
+ */
+async function getAIAnalysis(summary, sport, tile, sai, dung, retries = 3, backoff = 1000) {
+  const apiKey = ""; // Để trống, Canvas sẽ tự điền
+  const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+
+  const systemPrompt = "Bạn là một chuyên gia phân tích tư thế thể thao. Nhiệm vụ của bạn là cung cấp 3 danh sách (mảng string) dựa trên dữ liệu phân tích: 1. 'Lỗi thường gặp' (loi), 2. 'Nguy cơ chấn thương' (chanthuong) liên quan đến các lỗi đó, và 3. 'Gợi ý khắc phục' (goiy). Luôn trả lời bằng JSON theo schema đã định. Các gợi ý phải ngắn gọn (dưới 10 từ), tập trung vào kỹ thuật. Giữ số lượng mỗi danh sách chính xác là 3 mục.";
+
+  // Chỉ lấy 1 phần dữ liệu summary để tránh prompt quá dài
+  const relevantSummary = {
+    meanAngles: summary.mean,
+    rom: summary.rom
+  };
+
+  const userQuery = `
+    Phân tích cho môn thể thao: ${sport}.
+    Tỉ lệ đúng: ${tile}% (Đúng: ${dung} khung, Sai: ${sai} khung).
+    Dữ liệu tóm tắt (góc trung bình và biên độ chuyển động): ${JSON.stringify(relevantSummary)}
+    
+    Dựa trên tỉ lệ ${tile}% (nếu thấp là có lỗi) và dữ liệu, hãy tạo 3 danh sách (mỗi danh sách 3 mục): loi, chanthuong, goiy.
+  `;
+
+  const payload = {
+    contents: [{ parts: [{ text: userQuery }] }],
+    systemInstruction: {
+      parts: [{ text: systemPrompt }]
+    },
+    generationConfig: {
+      responseMimeType: "application/json",
+      responseSchema: analysisSchema,
+      temperature: 0.6,
+    }
+  };
+
+  for (let i = 0; i < retries; i++) {
+    try {
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        // Không log lỗi 429 (throttling) để tránh console spam khi retry
+        if (response.status !== 429) {
+            console.error(`HTTP error! status: ${response.status}`);
+        }
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      const candidate = result.candidates?.[0];
+
+      if (candidate && candidate.content?.parts?.[0]?.text) {
+        const jsonText = candidate.content.parts[0].text;
+        const parsedJson = JSON.parse(jsonText);
+        return {
+          loi: parsedJson.loi || ["Không phát hiện lỗi cụ thể."],
+          chanthuong: parsedJson.chanthuong || ["Không phát hiện nguy cơ cụ thể."],
+          goiy: parsedJson.goiy || ["Tiếp tục luyện tập."]
+        };
+      } else {
+        throw new Error("Cấu trúc response không hợp lệ từ API.");
+      }
+
+    } catch (error) {
+      // Không log lỗi nếu là do throttling (để retry thầm lặng)
+      if (!error.message.includes("429")) {
+        console.error(`Lỗi phân tích AI (lần ${i + 1}/${retries}):`, error.message);
+      }
+      
+      if (i === retries - 1) {
+        // Lần thử cuối cùng thất bại, trả về giá trị mặc định
+        return {
+          loi: ["Lỗi: Không thể kết nối AI để phân tích."],
+          chanthuong: ["Nguy cơ: N/A"],
+          goiy: ["Gợi ý: Vui lòng kiểm tra kết nối và thử lại."]
+        };
+      }
+      await delay(backoff * Math.pow(2, i)); // Exponential backoff
+    }
+  }
+  
+  return {
+    loi: ["Lỗi phân tích AI (fallback)."],
+    chanthuong: ["N/A"],
+    goiy: ["N/A"]
+  };
+}
+
 
 /* =================== ANALYZE =================== */
 analyzeBtn.onclick = ()=>{ 
@@ -997,7 +1129,6 @@ async function analyze(v,force=false){
         featAngles.push(A);
         featVel.push(angleVelocity(featAngles.at(-2) || A, A, dt));
 
-        // cập nhật 3D + auto lưu nếu fail (chống trùng)
         update3DSkeleton(res.poseLandmarks, passNow);
         const autoView = detectView2D(res.poseLandmarks);
         const sig = poseSignatureFromLandmarks(res.poseLandmarks, autoView);
@@ -1034,21 +1165,50 @@ async function analyze(v,force=false){
   const sai = Math.max(0, sampled-valid);
   const dung= Math.max(0, valid);
 
-  const bank={
-    xuatphat:{loi:["Gập gối chưa đủ","Tay chống yếu","Thân nghiêng nhiều"],chanthuong:["Cổ tay","Gối","Vai"],goiy:["Giữ thân thẳng khi xuất phát","Tăng phản xạ gối & mũi chân","Xuất phát tại chỗ giữ 5s"]},
-    nhaycao:{loi:["Bước chạy đà chậm","Gối không nâng cao","Lưng qua xà chưa cong"],chanthuong:["Gối","Cột sống thắt lưng"],goiy:["Chạy đà + nhảy 1 chân","Kéo giãn cột sống","Bật nhảy nâng gối"]},
-    nemta:{loi:["Hạ vai khi xoay","Chưa tối ưu lực chân"],chanthuong:["Cổ tay","Vai","Lưng"],goiy:["Tăng sức mạnh xoay thân","Phối hợp chân–trục–đẩy tạ","Xoay chậm giữ vai"]}
-  };
+  // XÓA BỎ BANK TĨNH
+  // const bank={
+  //   xuatphat:{loi:["Gập gối chưa đủ","Tay chống yếu","Thân nghiêng nhiều"],chanthuong:["Cổ tay","Gối","Vai"],goiy:["Giữ thân thẳng khi xuất phát","Tăng phản xạ gối & mũi chân","Xuất phát tại chỗ giữ 5s"]},
+  //   nhaycao:{loi:["Bước chạy đà chậm","Gối không nâng cao","Lưng qua xà chưa cong"],chanthuong:["Gối","Cột sống thắt lưng"],goiy:["Chạy đà + nhảy 1 chân","Kéo giãn cột sống","Bật nhảy nâng gối"]},
+  //   nemta:{loi:["Hạ vai khi xoay","Chưa tối ưu lực chân"],chanthuong:["Cổ tay","Vai","Lưng"],goiy:["Tăng sức mạnh xoay thân","Phối hợp chân–trục–đẩy tạ","Xoay chậm giữ vai"]}
+  // };
   const sport=v.sportTag||sportSel.value;
-  let loi=[],chan=[],goiy=[];
-  const sportBank = bank[sport] || { loi: [], chanthuong: [], goiy: [] };
+  // let loi=[],chan=[],goiy=[];
+  // const sportBank = bank[sport] || { loi: [], chanthuong: [], goiy: [] };
 
-  if(tile>=90){loi=sportBank.loi.slice(0,1); chan=sportBank.chanthuong.slice(0,1); goiy=sportBank.goiy.slice(0,1);}
-  else if(tile>=70){loi=sportBank.loi.slice(0,2); chan=sportBank.chanthuong.slice(0,2); goiy=sportBank.goiy.slice(0,2);}
-  else {loi=sportBank.loi; chan=sportBank.chanthuong; goiy=sportBank.goiy;}
+  // if(tile>=90){loi=sportBank.loi.slice(0,1); chan=sportBank.chanthuong.slice(0,1); goiy=sportBank.goiy.slice(0,1);}
+  // else if(tile>=70){loi=sportBank.loi.slice(0,2); chan=sportBank.chanthuong.slice(0,2); goiy=sportBank.goiy.slice(0,2);}
+  // else {loi=sportBank.loi; chan=sportBank.chanthuong; goiy=sportBank.goiy;}
 
-  results[id]={id,name:v.name,sport, sai,dung,tile,view:decided, features:summary, loi, chanthuong:chan, goiy};
+  // THAY THẾ BẰNG LỜI GỌI AI
+  setProgress(100, 'Đang AI...'); // Thông báo đang gọi AI
+  const { loi, chanthuong, goiy } = await getAIAnalysis(summary, sport, tile, sai, dung);
+  // CẬP NHẬT KẾT QUẢ VỚI DỮ LIỆU TỪ AI
+  results[id]={id,name:v.name,sport, sai,dung,tile,view:decided, features:summary, loi, chanthuong, goiy};
   localStorage.setItem('thethaott_results', JSON.stringify(results));
+
+  /* ======= TẠO CẢNH BÁO CHẤN THƯƠNG & GHI FIRESTORE ======= */
+  try{
+    if(ATHLETE_ID){
+      const riskLevel = (tile<60)?'high':(tile<=80?'medium':'low');
+      const accuracy = tile; // theo yêu cầu UI "Tỉ lệ đúng (ước lượng mô hình)"
+      // Tạo danh sách cảnh báo: mỗi vùng nguy cơ -> 1 bản ghi
+      const warnings = (chanthuong.length ? chanthuong : ['Nguy cơ chung']).map((zone, i)=>({
+        title: `Nguy cơ chấn thương: ${zone}`,
+        description: (loi[i] || loi[0]) ? `Dấu hiệu: ${(loi[i] || loi[0])}. Góc lệch/biên độ có thể chưa tối ưu.` : `Cần tối ưu kỹ thuật và biên độ vận động.`,
+        risk: riskLevel,
+        accuracy: accuracy,
+        advice: (goiy[i] || goiy[0] || 'Theo dõi tải luyện tập, khởi động kỹ và điều chỉnh kỹ thuật.'),
+        date: new Date().toISOString(),
+        _meta: { videoId: id, videoName: v.name, sport, view: decided }
+      }));
+      if(window.publishInjuryWarnings){
+        await window.publishInjuryWarnings(ATHLETE_ID, warnings);
+      }
+    }
+  }catch(e){
+    console.error('Lỗi ghi cảnh báo:', e);
+  }
+  /* ============================================ */
 
   setProgress(100,'Xong'); 
   showInfo(results[id]); 
@@ -1074,7 +1234,7 @@ videoUpload.onchange = e=>{
   libVideos.push(v); persistVideos(); renderVideoList(); 
   speedControl.value = "1";
   openVideo(v);
-  lastAutoSaveMs = 0; // reset autosave throttle
+  lastAutoSaveMs = 0;
 };
 
 clearBtn.onclick=()=>{
@@ -1099,5 +1259,64 @@ init3D();
 lucide.createIcons();
 window.addEventListener('resize', onThreeResize);
 </script>
+
+<!-- ===== Firebase ghi cảnh báo: module tách riêng ===== -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+  import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyA2dXWCyjL2xgCSyeW9QQ7RvjI_O7kFHJw",
+    authDomain: "sporthealthdata.firebaseapp.com",
+    projectId: "sporthealthdata",
+    storageBucket: "sporthealthdata.appspot.com",
+    messagingSenderId: "789054240877",
+    appId: "1:789054240877:web:04a400c9ea586523a86764",
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  // đảm bảo có user (ẩn danh nếu cần)
+  async function ensureAuth(){
+    return new Promise((resolve)=>{
+      const u = auth.currentUser;
+      if(u) return resolve(u);
+      const unsub = onAuthStateChanged(auth, async (user)=>{
+        if(user){ unsub(); resolve(user); }
+        else{
+          try{ await signInAnonymously(auth); }catch(e){ console.error(e); resolve(null); }
+        }
+      });
+    });
+  }
+
+  // Ghi nhiều cảnh báo 1 lượt
+  async function publishInjuryWarnings(athleteId, warnings){
+    if(!athleteId || !Array.isArray(warnings) || warnings.length===0) return;
+    await ensureAuth();
+    const colRef = collection(db, 'users', athleteId, 'injury_warnings');
+    const tasks = warnings.map(w=>{
+      const payload = {
+        title: w.title || 'Cảnh báo chấn thương',
+        description: w.description || '',
+        risk: (w.risk || w.severity || 'medium'),
+        accuracy: typeof w.accuracy==='number' ? Math.max(0, Math.min(100, Math.round(w.accuracy))) : 0,
+        advice: w.advice || '',
+        date: w.date ? new Date(w.date) : serverTimestamp(),
+        meta: w._meta || null
+      };
+      return addDoc(colRef, payload);
+    });
+    await Promise.allSettled(tasks);
+  }
+
+  // expose ra window cho script thường gọi
+  window.publishInjuryWarnings = publishInjuryWarnings;
+</script>
+
 </body>
 </html>
+
